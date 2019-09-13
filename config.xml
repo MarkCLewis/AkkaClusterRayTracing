@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config>
+	<numCommandsToGive>50</numCommandsToGive>
+	
+	<!-- Commands -->
+	<commands>
+		<command name="north" output="room" movement="true" enabled="true"/>
+		<command name="south" output="room" movement="true" enabled="true"/>
+		<command name="east" output="room" movement="true" enabled="true"/>
+		<command name="west" output="room" movement="true" enabled="true"/>
+		<command name="up" output="room" movement="true" enabled="true"/>
+		<command name="down" output="room" movement="true" enabled="true"/>
+		<command name="look" output="room" enabled="true"/>
+		<command name="get" output="unparsed" enabled="true">
+			<argument type="roomItem"/>
+		</command>
+		<command name="drop" output="unparsed" enabled="true">
+			<argument type="invItem"/>
+		</command>
+		<command name="inventory" output="inventory" enabled="true"/>
+		<command name="exit" output="terminate" enabled="true"/>
+		<command name="say">
+			<argument type="constant">Hello there!</argument>
+		</command>
+	</commands>
+	
+	<!-- Output formats -->
+	<output>
+		<roomOutput>
+([^\n]+)
+(.+?)
+Exits: (.+)
+Items: (None|(.+))
+		</roomOutput>
+
+		<roomName group="1"></roomName>
+		<exits group="3" separator=", "></exits>
+		<items group="5" separator=", "></items>
+	
+		<inventoryOutput>
+Inventory:
+([ \t]*Nothing)|(([ \t]*\w+ - [^\n]+\n?)+)
+		</inventoryOutput>
+	
+		<invItems group="2" separator="\n">[ \t]*(\w+) - .+</invItems>
+	</output>
+	
+	<!-- Debug levels -->
+	<debug>
+		<regexDebug level="0"></regexDebug>
+		<playerDebug level="0"></playerDebug>
+		<roomDebug level="0">
+			<monitoredRooms>
+				<monitoredRoom>Living Room</monitoredRoom>
+				<monitoredRoom>Front Door</monitoredRoom>
+			</monitoredRooms>
+		</roomDebug>
+	</debug>
+	
+	<!-- Test procedures -->
+	<tests>
+		<getDrop enabled="false"></getDrop>
+	</tests>
+</config>
