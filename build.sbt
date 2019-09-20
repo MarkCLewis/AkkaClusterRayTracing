@@ -12,6 +12,7 @@ libraryDependencies ++= Seq(
 	"org.scala-lang.modules" %% "scala-xml" % "1.2.0",
 	"com.novocode" % "junit-interface" % "0.11" % Test,
 	"org.scalactic" %% "scalactic" % "3.0.8",
-	"org.scalatest" %% "scalatest" % "3.0.8" % "test"
+	"org.scalatest" %% "scalatest" % "3.0.8" % "test",
+	"org.scala-lang" % "scala-swing" % "2.10.2"
 )
 

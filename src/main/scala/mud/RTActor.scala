@@ -10,7 +10,9 @@ class RTActor extends Actor {
   def recieve = {
     case Subset(subst) => {
       //TODO: trace subset
-      RayTrace.render(???)
+      //TODO: redefine render functions using actors
+      //RayTrace.render(???)
+      //RayTrace.castRay(ray: Ray, geom: Geometry, lights: List[Light], cnt: Int)
     }
     case _ =>
   }

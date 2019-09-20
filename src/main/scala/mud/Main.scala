@@ -1,17 +1,11 @@
 package mud
 
 import swiftvis2.raytrace._
-
-/**
-This is a stub for the main class for your MUD.
-*/
-
 import data.CartAndRad
-import swiftvis2.raytrace._
 import swiftvis2.raytrace.LinearViewPath._
 import java.awt.image.BufferedImage
 import scala.swing._
-import swiftvis2.
+import swiftvis2._
 import java.io.File
 import ExtendedSlidingBoxSims.SimSpec
 import javax.imageio.ImageIO
@@ -55,7 +49,7 @@ object Main extends App {
       StopPoint(View(Point(7.4e-8, -1.8e-6, 4e-6), Vect(0, 0, -1), Vect(-1, 0, 0)), 10),
       StopPoint(View(Point(2e-6, -1.8e-6, 7e-7), Vect(-1, 0, 0), Vect(0, 0, 1)), 10)), 
       List(10, 5, 5), LinearViewPath.SmoothEasing)
-  val frame = new JFrame("Trace Frame")
+  val frame = new MainFrame("Trace Frame")
   val secsPerFrame = 0.1
   val secsPerStep = 1 //45
   val sunElev = 10.0*math.Pi/180
