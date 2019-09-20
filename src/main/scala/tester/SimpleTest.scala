@@ -1,4 +1,4 @@
-package tester
+/*package tester
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // Not intended for students to edit.
@@ -23,4 +23,4 @@ object SimpleTest extends App {
   val system = ActorSystem("SimpleTest")
   val ioConfig = IOConfig("config.xml")
   val player = system.actorOf(Props(TestPlayer("test_player",is,os,ioConfig)),"test_player")
-}
+}*/

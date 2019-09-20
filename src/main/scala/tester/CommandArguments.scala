@@ -1,4 +1,4 @@
-package tester
+/*package tester
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // Not intended for students to edit.
@@ -42,4 +42,4 @@ case object RoomExit extends CommandArgument {
 case class ConstantArg(value: String) extends CommandArgument {
   def apply(state: Player.GameState): String = value
   def isValidForState(state: Player.GameState): Boolean = true
-}
+} */

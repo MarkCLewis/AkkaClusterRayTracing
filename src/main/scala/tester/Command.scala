@@ -1,4 +1,4 @@
-package tester
+/*package tester
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // Not intended for students to edit.
@@ -100,4 +100,4 @@ case class InvParsing(val name: String, args: Seq[CommandArgument]) extends Comm
         Right(currentState.copy(inventory = invItems))
     }
   }
-}
+}*/

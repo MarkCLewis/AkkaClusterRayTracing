@@ -1,4 +1,4 @@
-package mud
+/*package mud
 
 import org.junit.Test
 import org.junit.Assert._
@@ -44,4 +44,4 @@ Items: sword, chair
     room.dropItem(item)
     assertEquals(item, room.getItem("Homework"))
   }
-}
+}*/

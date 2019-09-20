@@ -1,4 +1,4 @@
-package mud
+/*package mud
 
 import org.junit._
 import org.junit.Assert._
@@ -25,4 +25,4 @@ class TestPlayer {
     player.addToInventory(item)
     assertEquals(item, player.getFromInventory("Homework"))
   }
-}
+}*/
