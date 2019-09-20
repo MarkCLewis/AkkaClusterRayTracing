@@ -7,8 +7,8 @@ import swiftvis2.raytrace.LinearViewPath._
 
 class RTActor extends Actor {
   import RTActor._
-  def recieve = {
-    case Subset(subst) => {
+  def receive = {
+    case CastRay(subst) => {
       //TODO: trace subset
       //TODO: redefine render functions using actors
       //RayTrace.render(???)
@@ -18,5 +18,5 @@ class RTActor extends Actor {
   }
 }
 object RTActor {
-  case class Subset(subst: KDTreeGeometry)
+  case class CastRay(ray: Ray)
 }

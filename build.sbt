@@ -1,6 +1,8 @@
-name := "MUD"
+name := "AkkaRayTracing"
 version := "1.0"
 scalaVersion := "2.12.8"
+
+run / fork := true
 
 mainClass in (Compile, packageBin) := Some("mud.Main")
 
@@ -13,6 +15,6 @@ libraryDependencies ++= Seq(
 	"com.novocode" % "junit-interface" % "0.11" % Test,
 	"org.scalactic" %% "scalactic" % "3.0.8",
 	"org.scalatest" %% "scalatest" % "3.0.8" % "test",
-	"org.scala-lang" % "scala-swing" % "2.10.2"
+	"org.scala-lang.modules" %% "scala-swing" % "2.1.1"
 )
 
