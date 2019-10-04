@@ -5,14 +5,11 @@ import data.CartAndRad
 import swiftvis2.raytrace._
 import swiftvis2.raytrace.LinearViewPath._
 
-class RTActor extends Actor {
+class RTActor(geom: Geometry, lights: List[Light]) extends Actor {
   import RTActor._
   def receive = {
-    case CastRay(subst) => {
-      //TODO: trace subset
-      //TODO: redefine render functions using actors
-      //RayTrace.render(???)
-      //RayTrace.castRay(ray: Ray, geom: Geometry, lights: List[Light], cnt: Int)
+    case CastRay(ray) => {
+      sender ! RayTrace.castRay(ray, geom, lights, 0)
     }
     case _ =>
   }
