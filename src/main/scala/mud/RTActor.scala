@@ -9,6 +9,7 @@ class RTActor(geom: Geometry, lights: List[Light]) extends Actor {
   import RTActor._
   def receive = {
     case CastRay(ray) => {
+      // println("Actor")
       sender ! RayTrace.castRay(ray, geom, lights, 0)
     }
     case _ =>

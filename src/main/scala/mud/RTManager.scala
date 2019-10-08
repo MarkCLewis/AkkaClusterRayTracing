@@ -19,6 +19,7 @@ class RTManager(geom: Geometry, lights: List[Light]) extends Actor{
   def receive = {
     //Consider possibility of CastRays
     case CastRay(ray) => {   
+      // println(s"Manager")
       val send = sender
       val fut = router ? RTActor.CastRay(ray)
       fut.foreach(res => send ! res)
