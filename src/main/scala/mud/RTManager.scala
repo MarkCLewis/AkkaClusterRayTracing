@@ -18,10 +18,9 @@ class RTManager(geom: Geometry, lights: List[Light]) extends Actor{
 
   def receive = {
     //Consider possibility of CastRays
-    case CastRay(ray) => {   
-      val send = sender
-      val fut = router ? RTActor.CastRay(ray)
-      fut.foreach(res => send ! res)
+    case CastRay(i, j, ray) => {
+      // println(s"Manager ray $i $j")
+      router ! RTActor.CastRay(i, j, ray, sender)
     }
     //TODO: need to rewrite render functions in SwiftVis RayTrace to use actors for parallelization
     //TODO: further actorize, with router
@@ -29,5 +28,5 @@ class RTManager(geom: Geometry, lights: List[Light]) extends Actor{
 }
 
 object RTManager{
-  case class CastRay(ray: Ray)
+  case class CastRay(i: Int, j: Int, ray: Ray)
 }
