@@ -32,7 +32,7 @@ object Main extends App {
   val lights = List(AmbientLight(new RTColor(0.1, 0.1, 0.0, 1.0)), PointLight(new RTColor(0.9,0.9,0.9,1), Point(1e-1, 0, 1e-2)))
   val bimg = new BufferedImage(800, 800, BufferedImage.TYPE_INT_ARGB)
   val img = new rendersim.RTBufferedImage(bimg)
-  val numRays = 1  // TODO: Make code work with this!!
+  val numRays = 5  // TODO: Make code work with this!!
   val eye = Point(0, 0, 1e-5)
   val topLeft = Point(-1e-5, 1e-5, 0.0)
   val right = Vect(2e-5, 0, 0)
