@@ -53,12 +53,11 @@ class ImageDrawer(geom: Geometry, lights: List[Light], img: rendersim.RTBuffered
           case None => //self ! SetColor(i,j, new RTColor(0.0, 0.0, 0.0, 1.0))
           case Some(id) => {
             val geomSize = id.geom.boundingSphere.radius
-            ids(key) match {
+            val rt = ids(key) match {
               case ml: MergeLightSource =>
-
+                val merged = ml.merge(id, geom)
             }
-            //does intersect result need to know the ray?
-            manager ! RTManager.CastRay(self, key, r)
+            //self ! SetColor(self, key, r)
           }
         }
       }
