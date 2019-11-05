@@ -1,4 +1,4 @@
-package mud
+package acrt
 
 import akka.actor.Actor
 import akka.pattern.ask
@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 import akka.util.Timeout
 import akka.actor.ActorRef
 
-class RTManager(geom: Geometry, lights: List[Light], nr:Int) extends Actor{
+class RTManager(geom: Geometry, lights: List[Light], nr: Int) extends Actor {
   import RTManager._
   implicit val timeout = Timeout(100.seconds)
   implicit val ec = context.dispatcher
@@ -26,6 +26,6 @@ class RTManager(geom: Geometry, lights: List[Light], nr:Int) extends Actor{
   }
 }
 
-object RTManager{
+object RTManager {
   case class CastRay(recipient: ActorRef, k: Long, ray: Ray)
 }

@@ -1,4 +1,4 @@
-package mud
+package acrt
 
 import swiftvis2.raytrace._
 import data.CartAndRad
@@ -29,10 +29,10 @@ object Main extends App {
   println(particles.maxBy(_.center.y))
   // sys.exit(0)
   val geom = new KDTreeGeometry(particles)
-  val lights = List(AmbientLight(new RTColor(0.1, 0.1, 0.0, 1.0)), PointLight(new RTColor(0.9,0.9,0.9,1), Point(1e-1, 0, 1e-2)))
+  val lights = List(AmbientLight(new RTColor(0.1, 0.1, 0.0, 1.0)), PointLight(new RTColor(0.9, 0.9, 0.9, 1), Point(1e-1, 0, 1e-2)))
   val bimg = new BufferedImage(800, 800, BufferedImage.TYPE_INT_ARGB)
   val img = new rendersim.RTBufferedImage(bimg)
-  val numRays = 5  // TODO: Make code work with this!!
+  val numRays = 5 // TODO: Make code work with this!!
   val eye = Point(0, 0, 1e-5)
   val topLeft = Point(-1e-5, 1e-5, 0.0)
   val right = Vect(2e-5, 0, 0)
@@ -42,17 +42,17 @@ object Main extends App {
   implicit val timeout = Timeout(100.seconds)
   implicit val ec = system.dispatcher
   imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)
-  
+
   val frame = new MainFrame {
     title = "Trace Frame"
     contents = new Label("", Swing.Icon(bimg), Alignment.Center)
   }
   frame.visible = true
-  
+
   var last = System.nanoTime()
-  while(true) {
+  while (true) {
     val delay = System.nanoTime() - last
-    if(delay >= (.5 * 1e9)) {
+    if (delay >= (.5 * 1e9)) {
       println("repainting")
       frame.repaint()
       last = System.nanoTime()

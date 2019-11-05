@@ -1,4 +1,4 @@
-package mud
+package acrt
 
 import data.InterpolatedCartAndRadSequence
 import util.Particle
@@ -14,15 +14,15 @@ import swiftvis2.raytrace.Vect
 import swiftvis2.raytrace.ListScene
 
 class ExtendedSlidingBoxSims(
-  cellSizeX:       Double,
-  cellSizeY:       Double,
-  cellCountX:      Int,
-  cellCountY:      Int,
-  placedSpecs:     Map[(Int, Int), SimSpec],
+  cellSizeX: Double,
+  cellSizeY: Double,
+  cellCountX: Int,
+  cellCountY: Int,
+  placedSpecs: Map[(Int, Int), SimSpec],
   backgroundSpecs: Seq[SimSpec],
-  shearRate:       Double                   = -1.5 * 2 * math.Pi / 1000, // The -1.5 is from the linearized Hill's solution. The rest is 1000 steps per 2Pi units of time.
-  interpCutoff:    Double                   = 1e-5,
-  radiusScale:     Particle => Double       = p => 1.0) {
+  shearRate: Double = -1.5 * 2 * math.Pi / 1000, // The -1.5 is from the linearized Hill's solution. The rest is 1000 steps per 2Pi units of time.
+  interpCutoff: Double = 1e-5,
+  radiusScale: Particle => Double = p => 1.0) {
 
   private val placedInterps = placedSpecs.mapValues(ss => new InterpolatedCartAndRadSequence(ss.dir, ss.startIndex, ss.endIndex, interpCutoff))
   private val backgroundInterps = backgroundSpecs.map(ss => new InterpolatedCartAndRadSequence(ss.dir, ss.startIndex, ss.endIndex, interpCutoff))
