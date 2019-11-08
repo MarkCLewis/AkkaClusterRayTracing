@@ -19,7 +19,7 @@ class ImageDrawer(geom: Geometry, lights: List[Light], img: rendersim.RTBuffered
   implicit val timeout = Timeout(100.seconds)
   implicit val ec = context.dispatcher
   val manager: ActorRef = context.actorOf(Props(new RTManager(geom, lights, numRays)), "RTMan")
-  val ids = collection.mutable.Map[Long, IDCombiner]()
+  val ids = collection.mutable.Map[Long, ActorRef]()
   //val mc = new MergeColors(1)
 
   def receive = {
@@ -33,7 +33,14 @@ class ImageDrawer(geom: Geometry, lights: List[Light], img: rendersim.RTBuffered
         val index = 0
         val key = scala.util.Random.nextLong()
         val r = Ray(eye, topLeft + right * (aspect * (i + (if (index > 0) math.random * 0.75 else 0)) / img.width) + down * (j + (if (index > 0) math.random * 0.75 else 0)) / img.height)
-        ids(key) = new MergeLightSource(lights)
+        ids(key) = (intD) => {
+          val mergeKey = scala.util.Random.nextLong()
+          ids(mergeKey) = new MergeLightSource(lights, intD)
+          for (light <- lights) {
+            manager ! RTManager.CastRay(self, mergeKey, light.outRay)
+          }
+          true
+        }
         manager ! RTManager.CastRay(self, key, r)
 
         /*intsct match {
@@ -55,17 +62,18 @@ class ImageDrawer(geom: Geometry, lights: List[Light], img: rendersim.RTBuffered
             val geomSize = id.geom.boundingSphere.radius
             val rt = ids(key) match {
               case ml: MergeLightSource =>
-                val merged = ml.merge(id, geom)
+              val merged = ml.merge(id, geom)
             }
             //self ! SetColor(self, key, r)
           }
         }
+        ids.remove(key)
       }
     }
     case SetColor(i, j, color) =>
       println(s"Setting $i, $j")
       img.setColor(i, j, color)
-    case m => println("Unhandled message " + m)
+    case m => "me imagedrawer. me recieve " + m
   }
 }
 

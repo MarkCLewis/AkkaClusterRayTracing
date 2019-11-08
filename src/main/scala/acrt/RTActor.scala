@@ -13,7 +13,7 @@ class RTActor(geom: Geometry, lights: List[Light]) extends Actor {
       // println(s"Actor ray $i $j")
       rec ! ImageDrawer.IntersectResult(k, geom intersect ray)
     }
-    case _ =>
+    case m => "me rtactor. me recieve " + m
   }
 }
 object RTActor {

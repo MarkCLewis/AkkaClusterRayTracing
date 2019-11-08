@@ -22,6 +22,7 @@ class RTManager(geom: Geometry, lights: List[Light], nr: Int) extends Actor {
       // println(s"Manager ray $i $j")
       router ! RTActor.CastRay(k, ray, sender)
     }
+    case m => "me rtmanager. me recieve " + m
     //TODO: need to rewrite render functions in SwiftVis RayTrace to use actors for parallelization
   }
 }

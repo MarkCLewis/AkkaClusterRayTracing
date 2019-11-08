@@ -13,7 +13,7 @@ class MergeColors(numRays: Int) extends IDCombiner {
     }
     def mergedColor: RTColor = intD.color * (lightColors.foldLeft(new RTColor(0, 0, 0, 1))(_ + _))
 }*/
-class MergeLightSource(lights: Seq[PointLight]) extends IDCombiner {
+class MergeLightSource(lights: Seq[PointLight], id: IntersectData) extends IDCombiner {
   /* mergeLightSource takes all the lights found by sending out the first ray and 
    * combines them to determine other rays to send out and the color to return */
   val buff = mutable.ArrayBuffer[Option[IntersectData]]()
