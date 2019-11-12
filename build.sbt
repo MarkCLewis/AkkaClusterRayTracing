@@ -4,9 +4,9 @@ scalaVersion := "2.12.8"
 
 run / fork := true
 
-mainClass in (Compile, packageBin) := Some("mud.Main")
+mainClass in (Compile, packageBin) := Some("acrt.Main")
 
-mainClass in (Compile, run) := Some("mud.Main")
+mainClass in (Compile, run) := Some("acrt.Main")
 
 libraryDependencies ++= Seq(
 	"com.typesafe.akka" %% "akka-actor" % "2.5.24",

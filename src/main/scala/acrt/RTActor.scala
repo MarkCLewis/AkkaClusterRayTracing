@@ -11,7 +11,7 @@ class RTActor(geom: Geometry, lights: List[Light]) extends Actor {
   def receive = {
     case CastRay(k, ray, rec) => {
       // println(s"Actor ray $i $j")
-      rec ! ImageDrawer.IntersectResult(k, geom intersect ray)
+      rec ! PixelHandler.IntersectResult(k, geom intersect ray)
     }
     case m => "me rtactor. me recieve " + m
   }

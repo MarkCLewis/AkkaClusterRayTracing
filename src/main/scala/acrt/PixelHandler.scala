@@ -7,23 +7,29 @@ import swiftvis2.raytrace.LinearViewPath._
 import akka.actor.ActorRef
 import akka.actor.Props
 
-class PixelHandler(lights: List[Light]) extends Actor {
+class PixelHandler(lights: List[PointLight], i: Int, j: Int) extends Actor {
   import PixelHandler._
 
-  val chld = context.actorOf(Props(new LightMerger(lights)), "jeff")
-
   def receive = {
-    case AddRay(id: IntersectData) => {
-      Main.imageDrawer.manager ! RTManager.CastRay(self, scala.util.Random.nextLong(), Ray(id.point + id.norm * 0.0001 * id.geom.boundingSphere.radius, point))
+    case AddRay(r: Ray) => {
+      Main.manager ! RTManager.CastRay(self, scala.util.Random.nextLong(), r)
     }
-    case AddID(intD: IntersectData) => {
-      chld ! 
+    case IntersectResult(k: Long, intD: Option[IntersectData]) => {
+      intD match {
+        case None => 
+        case Some(id) => {
+          val chld = context.actorOf(Props(new LightMerger(lights, id)), "jeff")
+        }
+      }
+    }
+    case SetColor(col: RTColor) => {
+      context.parent ! ImageDrawer.SetColor(i, j, col)
     }
     case m => "me pixelhandler. me recieve " + m
   }
 }
 object PixelHandler {
-  case class AddRay(intD: IntersectData)
-  case class MergeLightSources(id: Array[IntersectData])
-  case class AddID(intD: IntersectData)
+  case class AddRay(r: Ray)
+  case class SetColor(col: RTColor)
+  case class IntersectResult(k: Long, intD: Option[IntersectData])
 }

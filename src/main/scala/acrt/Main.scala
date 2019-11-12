@@ -29,7 +29,7 @@ object Main extends App {
   println(particles.maxBy(_.center.y))
   // sys.exit(0)
   val geom = new KDTreeGeometry(particles)
-  val lights = List(AmbientLight(new RTColor(0.1, 0.1, 0.0, 1.0)), PointLight(new RTColor(0.9, 0.9, 0.9, 1), Point(1e-1, 0, 1e-2)))
+  val lights = List(/*AmbientLight(new RTColor(0.1, 0.1, 0.0, 1.0)),*/ PointLight(new RTColor(0.9, 0.9, 0.9, 1), Point(1e-1, 0, 1e-2)))
   val bimg = new BufferedImage(800, 800, BufferedImage.TYPE_INT_ARGB)
   val img = new rendersim.RTBufferedImage(bimg)
   val numRays = 5 // TODO: Make code work with this!!
@@ -39,6 +39,7 @@ object Main extends App {
   val down = Vect(0, -2e-5, 0)
 
   val imageDrawer = system.actorOf(Props(new ImageDrawer(geom, lights, img, numRays)), "imgDraw")
+  val manager: ActorRef = system.actorOf(Props(new RTManager(geom, lights, numRays)), "RTMan")
   implicit val timeout = Timeout(100.seconds)
   implicit val ec = system.dispatcher
   imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)

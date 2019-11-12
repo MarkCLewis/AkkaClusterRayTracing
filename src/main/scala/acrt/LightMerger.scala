@@ -8,22 +8,47 @@ import akka.actor.ActorRef
 import akka.actor.Props
 import scala.collection.mutable
 
-class LightMerger(lights: List[Light]) extends Actor {
+class LightMerger(lights: List[PointLight], id: IntersectData) extends Actor {
   import LightMerger._
-  private val buff = mutable.ArrayBuffer[Option[IntersectData]]()  
+  private val buff = mutable.ArrayBuffer[RTColor]() 
+  val ids = collection.mutable.Map[Long, (Ray, PointLight)]() 
+  /*
+      val oid = geom.intersect(outRay)
+      o*/
+      for(light <- lights) {
+        val outRay = Ray(id.point + id.norm * 0.0001 * id.geom.boundingSphere.radius, light.point)
+        val k = scala.util.Random.nextLong()
+        val tup = (outRay, light)
+        ids += ((k, tup))
+      Main.manager ! RTManager.CastRay(self, k, outRay)
+  }
 
   def receive = {
-    case AddRay(intD: Option[IntersectData]) => {
-      
-      buff += intD
-      if(buff.length >= lights.length) {
-        val noNones = buff.flatten.toArray
-        context.parent ! PixelHandler.MergeLightSources(noNones)
+    case PixelHandler.IntersectResult(k: Long, oid: Option[IntersectData]) => {
+      if(buff.length <= lights.length) {
+        //context.parent ! PixelHandler.MergeLightSources(noNones)
+        oid match {
+          case None => {
+            val (outRay, light) = ids(k)
+            val intensity = (outRay.dir.normalize dot id.norm).toFloat
+            if (intensity < 0) buff += new RTColor(0, 0, 0, 1) else buff += (light.col * intensity);
+          }
+          case Some(nid) => {
+            if (nid.time < 0 || nid.time > 1) {
+              val (outRay, light) = ids(k)
+              val intensity = (outRay.dir.normalize dot id.norm).toFloat
+              if (intensity < 0) buff += new RTColor(0, 0, 0, 1) else buff += (light.col * intensity);
+            } else {
+              buff += new RTColor(0, 0, 0, 1)
+            }
+          }
+        }
+      } else {
+        context.parent ! PixelHandler.SetColor(buff.foldLeft(new RTColor(0, 0, 0, 1))(_ + _))
       }
     }
-    case m => "me lightmerger. me recieve " + m
+    case m => "me lightmerger. me receive " + m
   }
 }
 object LightMerger {
-  case class AddRay(id: Option[IntersectData])
 }
