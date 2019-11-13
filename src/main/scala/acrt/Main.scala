@@ -29,7 +29,7 @@ object Main extends App {
   println(particles.maxBy(_.center.y))
   // sys.exit(0)
   val geom = new KDTreeGeometry(particles)
-  val lights = List(/*AmbientLight(new RTColor(0.1, 0.1, 0.0, 1.0)),*/ PointLight(new RTColor(0.9, 0.9, 0.9, 1), Point(1e-1, 0, 1e-2)))
+  val lights = List(PointLight(new RTColor(0.9, 0.9, 0.9, 1), Point(1e-1, 0, 1e-2)), PointLight(new RTColor(0.5, 0.4, 0.1, 1), Point(-1e-1, 0, 1e-2)))
   val bimg = new BufferedImage(800, 800, BufferedImage.TYPE_INT_ARGB)
   val img = new rendersim.RTBufferedImage(bimg)
   val numRays = 5 // TODO: Make code work with this!!
@@ -54,7 +54,7 @@ object Main extends App {
   while (true) {
     val delay = System.nanoTime() - last
     if (delay >= (.5 * 1e9)) {
-      println("repainting")
+      //println("repainting")
       frame.repaint()
       last = System.nanoTime()
     }

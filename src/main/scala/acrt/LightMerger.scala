@@ -12,9 +12,6 @@ class LightMerger(lights: List[PointLight], id: IntersectData) extends Actor {
   import LightMerger._
   private val buff = mutable.ArrayBuffer[RTColor]() 
   val ids = collection.mutable.Map[Long, (Ray, PointLight)]() 
-  /*
-      val oid = geom.intersect(outRay)
-      o*/
       for(light <- lights) {
         val outRay = Ray(id.point + id.norm * 0.0001 * id.geom.boundingSphere.radius, light.point)
         val k = scala.util.Random.nextLong()

@@ -24,15 +24,14 @@ class ImageDrawer(geom: Geometry, lights: List[PointLight], img: rendersim.RTBuf
   def receive = {
     case Start(eye, topLeft, right, down) => {
       for (i <- (0 until img.width); j <- (0 until img.height)) {
-        val pix = context.actorOf(Props(new PixelHandler(lights, i, j)), s"PixelHandler$i,$j")
-        val index = 0
-        val r = Ray(eye, topLeft + right * (aspect * (i + (if (index > 0) math.random * 0.75 else 0)) / img.width) + down * (j + (if (index > 0) math.random * 0.75 else 0)) / img.height)
-        //println("sending ray " + i + j)
-        pix ! PixelHandler.AddRay(r)
+        val pix = context.actorOf(Props(new PixelHandler(lights, i, j, numRays)), s"PixelHandler$i,$j")
+        (0 until numRays).map(index => {
+          pix ! PixelHandler.AddRay(Ray(eye, topLeft + right * (aspect * (i + (if (index > 0) math.random * 0.75 else 0)) / img.width) + down * (j + (if (index > 0) math.random * 0.75 else 0)) / img.height))
+        })
       }
     }
     case SetColor(i, j, color) =>
-      println(s"Setting $i, $j")
+      //println(s"Setting $i, $j")
       img.setColor(i, j, color)
     case m => "me imagedrawer. me receive " + m
   }

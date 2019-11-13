@@ -12,7 +12,7 @@ class RTActor(geom: Geometry, lights: List[Light]) extends Actor {
     case CastRay(k, ray, rec) => {
       // println(s"Actor ray $i $j")
       rec ! PixelHandler.IntersectResult(k, geom intersect ray)
-      println("Intersected Ray #" + k)
+      //println("Intersected Ray #" + k)
     }
     case m => "me rtactor. me receive " + m
   }
