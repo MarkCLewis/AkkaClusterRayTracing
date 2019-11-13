@@ -45,7 +45,7 @@ object Main extends App {
   imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)
 
   val frame = new MainFrame {
-    title = "Trace Frame"
+    title = "AkkaRT Frame"
     contents = new Label("", Swing.Icon(bimg), Alignment.Center)
   }
   frame.visible = true

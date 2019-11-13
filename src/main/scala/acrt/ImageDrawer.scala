@@ -20,37 +20,21 @@ class ImageDrawer(geom: Geometry, lights: List[PointLight], img: rendersim.RTBuf
   implicit val ec = context.dispatcher
   
   val ids = collection.mutable.Map[Long, ActorRef]()
-  //val mc = new MergeColors(1)
 
   def receive = {
     case Start(eye, topLeft, right, down) => {
       for (i <- (0 until img.width); j <- (0 until img.height)) {
-        val pix = context.actorOf(Props(new PixelHandler(lights, i, j)), ""+i+j)
+        val pix = context.actorOf(Props(new PixelHandler(lights, i, j)), s"PixelHandler$i,$j")
         val index = 0
         val r = Ray(eye, topLeft + right * (aspect * (i + (if (index > 0) math.random * 0.75 else 0)) / img.width) + down * (j + (if (index > 0) math.random * 0.75 else 0)) / img.height)
+        //println("sending ray " + i + j)
         pix ! PixelHandler.AddRay(r)
       }
     }
-    /*case IntersectResult(key, intD) => {
-      if (ids(key)(intD)) {
-        intD match {
-          case None => //self ! SetColor(i,j, new RTColor(0.0, 0.0, 0.0, 1.0))
-          case Some(id) => {
-            val geomSize = id.geom.boundingSphere.radius
-            val rt = ids(key) match {
-              case ml: MergeLightSource =>
-              val merged = ml.merge(id, geom)
-            }
-            //self ! SetColor(self, key, r)
-          }
-        }
-        ids.remove(key)
-      }
-    }*/
     case SetColor(i, j, color) =>
       println(s"Setting $i, $j")
       img.setColor(i, j, color)
-    case m => "me imagedrawer. me recieve " + m
+    case m => "me imagedrawer. me receive " + m
   }
 }
 

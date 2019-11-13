@@ -16,16 +16,17 @@ class PixelHandler(lights: List[PointLight], i: Int, j: Int) extends Actor {
     }
     case IntersectResult(k: Long, intD: Option[IntersectData]) => {
       intD match {
-        case None => 
+        case None =>  context.parent ! ImageDrawer.SetColor(i, j, RTColor.Black)
         case Some(id) => {
-          val chld = context.actorOf(Props(new LightMerger(lights, id)), "jeff")
+          val chld = context.actorOf(Props(new LightMerger(lights, id)), s"LightMerger$i,$j")
         }
       }
     }
     case SetColor(col: RTColor) => {
+      println("REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
       context.parent ! ImageDrawer.SetColor(i, j, col)
     }
-    case m => "me pixelhandler. me recieve " + m
+    case m => "me pixelhandler. me receive " + m
   }
 }
 object PixelHandler {

@@ -25,26 +25,25 @@ class LightMerger(lights: List[PointLight], id: IntersectData) extends Actor {
 
   def receive = {
     case PixelHandler.IntersectResult(k: Long, oid: Option[IntersectData]) => {
-      if(buff.length <= lights.length) {
-        //context.parent ! PixelHandler.MergeLightSources(noNones)
-        oid match {
-          case None => {
+      oid match {
+        case None => {
+          val (outRay, light) = ids(k)
+          val intensity = (outRay.dir.normalize dot id.norm).toFloat
+          if (intensity < 0) buff += (RTColor.Black) else buff += (light.col * intensity);
+        }
+        case Some(nid) => {
+          if (nid.time < 0 || nid.time > 1) {
             val (outRay, light) = ids(k)
             val intensity = (outRay.dir.normalize dot id.norm).toFloat
-            if (intensity < 0) buff += new RTColor(0, 0, 0, 1) else buff += (light.col * intensity);
-          }
-          case Some(nid) => {
-            if (nid.time < 0 || nid.time > 1) {
-              val (outRay, light) = ids(k)
-              val intensity = (outRay.dir.normalize dot id.norm).toFloat
-              if (intensity < 0) buff += new RTColor(0, 0, 0, 1) else buff += (light.col * intensity);
-            } else {
-              buff += new RTColor(0, 0, 0, 1)
-            }
+            if (intensity < 0) buff += (RTColor.Black) else buff += (light.col * intensity);
+          } else {
+            buff += (RTColor.Black)
           }
         }
-      } else {
-        context.parent ! PixelHandler.SetColor(buff.foldLeft(new RTColor(0, 0, 0, 1))(_ + _))
+      }
+      //println(buff.length >= lights.length)
+      if(buff.length >= lights.length) {
+        context.parent ! PixelHandler.SetColor(buff.foldLeft(RTColor.Black)(_ + _))
       }
     }
     case m => "me lightmerger. me receive " + m
