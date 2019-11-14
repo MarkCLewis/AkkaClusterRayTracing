@@ -6,17 +6,17 @@ import swiftvis2.raytrace._
 import swiftvis2.raytrace.LinearViewPath._
 import akka.actor.ActorRef
 
-class RTActor(geom: Geometry, lights: List[Light]) extends Actor {
-  import RTActor._
+class Intersector(geom: Geometry) extends Actor {
+  import Intersector._
+
   def receive = {
     case CastRay(k, ray, rec) => {
-      // println(s"Actor ray $i $j")
+      // Checks if given Ray intersects the geometry and returns the result to the listed recipient, along with the supplied key
       rec ! PixelHandler.IntersectResult(k, geom intersect ray)
-      //println("Intersected Ray #" + k)
     }
-    case m => "me rtactor. me receive " + m
+    case m => "Intersector received unhandled message: " + m
   }
 }
-object RTActor {
+object Intersector {
   case class CastRay(k: Long, ray: Ray, rec: ActorRef)
 }

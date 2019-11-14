@@ -10,27 +10,34 @@ import scala.collection.mutable
 
 class LightMerger(lights: List[PointLight], id: IntersectData) extends Actor {
   import LightMerger._
+  //Creates a buffer to contain all the RTColors needed to be merged
   private val buff = mutable.ArrayBuffer[RTColor]() 
+  //creates a Map that assigns a random key to the Ray and Light that were used for that Ray
   val ids = collection.mutable.Map[Long, (Ray, PointLight)]() 
-      for(light <- lights) {
-        val outRay = Ray(id.point + id.norm * 0.0001 * id.geom.boundingSphere.radius, light.point)
-        val k = scala.util.Random.nextLong()
-        val tup = (outRay, light)
-        ids += ((k, tup))
-      Main.manager ! RTManager.CastRay(self, k, outRay)
+  for(light <- lights) {
+    //Creates a Ray for each Light
+    val outRay = Ray(id.point + id.norm * 0.0001 * id.geom.boundingSphere.radius, light.point)
+    //Assigns that ray and the light to the given id in the map
+    val k = scala.util.Random.nextLong()
+    val tup = (outRay, light)
+    ids += ((k, tup))
+    //Sends to check if the ray intersects the geometry
+    Main.manager ! GeometryManager.CastRay(self, k, outRay)
   }
 
   def receive = {
     case PixelHandler.IntersectResult(k: Long, oid: Option[IntersectData]) => {
+      //Upon receiving back the results of the above rays, checks whether or not this Ray intersected the geometry
+      val (outray, light) = ids(k)
       oid match {
         case None => {
-          val (outRay, light) = ids(k)
+          //If no intersection, determines intensity
           val intensity = (outRay.dir.normalize dot id.norm).toFloat
           if (intensity < 0) buff += (RTColor.Black) else buff += (light.col * intensity);
         }
         case Some(nid) => {
+          //If intersection, determines time to hit and then either decides intensity or black
           if (nid.time < 0 || nid.time > 1) {
-            val (outRay, light) = ids(k)
             val intensity = (outRay.dir.normalize dot id.norm).toFloat
             if (intensity < 0) buff += (RTColor.Black) else buff += (light.col * intensity);
           } else {
@@ -38,13 +45,11 @@ class LightMerger(lights: List[PointLight], id: IntersectData) extends Actor {
           }
         }
       }
-      //println(buff.length >= lights.length)
+      //If all rays have returned for the light, merges colors and sends up hierarchy
       if(buff.length >= lights.length) {
         context.parent ! PixelHandler.SetColor(buff.foldLeft(RTColor.Black)(_ + _))
       }
     }
     case m => "me lightmerger. me receive " + m
   }
-}
-object LightMerger {
 }
