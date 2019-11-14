@@ -29,7 +29,7 @@ class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int) exten
       //println("REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
       buff += col
       if(buff.length >= numRays) {
-        context.parent ! ImageDrawer.SetColor(i, j, buff.foldLeft(RTColor.Black)(_ + _))
+        context.parent ! ImageDrawer.SetColor(i, j, buff.reduceLeft(_ + _) / numRays)
       }
     }
     case m => "me pixelhandler. me receive " + m
