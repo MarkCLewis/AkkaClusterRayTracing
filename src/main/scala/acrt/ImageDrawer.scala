@@ -1,16 +1,8 @@
 package acrt
 
 import akka.actor.Actor
-import akka.pattern.ask
-import data.CartAndRad
 import swiftvis2.raytrace._
-import swiftvis2.raytrace.LinearViewPath._
-import akka.routing.BalancingPool
 import akka.actor.Props
-import scala.concurrent.duration._
-import akka.util.Timeout
-import akka.actor.ActorRef
-import playground.RTBufferedImage
 
 class ImageDrawer(geom: Geometry, lights: List[PointLight], img: rendersim.RTBufferedImage, numRays: Int) extends Actor {
   import ImageDrawer._

@@ -1,15 +1,10 @@
 package acrt
 
 import akka.actor.Actor
-import data.CartAndRad
 import swiftvis2.raytrace._
-import swiftvis2.raytrace.LinearViewPath._
-import akka.actor.ActorRef
-import akka.actor.Props
 import scala.collection.mutable
 
 class LightMerger(lights: List[PointLight], id: IntersectData) extends Actor {
-  import LightMerger._
   //Creates a buffer to contain all the RTColors needed to be merged
   private val buff = mutable.ArrayBuffer[RTColor]() 
   //creates a Map that assigns a random key to the Ray and Light that were used for that Ray
@@ -28,7 +23,7 @@ class LightMerger(lights: List[PointLight], id: IntersectData) extends Actor {
   def receive = {
     case PixelHandler.IntersectResult(k: Long, oid: Option[IntersectData]) => {
       //Upon receiving back the results of the above rays, checks whether or not this Ray intersected the geometry
-      val (outray, light) = ids(k)
+      val (outRay, light) = ids(k)
       oid match {
         case None => {
           //If no intersection, determines intensity

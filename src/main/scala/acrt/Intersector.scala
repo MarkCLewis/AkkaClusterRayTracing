@@ -1,9 +1,8 @@
 package acrt
 
 import akka.actor.Actor
-import data.CartAndRad
-import swiftvis2.raytrace._
-import swiftvis2.raytrace.LinearViewPath._
+import swiftvis2.raytrace.Geometry
+import swiftvis2.raytrace.Ray
 import akka.actor.ActorRef
 
 class Intersector(geom: Geometry) extends Actor {

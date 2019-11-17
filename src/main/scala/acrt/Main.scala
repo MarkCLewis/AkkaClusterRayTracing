@@ -2,21 +2,11 @@ package acrt
 
 import swiftvis2.raytrace._
 import data.CartAndRad
-import swiftvis2.raytrace.LinearViewPath._
 import java.awt.image.BufferedImage
 import scala.swing._
-import swiftvis2._
 import java.io.File
-import javax.imageio.ImageIO
-import javax.imageio.ImageWriteParam
-import javax.imageio.IIOImage
 import akka.actor.ActorSystem
 import akka.actor.Props
-import akka.pattern.ask
-import scala.concurrent.duration._
-import akka.util.Timeout
-import akka.actor.ActorRef
-import scala.concurrent.Future
 
 object Main extends App {
   //Pulls the geometry data from the supplied file within the given directory. Assigns the color of the spheres to black.

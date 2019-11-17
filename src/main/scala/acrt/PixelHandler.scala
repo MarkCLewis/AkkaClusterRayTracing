@@ -1,10 +1,7 @@
 package acrt
 
 import akka.actor.Actor
-import data.CartAndRad
 import swiftvis2.raytrace._
-import swiftvis2.raytrace.LinearViewPath._
-import akka.actor.ActorRef
 import akka.actor.Props
 import collection.mutable
 
