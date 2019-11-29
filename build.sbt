@@ -1,9 +1,9 @@
 name := "AkkaRayTracing"
 version := "1.0"
 scalaVersion := "2.12.8"
+javaHome := Some(file("D:\\graalvm-ce-19.2.1\\jre\\"))
 
 run / fork := true
-
 mainClass in (Compile, packageBin) := Some("acrt.Main")
 
 mainClass in (Compile, run) := Some("acrt.Main")

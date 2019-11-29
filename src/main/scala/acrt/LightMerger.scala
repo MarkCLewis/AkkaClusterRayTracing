@@ -43,6 +43,7 @@ class LightMerger(lights: List[PointLight], id: IntersectData) extends Actor {
       //If all rays have returned for the light, merges colors and sends up hierarchy
       if(buff.length >= lights.length) {
         context.parent ! PixelHandler.SetColor(buff.foldLeft(RTColor.Black)(_ + _))
+        context.stop(self)
       }
     }
     case m => "me lightmerger. me receive " + m
