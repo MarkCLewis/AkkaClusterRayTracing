@@ -13,7 +13,7 @@ class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int) exten
   def receive = {
     case AddRay(r) => {
       //Casts original Ray for (x,y)
-      Main.manager ! GeometryManager.CastRay(self, scala.util.Random.nextLong(), r)
+      Main.organizer ! GeometryOrganizer.CastRay(self, scala.util.Random.nextLong(), r)
     }
     case IntersectResult(k: Long, intD: Option[IntersectData]) => {
       intD match {

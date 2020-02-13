@@ -4,7 +4,7 @@ import akka.actor.Actor
 import swiftvis2.raytrace._
 import akka.actor.Props
 
-class ImageDrawer(geom: Geometry, lights: List[PointLight], img: rendersim.RTBufferedImage, numRays: Int) extends Actor {
+class ImageDrawer(lights: List[PointLight], img: rendersim.RTBufferedImage, numRays: Int) extends Actor {
   import ImageDrawer._
   //Aspect Ratio  
   val aspect = img.width.toDouble / img.height
