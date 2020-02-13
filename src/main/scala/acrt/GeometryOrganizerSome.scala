@@ -26,16 +26,19 @@ class GeometryOrganizerSome(simpleGeom: Seq[Geometry]) extends Actor {
 
   def receive = {
     case CastRay(rec, k, r) => {
+			println(s"Casting $k ${geoms.size}")
       val intscts = geoms.filter(_._2.boundingSphere.intersectParam(r) != None)
+			println(s"intersecting ${intscts.size}")
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
       numManMap += (k -> intscts.size)
 
       for(i <- intscts) {
-          println("making some geometry intersections")
+          println(s"making some geometry intersections $k")
           geomMans(i._1) ! GeometryManager.CastRay(rec, k, r, self)
       }
     }
     case RecID(rec, k, id) => {
+			println(s"Received $k")
       val buff = buffMap(k)
       val numManagers = numManMap(k)
       buff += id
