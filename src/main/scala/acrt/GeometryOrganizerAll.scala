@@ -19,33 +19,33 @@ class GeometryOrganizerAll(simpleGeom: Seq[Geometry]) extends Actor {
   
   val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs))
 
-  val geomMans = geoms.map { case (n, g) => n -> context.actorOf(Props(new GeometryManager(g)), "GeometryManager" + n) }
+  val geomManagers = geoms.map { case (n, g) => n -> context.actorOf(Props(new GeometryManager(g)), "GeometryManager" + n) }
 
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
   def receive = {
     case CastRay(rec, k, r) => {
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
-      geomMans.foreach(_._2 ! GeometryManager.CastRay(rec, k, r, self))
+      geomManagers.foreach(_._2 ! GeometryManager.CastRay(rec, k, r, self))
     }
     case RecID(rec, k, id) => {
-      val buff = buffMap(k)
-      buff += id
+      val buffK = buffMap(k)
+      buffK += id
 
-      if(buff.length < numManagers) {
+      if(buffK.length < numManagers) {
         buffMap -= k
-        buffMap += (k -> buff)
+        buffMap += (k -> buffK)
       } else {
-        val editBuff = buff.filter(_ != None)
+        val editedBuff = buffK.filter(_ != None)
 
-        if(editBuff.isEmpty){
+        if(editedBuff.isEmpty){
           rec ! PixelHandler.IntersectResult(k, None)
         } else {
-          var lowest: IntersectData = editBuff.head match {
+          var lowest: IntersectData = editedBuff.head match {
             case Some(intD) => intD
             case None => null
           }
 
-          for(i <- editBuff) {
+          for(i <- editedBuff) {
             i match {
               case Some(intD) => {
                 if(intD.time < lowest.time) {

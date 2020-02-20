@@ -19,42 +19,40 @@ class GeometryOrganizerSome(simpleGeom: Seq[Geometry]) extends Actor {
   
   val geoms = geomSeqs.map { case (n, gs) => n -> new KDTreeGeometry(gs) }
 
-  val geomMans = geoms.map { case (n, g) => n -> context.actorOf(Props(new GeometryManager(g)), "GeometryManager" + n) }
+  val geomManagers = geoms.map { case (n, g) => n -> context.actorOf(Props(new GeometryManager(g)), "GeometryManager" + n) }
 
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
-  private val numManMap = collection.mutable.Map[Long, Int]()
+  private val numManagersMap = collection.mutable.Map[Long, Int]()
 
   def receive = {
     case CastRay(rec, k, r) => {
-      val intscts = geoms.filter(_._2.boundingSphere.intersectParam(r) != None)
+      val intersects = geoms.filter(_._2.boundingSphere.intersectParam(r) != None)
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
-      numManMap += (k -> intscts.size)
+      numManagersMap += (k -> intersects.size)
 
-      for(i <- intscts) {
-          geomMans(i._1) ! GeometryManager.CastRay(rec, k, r, self)
+      for(i <- intersects) {
+          geomManagers(i._1) ! GeometryManager.CastRay(rec, k, r, self)
       }
     }
     case RecID(rec, k, id) => {
-      val buff = buffMap(k)
-      val numManagers = numManMap(k)
-      buff += id
+      val buffK = buffMap(k)
+      val numManagersK = numManagersMap(k)
+      buffK += id
 
-      if(buff.length < numManagers) {
-        buffMap -= k
-        buffMap += (k -> buff)
+      if(buffK.length < numManagersK) {
+        buffMap += (k -> buffK)
       } else {
-        val editBuff = buff.filter(_ != None)
+        val editedBuff = buffK.filter(_ != None)
 
-        if(editBuff.isEmpty){
+        if(editedBuff.isEmpty){
           rec ! PixelHandler.IntersectResult(k, None)
-          println("sending none to" + rec)
         } else {
-          var lowest: IntersectData = editBuff.head match {
+          var lowest: IntersectData = editedBuff.head match {
             case Some(intD) => intD
             case None => null
           }
 
-          for(i <- editBuff) {
+          for(i <- editedBuff) {
             i match {
               case Some(intD) => {
                 if(intD.time < lowest.time) {
@@ -66,7 +64,6 @@ class GeometryOrganizerSome(simpleGeom: Seq[Geometry]) extends Actor {
           }
 
           rec ! PixelHandler.IntersectResult(k, Some(lowest))
-          println("sending some to" + rec)
         }
       }
     }

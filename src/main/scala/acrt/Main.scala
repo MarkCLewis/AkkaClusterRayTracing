@@ -27,7 +27,7 @@ object Main extends App {
   //Creates an actorsystem, an ImageDrawer actor to handle RayTracing, and a GeometryManager actor to handle intersection math, then sends the ImageDrawer the message to start
   val system = ActorSystem("MUDSystem")  
   val imageDrawer = system.actorOf(Props(new ImageDrawer(lights, img, numRays)), "ImageDrawer")
-  val organizer = system.actorOf(Props(new GeometryOrganizerSome(particles)), "GeomOrganizer")
+  val organizer = system.actorOf(Props(new GeometryOrganizerFew(particles)), "GeomOrganizer")
   imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)
   //Creates the Swing frame and places the Buffered Image in it
   val frame = new MainFrame {

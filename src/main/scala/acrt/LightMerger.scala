@@ -15,7 +15,7 @@ class LightMerger(lights: List[PointLight], id: IntersectData) extends Actor {
     //Assigns that ray and the light to the given id in the map
     val k = scala.util.Random.nextLong()
     val tup = (outRay, light)
-    ids += ((k, tup))
+    ids += (k -> tup)
     //Sends to check if the ray intersects the geometry
     Main.organizer ! GeometryOrganizerAll.CastRay(self, k, outRay)
   }
