@@ -10,10 +10,12 @@ class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int) exten
   //Buffer of Colors to be merged
   private val buff = mutable.ArrayBuffer[RTColor]() 
   private var count = 0
+  
   def receive = {
     case AddRay(r) => {
       //Casts original Ray for (x,y)
-      Main.organizer ! GeometryOrganizerAll.CastRay(self, scala.util.Random.nextLong(), r)
+      //println("casting ray #" + i + j)
+      MainNode.mainNodeActor ! MainNode.orgEnvelope(GeometryOrganizerAll.CastRay(self, scala.util.Random.nextLong(), r))
     }
     case IntersectResult(k: Long, intD: Option[IntersectData]) => {
       intD match {

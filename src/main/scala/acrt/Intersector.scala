@@ -12,6 +12,7 @@ class Intersector(geom: Geometry) extends Actor {
     case CastRay(k, ray, rec, geomOrg) => {
       // Checks if given Ray intersects the geometry and returns the result to the listed recipient, along with the supplied key
       geomOrg ! GeometryOrganizerAll.RecID(rec, k, geom intersect ray)
+      println("intersecting")
     }
     case m => "Intersector received unhandled message: " + m
   }

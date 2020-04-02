@@ -17,7 +17,7 @@ class LightMerger(lights: List[PointLight], id: IntersectData) extends Actor {
     val tup = (outRay, light)
     ids += (k -> tup)
     //Sends to check if the ray intersects the geometry
-    Main.organizer ! GeometryOrganizerAll.CastRay(self, k, outRay)
+    MainNode.mainNodeActor ! MainNode.orgEnvelope(GeometryOrganizerAll.CastRay(self, k, outRay))
   }
 
   def receive = {

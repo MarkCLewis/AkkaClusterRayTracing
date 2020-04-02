@@ -8,30 +8,33 @@ import akka.actor.Props
 import akka.actor.ActorRef
 import swiftvis2.raytrace.IntersectData
 import swiftvis2.raytrace.KDTreeGeometry
+import swiftvis2.raytrace.OffsetGeometry
+import swiftvis2.raytrace.Vect
+import swiftvis2.raytrace.BoxBoundsBuilder
 
 class GeometryOrganizerSome(simpleGeom: Seq[Geometry]) extends Actor {
   import GeometryOrganizerAll._
   
-  val ymin = simpleGeom.minBy(_.boundingSphere.center.y).boundingSphere.center.y
-  val ymax = simpleGeom.maxBy(_.boundingSphere.center.y).boundingSphere.center.y
-  val numTotalManagers = 10
-  val geomSeqs = simpleGeom.groupBy(g => ((g.boundingSphere.center.y - ymin) / (ymax-ymin) * numTotalManagers).toInt min (numTotalManagers - 1))
-  
-  val geoms = geomSeqs.map { case (n, gs) => n -> new KDTreeGeometry(gs) }
+  val numManagers = 10
+  val complexGeom = new KDTreeGeometry(simpleGeom, 5, BoxBoundsBuilder)
+  //val complexGeom = new KDTreeGeometry(simpleGeom, 5, SphereBoundsBuilder)
+  val offsets = (0 to 9).map(i => (i, i*2e-5)).toMap
+  val geoms = offsets.map { case (n, os) => n -> OffsetGeometry(complexGeom, Vect(os, 0.0, 0.0)) }  
 
-  val geomManagers = geoms.map { case (n, g) => n -> context.actorOf(Props(new GeometryManager(g)), "GeometryManager" + n) }
+  //val geomManagers = geoms.map { case (n, g) => n -> context.actorOf(Props(new GeometryManager(g)), "GeometryManager" + n) }
 
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
   private val numManagersMap = collection.mutable.Map[Long, Int]()
 
   def receive = {
     case CastRay(rec, k, r) => {
-      val intersects = geoms.filter(_._2.boundingSphere.intersectParam(r) != None)
+      val intersects = geoms.filter(_._2.boundingBox.intersectParam(r) != None)
+      //val intersects = geoms.filter(_._2.boundingSphere.intersectParam(r) != None)
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
       numManagersMap += (k -> intersects.size)
 
       for(i <- intersects) {
-          geomManagers(i._1) ! GeometryManager.CastRay(rec, k, r, self)
+      //    geomManagers(i._1) ! GeometryManager.CastRay(rec, k, r, self)
       }
     }
     case RecID(rec, k, id) => {

@@ -20,10 +20,11 @@ class GeometryOrganizerAll(simpleGeom: Seq[Geometry]) extends Actor {
   val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs))
 
   val geomManagers = geoms.map { case (n, g) => n -> context.actorOf(Props(new GeometryManager(g)), "GeometryManager" + n) }
-
+  println("my name is " + self + "\n\n\n\n\n\n\n\n")
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
   def receive = {
     case CastRay(rec, k, r) => {
+      println("casting ray #" + k)
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
       geomManagers.foreach(_._2 ! GeometryManager.CastRay(rec, k, r, self))
     }
