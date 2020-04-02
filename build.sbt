@@ -6,12 +6,13 @@ scalaVersion := "2.12.10"
 //javaHome := Some(file("D:\\graalvm-ce-19.2.1\\jre\\"))
 
 run / fork := true
-mainClass in (Compile, packageBin) := Some("acrt.Main")
+mainClass in (Compile, packageBin) := Some("acrt.MainNode")
 
-mainClass in (Compile, run) := Some("acrt.Main")
+mainClass in (Compile, run) := Some("acrt.MainNode")
 
 libraryDependencies ++= Seq(
 	"com.typesafe.akka" %% "akka-actor" % "2.5.24",
+	"com.typesafe.akka" %% "akka-cluster" % "2.5.24", 
 	"com.typesafe.akka" %% "akka-testkit" % "2.5.24" % Test,
 	"org.scala-lang.modules" %% "scala-xml" % "1.2.0",
 	"com.novocode" % "junit-interface" % "0.11" % Test,
