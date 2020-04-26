@@ -8,6 +8,9 @@ class ImageDrawer(lights: List[PointLight], img: rendersim.RTBufferedImage, numR
   import ImageDrawer._
   //Aspect Ratio  
   val aspect = img.width.toDouble / img.height
+  private var pixelsSet = 0
+  private val totalPixels = img.width * img.height * numRays
+  private val start = System.nanoTime()
 
   def receive = {
     case Start(eye, topLeft, right, down) => {
@@ -24,6 +27,10 @@ class ImageDrawer(lights: List[PointLight], img: rendersim.RTBufferedImage, numR
     case SetColor(i, j, color) => {
       //Assigns the (x,y) pixel of the BufferedImage to be the supplied color
       img.setColor(i, j, color)
+      pixelsSet += 1
+      if (pixelsSet >= totalPixels) {
+        println((System.nanoTime() - start) * 1e-9)
+      }
     }
 
     case m => "ImageDrawer received unhandled message: " + m

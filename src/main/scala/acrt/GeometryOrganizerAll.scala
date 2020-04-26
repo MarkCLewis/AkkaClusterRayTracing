@@ -8,6 +8,8 @@ import akka.actor.Props
 import akka.actor.ActorRef
 import swiftvis2.raytrace.IntersectData
 import swiftvis2.raytrace.KDTreeGeometry
+import swiftvis2.raytrace.BoxBoundsBuilder
+import swiftvis2.raytrace.SphereBoundsBuilder
 
 class GeometryOrganizerAll(simpleGeom: Seq[Geometry]) extends Actor {
   import GeometryOrganizerAll._
@@ -17,7 +19,7 @@ class GeometryOrganizerAll(simpleGeom: Seq[Geometry]) extends Actor {
   val numManagers = 10
   val geomSeqs = simpleGeom.groupBy(g => ((g.boundingSphere.center.y - ymin) / (ymax-ymin) * numManagers).toInt min (numManagers - 1))
   
-  val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs))
+  val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs, builder = BoxBoundsBuilder))
 
   val geomManagers = geoms.map { case (n, g) => n -> context.actorOf(Props(new GeometryManager(g)), "GeometryManager" + n) }
 

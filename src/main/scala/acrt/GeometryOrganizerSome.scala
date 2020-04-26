@@ -8,6 +8,8 @@ import akka.actor.Props
 import akka.actor.ActorRef
 import swiftvis2.raytrace.IntersectData
 import swiftvis2.raytrace.KDTreeGeometry
+import swiftvis2.raytrace.BoxBoundsBuilder
+import swiftvis2.raytrace.SphereBoundsBuilder
 
 class GeometryOrganizerSome(simpleGeom: Seq[Geometry]) extends Actor {
   import GeometryOrganizerAll._
@@ -17,7 +19,7 @@ class GeometryOrganizerSome(simpleGeom: Seq[Geometry]) extends Actor {
   val numTotalManagers = 10
   val geomSeqs = simpleGeom.groupBy(g => ((g.boundingSphere.center.y - ymin) / (ymax-ymin) * numTotalManagers).toInt min (numTotalManagers - 1))
   
-  val geoms = geomSeqs.map { case (n, gs) => n -> new KDTreeGeometry(gs) }
+  val geoms = geomSeqs.map { case (n, gs) => n -> new KDTreeGeometry(gs, builder = BoxBoundsBuilder) }
 
   val geomManagers = geoms.map { case (n, g) => n -> context.actorOf(Props(new GeometryManager(g)), "GeometryManager" + n) }
 
@@ -26,11 +28,12 @@ class GeometryOrganizerSome(simpleGeom: Seq[Geometry]) extends Actor {
 
   def receive = {
     case CastRay(rec, k, r) => {
-      val intersects = geoms.filter(_._2.boundingSphere.intersectParam(r) != None)
+      val intersects = geoms.filter(_._2.boundingBox.intersectParam(r) != None)
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
       numManagersMap += (k -> intersects.size)
 
-      for(i <- intersects) {
+      if (intersects.isEmpty) rec ! PixelHandler.IntersectResult(k, None)
+      else for(i <- intersects) {
           geomManagers(i._1) ! GeometryManager.CastRay(rec, k, r, self)
       }
     }
