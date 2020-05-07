@@ -1,9 +1,10 @@
-package acrt
+package acrt.raytracing
 
 import akka.actor.Actor
 import swiftvis2.raytrace._
 import akka.actor.Props
 import collection.mutable
+import acrt.geometrymanagement.{GeometryOrganizerAll, GeometryOrganizerFew, GeometryOrganizerSome}
 
 class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int) extends Actor {
   import PixelHandler._

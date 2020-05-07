@@ -6,9 +6,9 @@ scalaVersion := "2.12.10"
 //javaHome := Some(file("D:\\graalvm-ce-19.2.1\\jre\\"))
 
 run / fork := true
-mainClass in (Compile, packageBin) := Some("acrt.Main")
+mainClass in (Compile, packageBin) := Some("acrt.Raytracing.Main")
 
-mainClass in (Compile, run) := Some("acrt.Main")
+mainClass in (Compile, run) := Some("acrt.Raytracing.Main")
 
 libraryDependencies ++= Seq(
 	"com.typesafe.akka" %% "akka-actor" % "2.5.24",
