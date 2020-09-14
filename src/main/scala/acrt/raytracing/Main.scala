@@ -59,7 +59,7 @@ object Main extends App {
   val img = new rendersim.RTBufferedImage(bimg)
     
   //Creates an actorsystem, an ImageDrawer actor to handle RayTracing, and a GeometryManager actor to handle intersection math, then sends the ImageDrawer the message to start
-  val system = ActorSystem("MUDSystem")  
+  val system = ActorSystem("AkkaSystem")  
   val imageDrawer = system.actorOf(Props(new ImageDrawer(lights, img, numRays)), "ImageDrawer")
   val organizer = system.actorOf(Props(new GeometryOrganizerFew(particles)), "GeomOrganizer")
   imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)
