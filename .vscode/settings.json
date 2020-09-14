@@ -1,5 +1,11 @@
 {
+<<<<<<< HEAD
     "files.watcherExclude": {
         "**/target": true
     }
+=======
+  "files.watcherExclude": {
+    "**/target": true
+  }
+>>>>>>> 0412187e5f60c6e990c6666dc74cb2b5ce94de19
 }
