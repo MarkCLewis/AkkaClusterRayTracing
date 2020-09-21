@@ -3,7 +3,7 @@ package acrt.remoting
 import akka.actor.Actor
 
 class TokActor extends Actor {
-  val selection = context.actorSelection("akka.tcp://TestSystem@131.194.161.51:2554/user/TikActor")
+  val selection = context.actorSelection("akka://TestSystem@131.194.161.51:2554/user/TikActor")
   def receive: Actor.Receive = {
     case "tik" => {
       Thread.sleep(5000)
