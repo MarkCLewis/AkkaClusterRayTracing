@@ -4,7 +4,7 @@ import akka.actor._
 import com.typesafe.config.ConfigFactory
 
 object RemotingMain extends App {
-  val config = ConfigFactory.load("remote")
+  val config = ConfigFactory.load("artery")
 
   val system = ActorSystem("TestSystem", config)
   val tikActor = system.actorOf(Props[TikActor], "TikActor")
