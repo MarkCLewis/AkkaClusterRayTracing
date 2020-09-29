@@ -28,21 +28,22 @@ object App {
   def main(args: Array[String]): Unit = {
     // starting 2 frontend nodes and 3 backend nodes
     if (args.isEmpty) {
-      startup("backend", 25251)
-      startup("backend", 25252)
-      startup("frontend", 0)
-      startup("frontend", 0)
-      startup("frontend", 0)
+      startup("backend", 25251, "131.194.71.132")
+      startup("backend", 25252, "131.194.71.132")
+      startup("frontend", 0, "131.194.71.132")
+      startup("frontend", 0, "131.194.71.132")
+      startup("frontend", 0, "131.194.71.132")
     } else {
-      require(args.length == 2, "Usage: role port")
-      startup(args(0), args(1).toInt)
+      require(args.length == 3, "Usage: role port ip")
+      startup(args(0), args(1).toInt, args(2))
     }
   }
 
-  def startup(role: String, port: Int): Unit = {
+  def startup(role: String, port: Int, ip: String): Unit = {
     // Override the configuration of the port and role
     val config = ConfigFactory
       .parseString(s"""
+        akka.remote.artery.canonical.hostname = "$ip"
         akka.remote.artery.canonical.port=$port
         akka.cluster.roles = [$role]
         """)

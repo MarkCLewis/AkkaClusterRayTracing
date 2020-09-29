@@ -2,7 +2,7 @@ package acrt.photometry
 
 import akka.actor.Actor
 import swiftvis2.raytrace.{Ray, Vect, IntersectData}
-import acrt.geometrymanagement.{GeometryOrganizerAll, GeometryOrganizerFew, GeometryOrganizerSome}
+import acrt.geometrymanagement.untyped.{GeometryOrganizerAll, GeometryOrganizerFew, GeometryOrganizerSome}
 
 //WIP
 
