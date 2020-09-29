@@ -1,4 +1,4 @@
-package acrt.geometrymanagement
+package acrt.geometrymanagement.untyped
 
 import akka.actor.{Actor, ActorRef}
 import swiftvis2.raytrace.{Geometry, Ray}

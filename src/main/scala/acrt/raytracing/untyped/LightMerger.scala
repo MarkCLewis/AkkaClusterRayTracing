@@ -1,9 +1,9 @@
-package acrt.raytracing
+package acrt.raytracing.untyped
 
 import akka.actor.Actor
 import scala.collection.mutable
 import swiftvis2.raytrace.{PointLight, IntersectData, RTColor, Ray}
-import acrt.geometrymanagement.{GeometryOrganizerAll, GeometryOrganizerFew, GeometryOrganizerSome}
+import acrt.geometrymanagement.untyped.{GeometryOrganizerAll, GeometryOrganizerFew, GeometryOrganizerSome}
 
 class LightMerger(lights: List[PointLight], id: IntersectData) extends Actor {
   //Creates a buffer to contain all the RTColors needed to be merged

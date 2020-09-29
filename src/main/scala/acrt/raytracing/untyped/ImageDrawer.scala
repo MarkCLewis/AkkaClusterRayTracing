@@ -1,4 +1,4 @@
-package acrt.raytracing
+package acrt.raytracing.untyped
 
 import akka.actor.{Actor, Props}
 import swiftvis2.raytrace.{PointLight, Ray, Point, Vect, RTColor}

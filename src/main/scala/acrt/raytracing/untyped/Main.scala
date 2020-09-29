@@ -1,4 +1,4 @@
-package acrt.raytracing
+package acrt.raytracing.untyped
 
 import java.awt.image.BufferedImage
 import java.net.URL
@@ -6,7 +6,7 @@ import data.CartAndRad
 import scala.swing.{MainFrame, Label, Swing, Alignment}
 import akka.actor.{ActorSystem, Props}
 import swiftvis2.raytrace.{PointLight, GeomSphere, RTColor, Point, Vect}
-import acrt.geometrymanagement.{GeometryOrganizerAll, GeometryOrganizerFew, GeometryOrganizerSome}
+import acrt.geometrymanagement.untyped.{GeometryOrganizerAll, GeometryOrganizerFew, GeometryOrganizerSome}
 
 object Main extends App {
   //Alternate Organizers:

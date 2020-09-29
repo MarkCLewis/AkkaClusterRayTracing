@@ -1,4 +1,4 @@
-package acrt.geometrymanagement
+package acrt.geometrymanagement.untyped
 
 import akka.actor.{Actor, Props, ActorRef}
 import akka.routing.BalancingPool

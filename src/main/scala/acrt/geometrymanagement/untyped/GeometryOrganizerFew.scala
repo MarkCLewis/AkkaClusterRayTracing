@@ -1,8 +1,8 @@
-package acrt.geometrymanagement
+package acrt.geometrymanagement.untyped
 
 import akka.actor.{Actor, Props}
 import swiftvis2.raytrace.{Geometry, Ray, KDTreeGeometry, Vect, BoxBoundsBuilder, SphereBoundsBuilder}
-import acrt.raytracing.PixelHandler
+import acrt.raytracing.untyped.PixelHandler
 
 class GeometryOrganizerFew(simpleGeom: Seq[Geometry]) extends Actor {
   import GeometryOrganizerAll._
