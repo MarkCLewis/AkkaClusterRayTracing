@@ -7,7 +7,7 @@ import acrt.cluster.untyped.CborSerializable
 
 class ImageDrawer(lights: List[PointLight], img: rendersim.RTBufferedImage, numRays: Int) extends Actor {
   import ImageDrawer._
-  val organizer: ActorSelection = context.actorSelection("akka://RTCluster@127.0.0.1:25251/user/GeometryOrganizer")
+  val organizer: ActorSelection = context.actorSelection("akka://RTCluster@127.0.0.1:5152/user/GeometryOrganizer")
   //Aspect Ratio  
   val aspect = img.width.toDouble / img.height
   

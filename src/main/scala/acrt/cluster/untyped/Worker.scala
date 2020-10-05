@@ -24,7 +24,7 @@ class Worker(cluster: Cluster) extends Actor {
     if (member.hasRole("frontend")) {
       println(RootActorPath(member.address))
       val port2 = Main.port2
-      frontend = context.actorSelection(s"akka://ClusterSystem@127.0.0.1:$port2/user/Frontend")
+      frontend = context.actorSelection(RootActorPath(member.address) / "user" / "frontend")
       frontend ! BackendRegistration
       frontend ! Worker.TransformationJob("dankmeme")
     }

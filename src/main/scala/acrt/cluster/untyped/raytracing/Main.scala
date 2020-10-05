@@ -12,8 +12,8 @@ import akka.cluster._
 import com.typesafe.config.ConfigFactory
 
 object Main extends App {
-  val port1 = 25278
-  val port2 = 25279
+  val port1 = 5152
+  val port2 = 5153
 
   val list: List[Address] = List(Address("akka", "RTCluster", "127.0.0.1", port1), 
   Address("akka", "RTCluster", "127.0.0.1", port2))
