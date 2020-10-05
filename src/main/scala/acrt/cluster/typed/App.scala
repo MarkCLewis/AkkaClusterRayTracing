@@ -1,4 +1,4 @@
-package acrt.cluster
+package acrt.cluster.typed
 
 import akka.actor.typed.{ActorSystem, Behavior}
 import akka.actor.typed.scaladsl.Behaviors
@@ -6,7 +6,6 @@ import akka.cluster.typed.Cluster
 import com.typesafe.config.ConfigFactory
 
 object App {
-
   object RootBehavior {
     def apply(): Behavior[Nothing] = Behaviors.setup[Nothing] { ctx =>
       val cluster = Cluster(ctx.system)
@@ -28,18 +27,18 @@ object App {
   def main(args: Array[String]): Unit = {
     // starting 2 frontend nodes and 3 backend nodes
     if (args.isEmpty) {
-      startup("backend", 25251, "131.194.71.132")
-      startup("backend", 25252, "131.194.71.132")
-      startup("frontend", 0, "131.194.71.132")
-      startup("frontend", 0, "131.194.71.132")
-      startup("frontend", 0, "131.194.71.132")
+      startup("backend", "127.0.0.1", 25251)
+      startup("backend", "127.0.0.1", 25252)
+      startup("frontend", "127.0.0.1", 0)
+      startup("frontend", "127.0.0.1", 0)
+      startup("frontend", "127.0.0.1", 0)
     } else {
-      require(args.length == 3, "Usage: role port ip")
-      startup(args(0), args(1).toInt, args(2))
+      require(args.length == 3, "Usage: role ip port")
+      startup(args(0), args(1), args(2).toInt)
     }
   }
 
-  def startup(role: String, port: Int, ip: String): Unit = {
+  def startup(role: String, ip: String, port: Int): Unit = {
     // Override the configuration of the port and role
     val config = ConfigFactory
       .parseString(s"""

@@ -1,4 +1,4 @@
-package acrt.cluster
+package acrt.cluster.typed
 
 import scala.concurrent.duration._
 import akka.util.Timeout
