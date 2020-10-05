@@ -5,17 +5,17 @@ import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
 
 object Main {
-  val port1 = 25278
-  val port2 = 25279
+  val hosts = List("pandora02", "pandora03")
+  val ports = List(25251, 25251)
 
-  val list: List[Address] = List(Address("akka", "ClusterSystem", "127.0.0.1", port1), 
-  Address("akka", "ClusterSystem", "127.0.0.1", port2))
+  val list: List[Address] = List(Address("akka", "ClusterSystem", hosts(0), ports(0)), 
+  Address("akka", "ClusterSystem", hosts(1), ports(1)))
 
   def main(args: Array[String]): Unit = {
     // starting 2 frontend nodes and 3 backend nodes
     if (args.isEmpty) {
-      startup("backend", "127.0.0.1", port1)
-      startup("frontend", "127.0.0.1", port2)
+      startup("backend", "127.0.0.1", ports(0))
+      startup("frontend", "127.0.0.1", ports(1))
       } else {
       require(args.length == 3, "Usage: role ip port")
       startup(args(0), args(1), args(2).toInt)

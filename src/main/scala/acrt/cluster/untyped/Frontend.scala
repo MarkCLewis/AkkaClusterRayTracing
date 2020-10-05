@@ -29,6 +29,9 @@ class Frontend extends Actor {
 
     case Terminated(a) =>
       backends = backends.filterNot(_ == a)
+
+    case CastRay(rec, k, r) =>
+      rec ! "randtext"
   }
 }
 //#frontend
