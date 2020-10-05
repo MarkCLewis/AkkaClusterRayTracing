@@ -1,4 +1,4 @@
-package acrt.cluster.untyped.raytracing
+package acrt.raytracing.untyped
 
 import java.awt.image.BufferedImage
 import java.net.URL
@@ -7,16 +7,15 @@ import scala.swing.{MainFrame, Label, Swing, Alignment}
 import akka.actor.{ActorSystem, Props}
 import swiftvis2.raytrace.{PointLight, GeomSphere, RTColor, Point, Vect}
 import acrt.geometrymanagement.untyped.{GeometryOrganizerAll, GeometryOrganizerFew, GeometryOrganizerSome}
-import akka.actor.Address
-import akka.cluster._
-import com.typesafe.config.ConfigFactory
 
-object Main extends App {
-  val port1 = 5152
-  val port2 = 5153
+object MainRT extends App {
+  //Alternate Organizers:
+  //val organizer = system.actorOf(Props(new GeometryOrganizerAll(particles)), "GeomOrganizer")
+  //val organizer = system.actorOf(Props(new GeometryOrganizerSome(particles)), "GeomOrganizer")
 
-  val list: List[Address] = List(Address("akka", "RTCluster", "127.0.0.1", port1), 
-  Address("akka", "RTCluster", "127.0.0.1", port2))
+  //Pulls the geometry data from the supplied file within the given directory. Assigns the color of the spheres to black.
+  val carURL = new URL("http://www.cs.trinity.edu/~mlewis/Rings/AMNS-Moonlets/Moonlet4/CartAndRad.6029.bin")
+  val particles = CartAndRad.readStream(carURL.openStream).map(p => GeomSphere(Point(p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
   
   //Visualization Params
   val numRays = 1
@@ -49,6 +48,9 @@ object Main extends App {
   //val particles = (0 until numSims).flatMap { i =>
   //  (CartAndRad.read(new java.io.File(s"/home/mlewis/Rings/AMNS-Moonlets/Moonlet4c/CartAndRad.720$i.bin"))).map(p => GeomSphere(Point(p.x - firstXOffset + i * 2 * cellWidth, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
   //}
+
+  println(s"# particles = ${particles.length}")
+  
   //Creates a List of PointLights. Does not work for AmbientLights.
   val lights: List[PointLight] = List(PointLight(new RTColor(0.9, 0.9, 0.9, 1), Point(1e-1, 0, 1e-2)), PointLight(new RTColor(0.5, 0.4, 0.1, 1), Point(-1e-1, 0, 1e-2)))
   
@@ -57,20 +59,11 @@ object Main extends App {
   val img = new rendersim.RTBufferedImage(bimg)
     
   //Creates an actorsystem, an ImageDrawer actor to handle RayTracing, and a GeometryManager actor to handle intersection math, then sends the ImageDrawer the message to start
-  val config = ConfigFactory
-      .parseString(s"""
-        akka.remote.artery.canonical.hostname = "127.0.0.1"
-        akka.remote.artery.canonical.port=$port2
-        akka.cluster.roles = [frontend]
-        """)
-      .withFallback(ConfigFactory.load("frontend"))
-  val system = ActorSystem("RTCluster", config)  
-  val cluster = Cluster(system)
+  val system = ActorSystem("AkkaSystem")  
   val imageDrawer = system.actorOf(Props(new ImageDrawer(lights, img, numRays)), "ImageDrawer")
+  val organizer = system.actorOf(Props(new GeometryOrganizerFew(particles)), "GeomOrganizer")
   imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)
   
-  cluster.joinSeedNodes(list)
-
   //Creates the Swing frame and places the Buffered Image in it
   val frame = new MainFrame {
     title = "AkkaRT Frame"

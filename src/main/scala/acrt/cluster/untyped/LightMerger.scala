@@ -1,9 +1,8 @@
-package acrt.cluster.untyped.raytracing
+package acrt.cluster.untyped
 
 import akka.actor.Actor
 import scala.collection.mutable
 import swiftvis2.raytrace.{PointLight, IntersectData, RTColor, Ray}
-import acrt.geometrymanagement.untyped.{GeometryOrganizerAll, GeometryOrganizerFew, GeometryOrganizerSome}
 import akka.actor.ActorSelection
 
 class LightMerger(lights: List[PointLight], id: IntersectData, organizer: ActorSelection) extends Actor {

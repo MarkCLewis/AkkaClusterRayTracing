@@ -1,12 +1,10 @@
-package acrt.cluster.untyped.raytracing
+package acrt.cluster.untyped
 
 import akka.actor.Actor
 import swiftvis2.raytrace._
 import akka.actor.Props
 import collection.mutable
-import acrt.geometrymanagement.untyped.{GeometryOrganizerAll, GeometryOrganizerFew, GeometryOrganizerSome}
 import akka.actor.ActorSelection
-import acrt.cluster.untyped.CborSerializable
 
 class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int, organizer: ActorSelection) extends Actor {
   import PixelHandler._

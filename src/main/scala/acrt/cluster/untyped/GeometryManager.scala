@@ -1,9 +1,8 @@
-package acrt.cluster.untyped.geometrymanagement
+package acrt.cluster.untyped
 
 import akka.actor.{Actor, Props, ActorRef}
 import akka.routing.BalancingPool
 import swiftvis2.raytrace.{Geometry, Ray}
-import acrt.cluster.untyped.CborSerializable
 
 class GeometryManager(geom: Geometry) extends Actor {
   import GeometryManager._

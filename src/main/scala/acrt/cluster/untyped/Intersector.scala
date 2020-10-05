@@ -1,8 +1,7 @@
-package acrt.cluster.untyped.geometrymanagement
+package acrt.cluster.untyped
 
 import akka.actor.{Actor, ActorRef}
 import swiftvis2.raytrace.{Geometry, Ray}
-import acrt.cluster.untyped.CborSerializable
 
 class Intersector(geom: Geometry) extends Actor {
   import Intersector._

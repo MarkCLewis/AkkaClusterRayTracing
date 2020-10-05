@@ -1,19 +1,11 @@
-package acrt.cluster.untyped.geometrymanagement
+package acrt.cluster.untyped
 
-import akka.actor.{Actor, ActorRef, Props}
-import swiftvis2.raytrace.{Geometry, Ray, KDTreeGeometry, Vect, BoxBoundsBuilder, SphereBoundsBuilder, IntersectData, GeomSphere, RTColor, Point}
-import acrt.raytracing.untyped.PixelHandler
-import data.CartAndRad
-import java.io._
+import akka.actor.{Props, Actor, ActorRef}
+import swiftvis2.raytrace.{Geometry, IntersectData, KDTreeGeometry, BoxBoundsBuilder, SphereBoundsBuilder}
 
-class GeometryOrganizerSome(path: String) extends Actor {
+class GeometryOrganizerSome(simpleGeom: Seq[Geometry]) extends Actor {
   import GeometryOrganizerAll._
-
-  //Alternate Lines for BoxBoundsBuilder - Replace all to swap
-  //val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs, builder = BoxBoundsBuilder))
-  val file = new File(path)
-  val simpleGeom: Seq[Geometry] = CartAndRad.read(file).map(p => GeomSphere(Point(p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
-
+  
   //Change this line for more/less breakup of geometry
   val numTotalManagers = 10
   

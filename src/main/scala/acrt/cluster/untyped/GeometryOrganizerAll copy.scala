@@ -1,22 +1,14 @@
-package acrt.cluster.untyped.geometrymanagement
+package acrt.cluster.untyped
 
 import akka.actor.{Actor, ActorRef, Props}
-import swiftvis2.raytrace.{Geometry, Ray, KDTreeGeometry, Vect, BoxBoundsBuilder, SphereBoundsBuilder, IntersectData, GeomSphere, RTColor, Point}
-import acrt.raytracing.untyped.PixelHandler
-import data.CartAndRad
-import java.io._
-import acrt.cluster.untyped.CborSerializable
-import java.net.URL
+import swiftvis2.raytrace.{Geometry, Ray, KDTreeGeometry, Vect, BoxBoundsBuilder, SphereBoundsBuilder, IntersectData}
 
-class GeometryOrganizerAll(path: String) extends Actor {
+class GeometryOrganizerAll(simpleGeom: Seq[Geometry]) extends Actor {
   import GeometryOrganizerAll._
 
   //Alternate Lines for BoxBoundsBuilder - Replace all to swap
   //val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs, builder = BoxBoundsBuilder))
-  //val file = new File(path)
-  //val simpleGeom: Seq[Geometry] = CartAndRad.read(file).map(p => GeomSphere(Point(p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
-  val carURL = new URL("http://www.cs.trinity.edu/~mlewis/Rings/AMNS-Moonlets/Moonlet4/CartAndRad.6029.bin")
-  val simpleGeom = CartAndRad.readStream(carURL.openStream).map(p => GeomSphere(Point(p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
+  
   //Change this line for more/less breakup of geometry
   val numManagers = 10
 
@@ -37,7 +29,6 @@ class GeometryOrganizerAll(path: String) extends Actor {
     case CastRay(rec, k, r) => {
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
       geomManagers.foreach(_._2 ! GeometryManager.CastRay(rec, k, r, self))
-      println("casting ray")
     }
     //Receives back IntersectDatas from the Managers 
     case RecID(rec, k, id) => {
