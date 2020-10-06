@@ -5,8 +5,9 @@ import swiftvis2.raytrace._
 import akka.actor.Props
 import collection.mutable
 import akka.actor.ActorSelection
+import akka.actor.ActorRef
 
-class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int, organizer: ActorSelection) extends Actor {
+class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int, organizer: ActorRef) extends Actor {
   import PixelHandler._
   //Buffer of Colors to be merged
   private val buff = mutable.ArrayBuffer[RTColor]() 

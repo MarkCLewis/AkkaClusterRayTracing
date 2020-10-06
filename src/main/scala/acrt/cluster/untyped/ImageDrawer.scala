@@ -2,8 +2,9 @@ package acrt.cluster.untyped
 
 import akka.actor.{Actor, Props}
 import swiftvis2.raytrace.{PointLight, Ray, Point, Vect, RTColor}
+import akka.actor.ActorRef
 
-class ImageDrawer(lights: List[PointLight], img: rendersim.RTBufferedImage, numRays: Int) extends Actor {
+class ImageDrawer(lights: List[PointLight], img: rendersim.RTBufferedImage, numRays: Int, organizer: ActorRef) extends Actor {
   import ImageDrawer._
   
   //Aspect Ratio  
@@ -18,7 +19,6 @@ class ImageDrawer(lights: List[PointLight], img: rendersim.RTBufferedImage, numR
     case Start(eye, topLeft, right, down) => {
       for (i <- (0 until img.width); j <- (0 until img.height)) {
         //Creates a new child actor assigned to the given (x,y) pixel
-        val organizer = context.actorSelection("somepath")
         val pix = context.actorOf(Props(new PixelHandler(lights, i, j, numRays, organizer)), s"PixelHandler$i,$j")
         
         //Sends numRays Rays to the new PixelHandler to be sent to the Geometry and averaged into a color

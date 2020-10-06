@@ -4,8 +4,9 @@ import akka.actor.Actor
 import scala.collection.mutable
 import swiftvis2.raytrace.{PointLight, IntersectData, RTColor, Ray}
 import akka.actor.ActorSelection
+import akka.actor.ActorRef
 
-class LightMerger(lights: List[PointLight], id: IntersectData, organizer: ActorSelection) extends Actor {
+class LightMerger(lights: List[PointLight], id: IntersectData, organizer: ActorRef) extends Actor {
   //Creates a buffer to contain all the RTColors needed to be merged
   private val buff = mutable.ArrayBuffer[RTColor]() 
 

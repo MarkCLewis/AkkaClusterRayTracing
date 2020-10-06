@@ -21,7 +21,7 @@ class Worker(cluster: Cluster) extends Actor {
 
   val carURL = new URL("http://www.cs.trinity.edu/~mlewis/Rings/AMNS-Moonlets/Moonlet4/CartAndRad.6029.bin")
   val particles = CartAndRad.readStream(carURL.openStream).map(p => GeomSphere(Point(p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
-  val organizer = context.actorOf(Props(new GeometryOrganizerAll(particles)), "GeomOrganizer")
+  //val organizer = context.actorOf(Props(new GeometryOrganizerAll(particles)), "GeomOrganizer")
 
   def receive = {
     case TransformationJob(text) => frontend ! TransformationResult(text.toUpperCase)
@@ -39,8 +39,7 @@ class Worker(cluster: Cluster) extends Actor {
       frontend = context.actorSelection(RootActorPath(member.address) / "user" / "Frontend")
       frontend ! BackendRegistration
       frontend ! Worker.TransformationJob("dankmeme")
-      frontend ! CastRay(self, 1, Ray(Point(1,1,1),Vect(1,1,1)))
-      organizer ! GeometryOrganizerAll.CastRay(self, 1, Ray(Point(1,1,1),Vect(1,1,1)))
+      //organizer ! GeometryOrganizerAll.CastRay(self, 1, Ray(Point(1,1,1),Vect(1,1,1)))
     }
 }
 //#worker

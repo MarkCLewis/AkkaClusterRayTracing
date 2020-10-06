@@ -1,34 +1,38 @@
 package acrt.cluster.untyped
 
 import akka.actor.{Actor, ActorRef, Props}
-import swiftvis2.raytrace.{Geometry, Ray, KDTreeGeometry, Vect, BoxBoundsBuilder, SphereBoundsBuilder, IntersectData}
+import swiftvis2.raytrace._
+import data.CartAndRad
+import java.net.URL
 
-class GeometryOrganizerAll(simpleGeom: Seq[Geometry]) extends Actor {
+class GeometryOrganizerAll extends Actor {
   import GeometryOrganizerAll._
 
-  //Alternate Lines for BoxBoundsBuilder - Replace all to swap
-  //val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs, builder = BoxBoundsBuilder))
-  
-  //Change this line for more/less breakup of geometry
   val numManagers = 10
-
+  private var managers = IndexedSeq.empty[ActorRef]
   //Gets the Bounds of the Geometry
-  val ymin = simpleGeom.minBy(_.boundingSphere.center.y).boundingSphere.center.y
-  val ymax = simpleGeom.maxBy(_.boundingSphere.center.y).boundingSphere.center.y
-
-  //Groups the Geometry into slices and creates Managers for those pieces of Geometry
-  val geomSeqs = simpleGeom.groupBy(g => ((g.boundingSphere.center.y - ymin) / (ymax-ymin) * numManagers).toInt min (numManagers - 1))
-  val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs, builder = SphereBoundsBuilder))
-  val geomManagers = geoms.map { case (n, g) => n -> context.actorOf(Props(new GeometryManager(g)), "GeometryManager" + n) }
+  private var ymin: Double = 0.0 //simpleGeom.minBy(_.boundingSphere.center.y).boundingSphere.center.y
+  private var ymax: Double = 0.0 //simpleGeom.maxBy(_.boundingSphere.center.y).boundingSphere.center.y
 
   //Map of IDs to Buffers of IntersectDatas
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
   
+  val finderFunc: String => Geometry = { s =>
+    val carURL = new URL("http://www.cs.trinity.edu/~mlewis/Rings/AMNS-Moonlets/Moonlet4/CartAndRad.6029.bin")
+    val particles = CartAndRad.readStream(carURL.openStream).map(p => GeomSphere(Point(p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
+    val geom = new KDTreeGeometry(particles)
+    geom
+  }
   def receive = {
+    case ManagerRegistration(mgr)=> {
+      managers = managers :+ mgr
+      if(managers.length >= numManagers)
+        context.parent ! Frontend.Start
+    }
     //Casts Rays to every Geometry and adds the ray to the Map
     case CastRay(rec, k, r) => {
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
-      geomManagers.foreach(_._2 ! GeometryManager.CastRay(rec, k, r, self))
+      managers.foreach(_ ! GeometryManager.CastRay(rec, k, r, self))
     }
     //Receives back IntersectDatas from the Managers 
     case RecID(rec, k, id) => {
@@ -74,4 +78,5 @@ class GeometryOrganizerAll(simpleGeom: Seq[Geometry]) extends Actor {
 object GeometryOrganizerAll {
   case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends CborSerializable
   case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) extends CborSerializable
+  case class ManagerRegistration(manager: ActorRef) extends CborSerializable
 }
