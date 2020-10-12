@@ -17,14 +17,7 @@ class GeometryOrganizerAll extends Actor {
   //Map of IDs to Buffers of IntersectDatas
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
   
-  val finderFunc = new GeometryCreator {
-    def apply(num: String): Geometry = {
-      val carURL = new URL("http://www.cs.trinity.edu/~mlewis/Rings/AMNS-Moonlets/Moonlet4/CartAndRad.6029.bin")
-      val particles = CartAndRad.readStream(carURL.openStream).map(p => GeomSphere(Point(p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
-      val geom = new KDTreeGeometry(particles)
-      geom
-    }
-  }
+  val finderFunc = new RingSimCreator()
 
   def receive = {
     case ReceiveDone => {
