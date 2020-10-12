@@ -24,10 +24,13 @@ class GeometryOrganizerAll extends Actor {
     geom
   }
   def receive = {
-    case ManagerRegistration(mgr)=> {
-      managers = managers :+ mgr
+    case ReceiveDone => {
+      managers = managers :+ sender
       if(managers.length >= numManagers)
         context.parent ! Frontend.Start
+    }
+    case ManagerRegistration(mgr)=> {
+      mgr ! GeometryManager.FindPath(finderFunc)
     }
     //Casts Rays to every Geometry and adds the ray to the Map
     case CastRay(rec, k, r) => {
@@ -76,6 +79,7 @@ class GeometryOrganizerAll extends Actor {
 }
 
 object GeometryOrganizerAll {
+  case object ReceiveDone extends CborSerializable
   case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends CborSerializable
   case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) extends CborSerializable
   case class ManagerRegistration(manager: ActorRef) extends CborSerializable
