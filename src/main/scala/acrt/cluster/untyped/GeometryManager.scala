@@ -57,7 +57,7 @@ class GeometryManager(cluster: Cluster, number: String) extends Actor {
 }
 
 object GeometryManager {
-  case class FindPath(func: String => Geometry) extends CborSerializable
+  case class FindPath(func: GeometryCreator) extends CborSerializable
   case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) extends CborSerializable
   final case class TransformationJob(text: String) extends CborSerializable
   final case class TransformationResult(text: String) extends CborSerializable
