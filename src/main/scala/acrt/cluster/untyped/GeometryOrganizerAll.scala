@@ -17,7 +17,7 @@ class GeometryOrganizerAll extends Actor {
   //Map of IDs to Buffers of IntersectDatas
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
   
-  val finderFunc = new RingSimCreator()
+  val finderFunc = new GeometryCreator()
 
   def receive = {
     case ReceiveDone => {
