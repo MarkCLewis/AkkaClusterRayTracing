@@ -49,9 +49,9 @@ class GeometryManager(cluster: Cluster, number: String) extends Actor {
       println(RootActorPath(member.address))
       frontend = context.actorSelection(RootActorPath(member.address) / "user" / "Frontend")
       frontend ! BackendRegistration
-      frontend ! Worker.TransformationJob("dankmeme")
+      //frontend ! Worker.TransformationJob("dankmeme")
       //frontend ! CastRay(self, 1, Ray(Point(1,1,1),Vect(1,1,1)), organizer)
-      organizer ! GeometryOrganizerAll.CastRay(self, 1, Ray(Point(1,1,1),Vect(1,1,1)))
+      //frontend ! GeometryOrganizerAll.CastRay(self, 1, Ray(Point(1,1,1),Vect(1,1,1)))
     }
 }
 

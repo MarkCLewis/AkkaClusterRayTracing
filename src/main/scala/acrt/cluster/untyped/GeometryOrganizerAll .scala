@@ -8,7 +8,7 @@ import java.net.URL
 class GeometryOrganizerAll extends Actor {
   import GeometryOrganizerAll._
 
-  val numManagers = 10
+  val numManagers = 1
   private var managers = IndexedSeq.empty[ActorRef]
   //Gets the Bounds of the Geometry
   private var ymin: Double = 0.0 //simpleGeom.minBy(_.boundingSphere.center.y).boundingSphere.center.y
