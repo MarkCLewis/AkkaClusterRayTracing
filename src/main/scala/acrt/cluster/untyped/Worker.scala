@@ -44,9 +44,9 @@ class Worker(cluster: Cluster) extends Actor {
 }
 //#worker
 object Worker {
-  final case class TransformationJob(text: String) extends CborSerializable
-  final case class TransformationResult(text: String) extends CborSerializable
-  final case class JobFailed(reason: String, job: TransformationJob) extends CborSerializable
-  final case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends CborSerializable
-  case object BackendRegistration extends CborSerializable
+  final case class TransformationJob(text: String) extends Serializable
+  final case class TransformationResult(text: String) extends Serializable
+  final case class JobFailed(reason: String, job: TransformationJob) extends Serializable
+  final case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends Serializable
+  case object BackendRegistration extends Serializable
 }

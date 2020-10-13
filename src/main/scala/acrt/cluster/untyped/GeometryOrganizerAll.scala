@@ -17,7 +17,7 @@ class GeometryOrganizerAll extends Actor {
   //Map of IDs to Buffers of IntersectDatas
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
   
-  val finderFunc = new GeometryCreator()
+  val finderFunc = new RingSimCreator()
 
   def receive = {
     case ReceiveDone => {
@@ -76,7 +76,7 @@ class GeometryOrganizerAll extends Actor {
 
 object GeometryOrganizerAll {
   case object ReceiveDone extends CborSerializable
-  case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends CborSerializable
-  case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) extends CborSerializable
-  case class ManagerRegistration(manager: ActorRef) extends CborSerializable
+  case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends Serializable
+  case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) extends Serializable
+  case class ManagerRegistration(manager: ActorRef) extends Serializable
 }
