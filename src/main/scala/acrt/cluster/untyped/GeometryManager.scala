@@ -30,7 +30,7 @@ class GeometryManager(cluster: Cluster, number: String) extends Actor {
     case FindPath(f) => {
       geom = f(number)
       router = context.actorOf(BalancingPool(Runtime.getRuntime().availableProcessors()).props(Props(new Intersector(geom))), "IntersectRouter")
-      sender ! GeometryOrganizerAll.ReceiveDone
+      sender ! GeometryOrganizerAll.ReceiveDone(geom.boundingSphere)
     }
     //Sends a given Ray to the router to be allocated to one of the 8 (or core count) possible Intersectors
     case CastRay(r, k, ray, geomOrg) => {

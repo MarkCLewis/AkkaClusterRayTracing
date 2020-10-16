@@ -10,17 +10,13 @@ class GeometryOrganizerAll extends Actor {
 
   val numManagers = 1
   private var managers = IndexedSeq.empty[ActorRef]
-  //Gets the Bounds of the Geometry
-  private var ymin: Double = 0.0 //simpleGeom.minBy(_.boundingSphere.center.y).boundingSphere.center.y
-  private var ymax: Double = 0.0 //simpleGeom.maxBy(_.boundingSphere.center.y).boundingSphere.center.y
-
-  //Map of IDs to Buffers of IntersectDatas
+ 
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
   
-  val finderFunc = new RingSimCreator()
+  val finderFunc = new RingSimCreator(numManagers)
 
   def receive = {
-    case ReceiveDone => {
+    case ReceiveDone(bounds) => {
       managers = managers :+ sender
       if(managers.length >= numManagers)
         context.parent ! Frontend.Start
@@ -75,7 +71,7 @@ class GeometryOrganizerAll extends Actor {
 }
 
 object GeometryOrganizerAll {
-  case object ReceiveDone extends CborSerializable
+  case class ReceiveDone(bounds: Sphere) extends Serializable
   case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends Serializable
   case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) extends Serializable
   case class ManagerRegistration(manager: ActorRef) extends Serializable
