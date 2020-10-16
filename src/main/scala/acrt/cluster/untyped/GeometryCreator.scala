@@ -7,7 +7,7 @@ sealed trait GeometryCreator extends Serializable {
     def apply(num: String): Geometry
 }
 
-class RingSimCreator(numManagers: Int) extends GeometryCreator {
+class WebCreator(numManagers: Int) extends GeometryCreator {
     def apply(num: String): Geometry = {
       val carURL = new URL("http://www.cs.trinity.edu/~mlewis/Rings/AMNS-Moonlets/Moonlet4/CartAndRad.6029.bin")
       val simpleGeom = CartAndRad.readStream(carURL.openStream).map(p => GeomSphere(Point(p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
@@ -19,5 +19,11 @@ class RingSimCreator(numManagers: Int) extends GeometryCreator {
       
       val geom = geoms(num.toInt)
       geom
+    }
+}
+
+class TooMuchRAMCreator(numManagers: Int) extends GeometryCreator {
+    def apply(num: String): Geometry = {
+      ???
     }
 }

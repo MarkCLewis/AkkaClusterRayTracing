@@ -5,14 +5,14 @@ import swiftvis2.raytrace.{Geometry, Ray, KDTreeGeometry, Vect, BoxBoundsBuilder
 import swiftvis2.raytrace.Sphere
 import akka.actor.ActorRef
 
-class GeometryOrganizerFew(simpleGeom: Seq[Geometry]) extends Actor {
+class GeometryOrganizerFew() extends Actor {
   import GeometryOrganizerAll._
 
-  val numManagers = 1
+  val numManagers = 7
   private val managers = collection.mutable.Map.empty[ActorRef, Sphere]
   private var managersRegistered = 0
   
-  val finderFunc = new RingSimCreator(numManagers)
+  val finderFunc = new WebCreator(numManagers)
 
   private val intersectsMap = collection.mutable.Map[Long, (Ray, Array[(ActorRef, (Double, Vect, Double, Vect))])]()
   
@@ -23,7 +23,7 @@ class GeometryOrganizerFew(simpleGeom: Seq[Geometry]) extends Actor {
       if(managersRegistered >= numManagers)
         context.parent ! Frontend.Start
     }
-    
+
     case ManagerRegistration(mgr)=> {
       mgr ! GeometryManager.FindPath(finderFunc)
     }
@@ -39,8 +39,6 @@ class GeometryOrganizerFew(simpleGeom: Seq[Geometry]) extends Actor {
       }
     }
 
-    //Upon receiving IntersectData, either sends the Some back up, 
-    //or sends to the next manager whose bounds it hits
     case RecID(rec, k, id) => {
       id match {
         case Some(intD) => {

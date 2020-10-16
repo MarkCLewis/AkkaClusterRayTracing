@@ -14,7 +14,7 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
   private var backends = IndexedSeq.empty[ActorRef]
   private var jobCounter = 0
 
-  val organizer = context.actorOf(Props(new GeometryOrganizerAll()), "GeometryOrganizer")
+  val organizer = context.actorOf(Props(new GeometryOrganizerSome()), "GeometryOrganizer")
   val imageDrawer = context.actorOf(Props(new ImageDrawer(lights, img, numRays, organizer)), "ImageDrawer")
 
   val cellWidth = 1e-5
@@ -32,16 +32,6 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
     case Start =>
       imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)
 
-    case job: TransformationJob if backends.isEmpty =>
-      sender ! JobFailed("Service unavailable, try again later", job)
-
-    case job: TransformationJob =>
-      jobCounter += 1
-      backends(jobCounter % backends.size).forward(job)
-    
-    case TransformationResult(txt) =>
-      println(txt)
-
     case BackendRegistration =>
      if (!backends.contains(sender)) {
        context.watch(sender)
@@ -56,5 +46,5 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
 //#frontend
 
 object Frontend {
-  case object Start extends Serializable
+  case object Start extends KryoSerializable
 }

@@ -7,7 +7,6 @@ class Intersector(geom: Geometry) extends Actor {
   import Intersector._
 
   def receive = {
-    // Checks if given Ray intersects the geometry and returns the result to the listed recipient, along with the supplied key
     case CastRay(k, ray, rec, geomOrg) => {
       geomOrg ! GeometryOrganizerAll.RecID(rec, k, geom intersect ray)
     }
@@ -15,5 +14,5 @@ class Intersector(geom: Geometry) extends Actor {
   }
 }
 object Intersector {
-  case class CastRay(k: Long, ray: Ray, rec: ActorRef, geomOrg: ActorRef) extends Serializable
+  case class CastRay(k: Long, ray: Ray, rec: ActorRef, geomOrg: ActorRef) extends KryoSerializable
 }

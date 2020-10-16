@@ -11,17 +11,15 @@ import scala.swing.Swing
 import scala.swing.Alignment
 
 object Main {
-  val hosts = List("pandora02", "pandora03")
-  val ports = List(25251, 25251)
+  val hosts = List("pandora01", "pandora02", "pandora03", "pandora04", "pandora05", "pandora06", "pandora07", "pandora08")
+  val port = 25251
 
-  val list: List[Address] = List(Address("akka", "ClusterSystem", hosts(0), ports(0)), 
-  Address("akka", "ClusterSystem", hosts(1), ports(1)))
+  val list = hosts.map(Address("akka", "ClusterSystem", _, port))
 
   def main(args: Array[String]): Unit = {
-    // starting 2 frontend nodes and 3 backend nodes
     if (args.isEmpty) {
-      startup("backend", "127.0.0.1", ports(0), "0")
-      startup("frontend", "127.0.0.1", ports(1), "0")
+      startup("backend", "127.0.0.1", 25251, "0")
+      startup("frontend", "127.0.0.1", 25252, "0")
       } else {
       require((args.length == 3) || (args.length == 4), "Usage: role ip port (number)")
       if(args.length == 3)
@@ -32,7 +30,6 @@ object Main {
   }
 
   def startup(role: String, ip: String, port: Int, n: String): Unit = {
-    // Override the configuration of the port and role
     val config = ConfigFactory
       .parseString(s"""
         akka.remote.artery.canonical.hostname = "$ip"

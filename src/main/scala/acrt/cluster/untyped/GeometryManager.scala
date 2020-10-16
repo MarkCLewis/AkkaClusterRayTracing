@@ -29,19 +29,19 @@ class GeometryManager(cluster: Cluster, number: String) extends Actor {
   def receive = {
     case FindPath(f) => {
       geom = f(number)
-      router = context.actorOf(BalancingPool(Runtime.getRuntime().availableProcessors()).props(Props(new Intersector(geom))), "IntersectRouter")
+      router = context.actorOf(BalancingPool(Runtime.getRuntime().availableProcessors()).props(Props(new Intersector(geom))), "IntersectRouter" + scala.util.Random.nextLong())
       sender ! GeometryOrganizerAll.ReceiveDone(geom.boundingSphere)
     }
-    //Sends a given Ray to the router to be allocated to one of the 8 (or core count) possible Intersectors
+    
     case CastRay(r, k, ray, geomOrg) => {
       router ! Intersector.CastRay(k, ray, r, geomOrg)
     }
-    case TransformationJob(text) => frontend ! TransformationResult(text.toUpperCase)
+    
     case state: CurrentClusterState =>
       state.members.filter(_.status == MemberStatus.Up).foreach(register)
+    
     case MemberUp(m) => register(m)
-    case PixelHandler.IntersectResult(k, intD) =>
-      println(s"returned ray $k with intersects $intD")
+    
     case m => "GeometryManager received unhandled message: " + m
   }
 
@@ -50,17 +50,11 @@ class GeometryManager(cluster: Cluster, number: String) extends Actor {
       println(RootActorPath(member.address))
       frontend = context.actorSelection(RootActorPath(member.address) / "user" / "Frontend")
       frontend ! BackendRegistration
-      //frontend ! Worker.TransformationJob("dankmeme")
-      //frontend ! CastRay(self, 1, Ray(Point(1,1,1),Vect(1,1,1)), organizer)
-      //frontend ! GeometryOrganizerAll.CastRay(self, 1, Ray(Point(1,1,1),Vect(1,1,1)))
     }
 }
 
 object GeometryManager {
-  case class FindPath(func: GeometryCreator) extends Serializable
-  case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) extends Serializable
-  final case class TransformationJob(text: String) extends Serializable
-  final case class TransformationResult(text: String) extends Serializable
-  final case class JobFailed(reason: String, job: TransformationJob) extends Serializable
-  case object BackendRegistration extends Serializable
+  case class FindPath(func: GeometryCreator) extends KryoSerializable
+  case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) extends KryoSerializable
+  case object BackendRegistration extends KryoSerializable
 }

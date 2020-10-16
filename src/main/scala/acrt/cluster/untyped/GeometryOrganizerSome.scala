@@ -3,14 +3,14 @@ package acrt.cluster.untyped
 import akka.actor.{Props, Actor, ActorRef}
 import swiftvis2.raytrace._
 
-class GeometryOrganizerSome(simpleGeom: Seq[Geometry]) extends Actor {
+class GeometryOrganizerSome() extends Actor {
   import GeometryOrganizerAll._
   
-  val numManagers = 1
+  val numManagers = 7
   private val managers = collection.mutable.Map.empty[ActorRef, Sphere]
   private var managersRegistered = 0
   
-  val finderFunc = new RingSimCreator(numManagers)
+  val finderFunc = new WebCreator(numManagers)
 
   private val intersectsMap = collection.mutable.Map[Long, (Ray, Array[(ActorRef, (Double, Vect, Double, Vect))])]()
 
@@ -39,6 +39,7 @@ class GeometryOrganizerSome(simpleGeom: Seq[Geometry]) extends Actor {
           i._1 ! GeometryManager.CastRay(rec, k, r, self)
       }
     }
+
     case RecID(rec, k, id) => {
       val buffK = buffMap(k)
       val numManagersK = numManagersMap(k)

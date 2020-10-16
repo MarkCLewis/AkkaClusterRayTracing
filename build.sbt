@@ -26,6 +26,7 @@ libraryDependencies ++= Seq(
     "ch.qos.logback"    %  "logback-classic"             % "1.2.3",
     "com.typesafe.akka" %% "akka-multi-node-testkit"    % "2.6.9" % Test,
     "org.scalatest"     %% "scalatest"                  % "3.0.8"     % Test,
-    "com.typesafe.akka" %% "akka-actor-testkit-typed"   % "2.6.9" % Test
+	"com.typesafe.akka" %% "akka-actor-testkit-typed"   % "2.6.9" % Test,
+	"io.altoo" %% "akka-kryo-serialization" % "1.1.5"
 )
 
