@@ -23,9 +23,11 @@ class GeometryOrganizerFew(simpleGeom: Seq[Geometry]) extends Actor {
       if(managersRegistered >= numManagers)
         context.parent ! Frontend.Start
     }
+    
     case ManagerRegistration(mgr)=> {
       mgr ! GeometryManager.FindPath(finderFunc)
     }
+
     case CastRay(rec, k, r) => {
       val intersects = managers.map(g => g._1 -> g._2.intersectParam(r)).filter(g => g._2.map(_._3 > 0).getOrElse(false)).toArray.sortBy(_._2.get._3)
       

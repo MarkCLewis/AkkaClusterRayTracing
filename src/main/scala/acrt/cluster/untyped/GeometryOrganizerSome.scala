@@ -24,9 +24,11 @@ class GeometryOrganizerSome(simpleGeom: Seq[Geometry]) extends Actor {
       if(managersRegistered >= numManagers)
         context.parent ! Frontend.Start
     }
+
     case ManagerRegistration(mgr)=> {
       mgr ! GeometryManager.FindPath(finderFunc)
     }
+
     case CastRay(rec, k, r) => {
       val intersects = managers.filter(_._2.intersectParam(r) != None)
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])

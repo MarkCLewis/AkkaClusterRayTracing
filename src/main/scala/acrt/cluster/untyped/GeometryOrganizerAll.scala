@@ -21,14 +21,17 @@ class GeometryOrganizerAll extends Actor {
       if(managers.length >= numManagers)
         context.parent ! Frontend.Start
     }
+
     case ManagerRegistration(mgr)=> {
       mgr ! GeometryManager.FindPath(finderFunc)
     }
+
     //Casts Rays to every Geometry and adds the ray to the Map
     case CastRay(rec, k, r) => {
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
       managers.foreach(_ ! GeometryManager.CastRay(rec, k, r, self))
     }
+    
     //Receives back IntersectDatas from the Managers 
     case RecID(rec, k, id) => {
       //Adds the ID to the Buffer based on the associated Key

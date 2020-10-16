@@ -13,10 +13,13 @@ class ImageDrawer(lights: List[PointLight], img: rendersim.RTBufferedImage, numR
   //Counts Pixels for timing
   private var pixelsSet = 0
   private val totalPixels = img.width * img.height * numRays
-  private val start = System.nanoTime()
+
+  private var startTime: Long = 0
 
   def receive = {
     case Start(eye, topLeft, right, down) => {
+      startTime = System.nanoTime()
+
       for (i <- (0 until img.width); j <- (0 until img.height)) {
         //Creates a new child actor assigned to the given (x,y) pixel
         val pix = context.actorOf(Props(new PixelHandler(lights, i, j, numRays, organizer)), s"PixelHandler$i,$j")
@@ -35,7 +38,7 @@ class ImageDrawer(lights: List[PointLight], img: rendersim.RTBufferedImage, numR
       //Checks to see if the image is completed and ends time
       pixelsSet += 1
       if (pixelsSet >= totalPixels) {
-        println((System.nanoTime() - start) * 1e-9)
+        println((System.nanoTime() - startTime) * 1e-9)
       }
     }
 
