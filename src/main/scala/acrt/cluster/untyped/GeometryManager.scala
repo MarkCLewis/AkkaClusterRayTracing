@@ -35,6 +35,7 @@ class GeometryManager(cluster: Cluster, number: String) extends Actor {
     
     case CastRay(r, k, ray, geomOrg) => {
       router ! Intersector.CastRay(k, ray, r, geomOrg)
+      println(s"casting ray $k")
     }
     
     case state: CurrentClusterState =>
@@ -55,6 +56,6 @@ class GeometryManager(cluster: Cluster, number: String) extends Actor {
 
 object GeometryManager {
   case class FindPath(func: GeometryCreator) extends KryoSerializable
-  case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) extends KryoSerializable
+  case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) 
   case object BackendRegistration extends KryoSerializable
 }

@@ -8,7 +8,7 @@ import java.net.URL
 class GeometryOrganizerAll extends Actor {
   import GeometryOrganizerAll._
 
-  val numManagers = 7
+  val numManagers = 1
   private var managers = IndexedSeq.empty[ActorRef]
  
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
