@@ -37,7 +37,7 @@ object Main {
         akka.remote.artery.canonical.port=$port
         akka.cluster.roles = [$role]
         """)
-      .withFallback(ConfigFactory.load("transformation"))
+      .withFallback(ConfigFactory.load("application"))
 
     val system = ActorSystem("ClusterSystem", config)
     val cluster = Cluster(system)

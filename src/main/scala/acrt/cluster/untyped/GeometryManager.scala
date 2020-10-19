@@ -54,7 +54,7 @@ class GeometryManager(cluster: Cluster, number: String) extends Actor {
 }
 
 object GeometryManager {
-  case class FindPath(func: GeometryCreator) 
-  case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) 
-  case object BackendRegistration 
+  case class FindPath(func: GeometryCreator) extends KryoSerializable
+  case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) extends KryoSerializable
+  case object BackendRegistration extends KryoSerializable
 }
