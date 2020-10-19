@@ -69,8 +69,8 @@ class GeometryOrganizerAll extends Actor {
 }
 
 object GeometryOrganizerAll {
-  case class ReceiveDone(bounds: Sphere) extends KryoSerializable
-  case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends KryoSerializable
-  case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) extends KryoSerializable
-  case class ManagerRegistration(manager: ActorRef) extends KryoSerializable
+  case class ReceiveDone(bounds: Sphere) 
+  case class CastRay(recipient: ActorRef, k: Long, r: Ray) 
+  case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) 
+  case class ManagerRegistration(manager: ActorRef) 
 }

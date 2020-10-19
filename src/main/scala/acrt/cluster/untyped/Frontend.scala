@@ -46,5 +46,5 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
 //#frontend
 
 object Frontend {
-  case object Start extends KryoSerializable
+  case object Start extends Serializable
 }

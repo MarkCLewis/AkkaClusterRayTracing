@@ -39,7 +39,7 @@ class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int, organ
   }
 }
 object PixelHandler {
-  case class AddRay(r: Ray) extends KryoSerializable
-  case class SetColor(col: RTColor) extends KryoSerializable
-  case class IntersectResult(k: Long, intD: Option[IntersectData]) extends KryoSerializable
+  case class AddRay(r: Ray) extends Serializable
+  case class SetColor(col: RTColor) extends Serializable
+  case class IntersectResult(k: Long, intD: Option[IntersectData]) extends Serializable
 }
