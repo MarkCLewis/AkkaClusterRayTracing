@@ -14,7 +14,7 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
   private var backends = IndexedSeq.empty[ActorRef]
   private var jobCounter = 0
 
-  val organizer = context.actorOf(Props(new GeometryOrganizerSome()), "GeometryOrganizer")
+  val organizer = context.actorOf(Props(new GeometryOrganizerAll()), "GeometryOrganizer")
   val imageDrawer = context.actorOf(Props(new ImageDrawer(lights, img, numRays, organizer)), "ImageDrawer")
 
   val cellWidth = 1e-5
@@ -33,6 +33,7 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
       imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)
 
     case BackendRegistration =>
+    println("backendRegistered")
      if (!backends.contains(sender)) {
        context.watch(sender)
        backends = backends :+ sender
@@ -46,5 +47,5 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
 //#frontend
 
 object Frontend {
-  case object Start extends Serializable
+  case object Start
 }

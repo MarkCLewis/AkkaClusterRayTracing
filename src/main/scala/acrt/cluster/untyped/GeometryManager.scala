@@ -35,7 +35,6 @@ class GeometryManager(cluster: Cluster, number: String) extends Actor {
     
     case CastRay(r, k, ray, geomOrg) => {
       router ! Intersector.CastRay(k, ray, r, geomOrg)
-      println(s"casting ray $k")
     }
     
     case state: CurrentClusterState =>

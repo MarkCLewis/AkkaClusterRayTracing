@@ -14,5 +14,5 @@ class Intersector(geom: Geometry) extends Actor {
   }
 }
 object Intersector {
-  case class CastRay(k: Long, ray: Ray, rec: ActorRef, geomOrg: ActorRef) extends Serializable
+  case class CastRay(k: Long, ray: Ray, rec: ActorRef, geomOrg: ActorRef)
 }
