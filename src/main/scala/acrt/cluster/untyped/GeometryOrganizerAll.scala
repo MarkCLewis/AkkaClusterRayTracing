@@ -23,6 +23,7 @@ class GeometryOrganizerAll extends Actor {
     }
 
     case ManagerRegistration(mgr)=> {
+      mgr ! TestSerialize(new GeomSphere(Point(0,0,0), 0.0, (g => RTColor.Black), (g => 0.0)))
       mgr ! GeometryManager.FindPath(finderFunc)
     }
 
@@ -69,6 +70,7 @@ class GeometryOrganizerAll extends Actor {
 }
 
 object GeometryOrganizerAll {
+  case class TestSerialize(g: GeomSphere)
   case class ReceiveDone(bounds: Sphere) 
   case class CastRay(recipient: ActorRef, k: Long, r: Ray) 
   case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) 
