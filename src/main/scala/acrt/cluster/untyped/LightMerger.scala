@@ -6,7 +6,7 @@ import swiftvis2.raytrace.{PointLight, IntersectData, RTColor, Ray}
 import akka.actor.ActorSelection
 import akka.actor.ActorRef
 
-class LightMerger(lights: List[PointLight], id: PixelHandler.PIntersectData, organizer: ActorRef) extends Actor {
+class LightMerger(lights: List[PointLight], id: IntersectContainer, organizer: ActorRef) extends Actor {
   private val buff = mutable.ArrayBuffer[RTColor]() 
 
   val ids = collection.mutable.Map[Long, (Ray, PointLight)]() 
@@ -22,7 +22,7 @@ class LightMerger(lights: List[PointLight], id: PixelHandler.PIntersectData, org
   }
 
   def receive = {
-    case PixelHandler.IntersectResult(k: Long, oid: Option[PixelHandler.PIntersectData]) => {
+    case PixelHandler.IntersectResult(k: Long, oid: Option[IntersectContainer]) => {
       val (outRay, light) = ids(k)
       
       oid match {

@@ -69,7 +69,7 @@ class GeometryOrganizerSome() extends Actor {
             }
           }
 
-          val pidLowest = PixelHandler.PIntersectData(lowest.time, lowest.point, lowest.norm, lowest.color, lowest.reflect, lowest.geom)
+          val pidLowest = IntersectContainer(lowest.time, lowest.point, lowest.norm, lowest.color, lowest.reflect, lowest.geom)
           rec ! PixelHandler.IntersectResult(k, Some(pidLowest))
         }
       }

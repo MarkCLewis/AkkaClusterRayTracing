@@ -19,7 +19,7 @@ class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int, organ
       organizer ! GeometryOrganizerAll.CastRay(self, scala.util.Random.nextLong(), r)
     }
     
-    case IntersectResult(k: Long, intD: Option[PIntersectData]) => {
+    case IntersectResult(k: Long, intD: Option[IntersectContainer]) => {
       intD match {
         case None =>  context.parent ! ImageDrawer.SetColor(i, j, RTColor.Black)
         case Some(id) => {
@@ -41,14 +41,7 @@ class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int, organ
   }
 }
 object PixelHandler {
-  case class PIntersectData(time: Double, point: Point, norm: Vect, color: RTColor, reflect: Double, 
-  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-      @JsonSubTypes(
-        Array(
-          new JsonSubTypes.Type(value = classOf[GeomSphere], name = "geomsphere"),
-          new JsonSubTypes.Type(value = classOf[GeomCylinder], name = "geomcylinder")))
-      geom: Geometry)
   case class AddRay(r: Ray) extends CborSerializable
   case class SetColor(col: RTColor) extends CborSerializable
-  case class IntersectResult(k: Long, intD: Option[PIntersectData]) extends CborSerializable
+  case class IntersectResult(k: Long, intD: Option[IntersectContainer]) extends CborSerializable
 }

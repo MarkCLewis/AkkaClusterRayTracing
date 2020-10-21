@@ -42,7 +42,7 @@ class GeometryOrganizerFew() extends Actor {
     case RecID(rec, k, id) => {
       id match {
         case Some(intD) => {
-          val pid = PixelHandler.PIntersectData(intD.time, intD.point, intD.norm, intD.color, intD.reflect, intD.geom)
+          val pid = IntersectContainer(intD.time, intD.point, intD.norm, intD.color, intD.reflect, intD.geom)
           rec ! PixelHandler.IntersectResult(k, Some(pid))
         } 
         case None => {

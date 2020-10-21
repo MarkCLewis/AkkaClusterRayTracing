@@ -23,7 +23,7 @@ class GeometryOrganizerAll extends Actor {
     }
 
     case ManagerRegistration(mgr)=> {
-      mgr ! TestSerialize(Some(IntersectData(0.0, Point(0.0,0.0,0.0), Vect(0.0,0.0,0.0), GeomSphere(Point(0,0,0), 0.0, (g => RTColor.Black), (g => 0.0)))))
+      mgr ! TestSerialize(Some(IntersectContainer(0.0, Point(0.0,0.0,0.0), Vect(0.0,0.0,0.0), RTColor.Black, 0.0, new GeomSphereContainer(Point(0,0,0), 0.0, RTColor.Black, 0.0))))
       mgr ! GeometryManager.FindPath(finderFunc)
     }
 
@@ -60,7 +60,7 @@ class GeometryOrganizerAll extends Actor {
               case None => println("how did we get here?")
             }
           }
-          val pidLowest = PixelHandler.PIntersectData(lowest.time, lowest.point, lowest.norm, lowest.color, lowest.reflect, lowest.geom)
+          val pidLowest = IntersectContainer(lowest.time, lowest.point, lowest.norm, lowest.color, lowest.reflect, lowest.geom)
           rec ! PixelHandler.IntersectResult(k, Some(pidLowest))
         }
       }
@@ -70,7 +70,7 @@ class GeometryOrganizerAll extends Actor {
 }
 
 object GeometryOrganizerAll {
-  case class TestSerialize(g: Option[IntersectData]) extends CborSerializable
+  case class TestSerialize(g: Option[IntersectContainer]) extends CborSerializable
   case class ReceiveDone(bounds: Sphere) extends CborSerializable
   case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends CborSerializable
   case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) extends CborSerializable
