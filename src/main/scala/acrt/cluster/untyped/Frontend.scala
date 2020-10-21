@@ -47,5 +47,5 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
 //#frontend
 
 object Frontend {
-  case object Start
+  case object Start extends CborSerializable
 }

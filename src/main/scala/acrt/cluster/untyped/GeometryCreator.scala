@@ -3,7 +3,7 @@ import swiftvis2.raytrace._
 import java.net.URL
 import data.CartAndRad
 
-sealed trait GeometryCreator  {
+sealed trait GeometryCreator extends CborSerializable  {
     def apply(num: String): Geometry
 }
 

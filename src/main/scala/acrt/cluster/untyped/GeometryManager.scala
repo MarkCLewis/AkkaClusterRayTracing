@@ -29,9 +29,11 @@ class GeometryManager(cluster: Cluster, number: String) extends Actor {
   def receive = {
     case GeometryOrganizerAll.TestSerialize(geom) => {
       println(geom)
+      println(geom.get.color)
     }
     case FindPath(f) => {
       geom = f(number)
+      println(geom)
       router = context.actorOf(BalancingPool(Runtime.getRuntime().availableProcessors()).props(Props(new Intersector(geom))), "IntersectRouter" + scala.util.Random.nextLong())
       sender ! GeometryOrganizerAll.ReceiveDone(geom.boundingSphere)
     }
@@ -57,7 +59,7 @@ class GeometryManager(cluster: Cluster, number: String) extends Actor {
 }
 
 object GeometryManager {
-  case class FindPath(func: GeometryCreator)
-  case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) 
-  case object BackendRegistration
+  case class FindPath(func: GeometryCreator) extends CborSerializable
+  case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) extends CborSerializable 
+  case object BackendRegistration extends CborSerializable
 }

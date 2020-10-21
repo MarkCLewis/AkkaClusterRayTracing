@@ -70,9 +70,9 @@ class GeometryOrganizerAll extends Actor {
 }
 
 object GeometryOrganizerAll {
-  case class TestSerialize(g: Option[IntersectData])
-  case class ReceiveDone(bounds: Sphere) 
-  case class CastRay(recipient: ActorRef, k: Long, r: Ray) 
-  case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) 
-  case class ManagerRegistration(manager: ActorRef) 
+  case class TestSerialize(g: Option[IntersectData]) extends CborSerializable
+  case class ReceiveDone(bounds: Sphere) extends CborSerializable
+  case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends CborSerializable
+  case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) extends CborSerializable
+  case class ManagerRegistration(manager: ActorRef) extends CborSerializable
 }
