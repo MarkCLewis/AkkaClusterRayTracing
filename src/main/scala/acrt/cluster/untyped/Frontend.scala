@@ -11,41 +11,33 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
   import GeometryManager._
   import GeometryOrganizerAll._
   import Frontend._
+
   private var backends = IndexedSeq.empty[ActorRef]
   private var jobCounter = 0
 
-  val organizer = context.actorOf(Props(new GeometryOrganizerAll()), "GeometryOrganizer")
+  val numFiles = 3
+
+  val organizer = context.actorOf(Props(new GeometryOrganizerAll(numFiles)), "GeometryOrganizer")
   val imageDrawer = context.actorOf(Props(new ImageDrawer(lights, img, numRays, organizer)), "ImageDrawer")
 
   val cellWidth = 1e-5
   val distanceUp = 1e-5
   val viewSize = 1e-5
-  val numSims = 6
-  val firstXOffset = cellWidth * (numSims - 1)
-      
-  val eye = Point(0, 0, distanceUp)
-  val topLeft = Point(-viewSize, viewSize, distanceUp - viewSize)
-  val right = Vect(2 * viewSize, 0, 0)
-  val down = Vect(0, -2 * viewSize, 0)
+  
+  val eye = Point(0.0, 0.0, numFiles*1e-5)
+  val topLeft = Point(-1e-5, 1e-5, (numFiles-1)*1e-5)
+  val right = Vect(2 * 1e-5, 0, 0)
+  val down = Vect(0, -2 * 1e-5, 0)
 
   def receive = {
     case Start =>
       imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)
 
-    case BackendRegistration =>
-    println("backendRegistered")
-     if (!backends.contains(sender)) {
-       context.watch(sender)
-       backends = backends :+ sender
-       organizer ! ManagerRegistration(sender)
-     }
-
     case Terminated(a) =>
       backends = backends.filterNot(_ == a)
   }
 }
-//#frontend
 
 object Frontend {
-  case object Start extends CborSerializable
+  case object Start extends Serializable
 }

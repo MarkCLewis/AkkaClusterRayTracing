@@ -14,17 +14,11 @@ import akka.cluster.MemberStatus
 import akka.cluster.Member
 import akka.actor.RootActorPath
 
-class GeometryManager(cluster: Cluster, number: String) extends Actor {
+class GeometryManager(cluster: Cluster, frontend: ActorSelection, number: String, offset: Double) extends Actor {
   import GeometryManager._
-  //Creates a BalancingPool of Intersectors equal to core count
+
   private var geom: Geometry = null
-  private var frontend: ActorSelection = null
-
-  override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
-  override def postStop(): Unit = cluster.unsubscribe(self)
   private var router: ActorRef = null
-
-  private var organizer: ActorSelection = null 
 
   def receive = {
     case GeometryOrganizerAll.TestSerialize(geom) => {
@@ -32,34 +26,25 @@ class GeometryManager(cluster: Cluster, number: String) extends Actor {
       println(geom.get.color)
     }
     case FindPath(f) => {
-      geom = f(number)
-      println(geom)
+      geom = f(number, offset)
       router = context.actorOf(BalancingPool(Runtime.getRuntime().availableProcessors()).props(Props(new Intersector(geom))), "IntersectRouter" + scala.util.Random.nextLong())
       sender ! GeometryOrganizerAll.ReceiveDone(geom.boundingSphere)
+    }
+    case FrontendRegistration => {
+      frontend ! GeometryOrganizerAll.ManagerRegistration
     }
     
     case CastRay(r, k, ray, geomOrg) => {
       router ! Intersector.CastRay(k, ray, r, geomOrg)
     }
     
-    case state: CurrentClusterState =>
-      state.members.filter(_.status == MemberStatus.Up).foreach(register)
-    
-    case MemberUp(m) => register(m)
-    
     case m => "GeometryManager received unhandled message: " + m
   }
 
-  def register(member: Member): Unit =
-    if (member.hasRole("frontend")) {
-      println(RootActorPath(member.address))
-      frontend = context.actorSelection(RootActorPath(member.address) / "user" / "Frontend")
-      frontend ! BackendRegistration
-    }
 }
 
 object GeometryManager {
-  case class FindPath(func: GeometryCreator) extends CborSerializable
-  case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) extends CborSerializable 
-  case object BackendRegistration extends CborSerializable
+  case class FindPath(func: GeometryCreator) extends Serializable
+  case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) extends Serializable
+  case object FrontendRegistration extends Serializable
 }

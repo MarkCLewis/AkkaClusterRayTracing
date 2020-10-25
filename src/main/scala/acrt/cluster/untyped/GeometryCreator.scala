@@ -2,28 +2,33 @@ package acrt.cluster.untyped
 import swiftvis2.raytrace._
 import java.net.URL
 import data.CartAndRad
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.JsonSubTypes
 
-sealed trait GeometryCreator extends CborSerializable  {
-    def apply(num: String): Geometry
+
+/*@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[WebCreator], name = "webcreator"),
+    new JsonSubTypes.Type(value = classOf[FileCreator], name = "toomuchramcreator")))*/
+sealed trait GeometryCreator extends Serializable  {
+    def apply(num: String, offset: Double): Geometry
 }
 
-class WebCreator(numManagers: Int) extends GeometryCreator {
-    def apply(num: String): Geometry = {
-      val carURL = new URL("http://www.cs.trinity.edu/~mlewis/Rings/AMNS-Moonlets/Moonlet4/CartAndRad.6029.bin")
-      val simpleGeom = CartAndRad.readStream(carURL.openStream).map(p => GeomSphere(Point(p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
-      val ymin = simpleGeom.minBy(_.boundingSphere.center.y).boundingSphere.center.y
-      val ymax = simpleGeom.maxBy(_.boundingSphere.center.y).boundingSphere.center.y
+class WebCreator extends GeometryCreator {
+    def apply(num: String, offset: Double): Geometry = {
+      val carURL = new URL(s"http://www.cs.trinity.edu/~mlewis/Rings/AMNS-Moonlets/Moonlet4/CartAndRad.$num.bin")
 
-      val geomSeqs = simpleGeom.groupBy(g => ((g.boundingSphere.center.y - ymin) / (ymax-ymin) * numManagers).toInt min (numManagers - 1))
-      val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs, builder = SphereBoundsBuilder))
+      val simpleGeom = CartAndRad.readStream(carURL.openStream).map(p => 
+        GeomSphere(Point(offset*2.0e-5-p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
       
-      val geom = geoms(num.toInt)
+      val geom = new KDTreeGeometry(simpleGeom, builder = SphereBoundsBuilder)
       geom
     }
 }
 
-class TooMuchRAMCreator(numManagers: Int) extends GeometryCreator {
-    def apply(num: String): Geometry = {
+class FileCreator extends GeometryCreator {
+    def apply(num: String, offset: Double): Geometry = {
       ???
     }
 }

@@ -3,14 +3,15 @@ package acrt.cluster.untyped
 import swiftvis2.raytrace._
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonSubTypes
+import scala.concurrent._
 
 case class IntersectContainer(time: Double, point: Point, norm: Vect, color: RTColor, reflect: Double, 
-  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+  /*@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
       @JsonSubTypes(
         Array(
           new JsonSubTypes.Type(value = classOf[GeomSphere], name = "geomsphere"),
-          new JsonSubTypes.Type(value = classOf[GeomSphereContainer], name = "ageomsphere")))
-      geom: Geometry) extends CborSerializable
+          new JsonSubTypes.Type(value = classOf[GeomSphereContainer], name = "ageomsphere")))*/
+      geom: Geometry) extends Serializable
 
 class GeomSphereContainer(centerP: Point, radiusD: Double, color: RTColor, reflect: Double) extends Geometry with Sphere {
     val center: Point = centerP
@@ -35,7 +36,7 @@ class GeomSphereContainer(centerP: Point, radiusD: Double, color: RTColor, refle
     override def boundingBox: Box = BoundingBox(center - radius, center + radius)
 }
 
-class KDTreeContainer[B <: Bounds](geometry: Seq[Geometry], val MaxGeom: Int = 5, builder: BoundsBuilder[B] = SphereBoundsBuilder) extends Geometry {
+/*aclass KDTreeContainer[B <: Bounds](geometry: Seq[Geometry], val MaxGeom: Int = 5, builder: BoundsBuilder[B] = SphereBoundsBuilder) extends Geometry {
   import KDTreeGeometry._
 
   private val root = buildTree(geometry)
@@ -124,4 +125,4 @@ object KDTreeGeometry {
   }
   private case class InternalNode[B](g: Seq[Geometry], splitDim: Int, splitValue: Double, left: Node[B], right: Node[B], bounds: B) extends Node[B]
   private case class LeafNode[B](g: Seq[Geometry], bounds: B) extends Node[B]
-}
+}*/

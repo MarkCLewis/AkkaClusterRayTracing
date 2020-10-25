@@ -43,7 +43,7 @@ object Main {
     val cluster = Cluster(system)
     
     if (role == "backend") {
-      system.actorOf(Props(new GeometryManager(cluster, n)), "Worker")
+      system.actorOf(Props(new Backend(cluster, n.toInt)), "Worker")
       cluster.joinSeedNodes(list)
     }
     if (role == "frontend") {
