@@ -15,7 +15,7 @@ class GeometryOrganizerAll(numFiles: Int) extends Actor {
  
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
   
-  val finderFunc = new WebCreator()
+  val finderFunc = new WebCreator
 
   val numberList: List[String] = List("5000", "5001", "5002", "5003", "5004", "5005", 
      "5006", "5007", "5008", "5009", "5010", "5011", "5012", "5013", "5014", "5015", 

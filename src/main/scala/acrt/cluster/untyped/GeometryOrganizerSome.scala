@@ -11,7 +11,7 @@ class GeometryOrganizerSome(numFiles: Int) extends Actor {
   private var backendsRegistered = 0
   private var backends = collection.mutable.Buffer.empty[ActorRef]
   
-  val finderFunc = new WebCreator()
+  val finderFunc = new WebCreator
 
   private val intersectsMap = collection.mutable.Map[Long, (Ray, Array[(ActorRef, (Double, Vect, Double, Vect))])]()
 
@@ -34,13 +34,13 @@ class GeometryOrganizerSome(numFiles: Int) extends Actor {
         context.parent ! Frontend.Start
     }
 
-    case BackendRegistration => {
-      backends = backends :+ sender
+    case BackendRegistration(backend) => {
+      backends = backends :+ backend
       if(backends.length >= numBackends) roundRobinManagers
     }
 
-    case ManagerRegistration => {
-      sender ! GeometryManager.FindPath(finderFunc)
+    case ManagerRegistration(manager) => {
+      manager ! GeometryManager.FindPath(finderFunc)
     }
 
     case CastRay(rec, k, r) => {

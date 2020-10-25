@@ -31,7 +31,7 @@ class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, off
       sender ! GeometryOrganizerAll.ReceiveDone(geom.boundingSphere)
     }
     case OrganizerRegistration => {
-      organizer ! GeometryOrganizerAll.ManagerRegistration
+      organizer ! GeometryOrganizerAll.ManagerRegistration(self)
       println("registering manager with frontend")
     }
     

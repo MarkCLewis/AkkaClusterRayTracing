@@ -13,7 +13,7 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
   private var backends = IndexedSeq.empty[ActorRef]
   private var jobCounter = 0
 
-  val numFiles = 3
+  val numFiles = 20
 
   val organizer = context.actorOf(Props(new GeometryOrganizerAll(numFiles)), "GeometryOrganizer")
   val imageDrawer = context.actorOf(Props(new ImageDrawer(lights, img, numRays, organizer)), "ImageDrawer")
