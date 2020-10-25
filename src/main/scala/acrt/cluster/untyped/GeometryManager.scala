@@ -32,6 +32,7 @@ class GeometryManager(cluster: Cluster, frontend: ActorSelection, number: String
     }
     case FrontendRegistration => {
       frontend ! GeometryOrganizerAll.ManagerRegistration
+      println("registering manager with frontend")
     }
     
     case CastRay(r, k, ray, geomOrg) => {

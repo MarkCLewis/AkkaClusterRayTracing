@@ -34,6 +34,7 @@ class GeometryOrganizerAll(numFiles: Int) extends Actor {
     case BackendRegistration => {
       backends = backends :+ sender
       if(backends.length >= numBackends) roundRobinManagers
+      println("registering with backend")
     }
 
     case ManagerRegistration => {

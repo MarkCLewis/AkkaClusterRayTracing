@@ -25,6 +25,7 @@ class Backend(cluster: Cluster, number: Int) extends Actor {
         val mgr = context.actorOf(Props(new GeometryManager(cluster, frontend, num, offset)), s"Manager$num")
         managers += (num -> mgr)
         mgr ! GeometryManager.FrontendRegistration
+        println("making manager")
     }
 
     case MemberUp(m) => register(m)
