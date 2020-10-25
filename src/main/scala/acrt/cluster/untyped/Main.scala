@@ -11,14 +11,14 @@ import scala.swing.Swing
 import scala.swing.Alignment
 
 object Main {
-  //val hosts = List("pandora01", "pandora02", "pandora03", "pandora04", "pandora05", "pandora06", "pandora07", "pandora08")
-  /*val hosts = List("pandora02", "pandora03")
+  val hosts = List("pandora01", "pandora02", "pandora03", "pandora04", "pandora05", "pandora06", "pandora07", "pandora08")
+  //val hosts = List("pandora02", "pandora03")
   val port = 25251
-  val list = hosts.map(Address("akka", "ClusterSystem", _, port))*/
+  val list = hosts.map(Address("akka", "ClusterSystem", _, port))
 
-  val hosts = "pandora02"
+  /*val hosts = "pandora02"
   val port = List(25251, 25252)
-  val list = port.map(Address("akka", "ClusterSystem", hosts, _))
+  val list = port.map(Address("akka", "ClusterSystem", hosts, _))*/
 
   def main(args: Array[String]): Unit = {
     if (args.isEmpty) {
