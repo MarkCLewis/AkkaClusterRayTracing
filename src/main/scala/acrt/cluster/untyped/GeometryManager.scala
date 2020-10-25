@@ -14,7 +14,7 @@ import akka.cluster.MemberStatus
 import akka.cluster.Member
 import akka.actor.RootActorPath
 
-class GeometryManager(cluster: Cluster, frontend: ActorSelection, number: String, offset: Double) extends Actor {
+class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, offset: Double) extends Actor {
   import GeometryManager._
 
   private var geom: Geometry = null
@@ -30,8 +30,8 @@ class GeometryManager(cluster: Cluster, frontend: ActorSelection, number: String
       router = context.actorOf(BalancingPool(Runtime.getRuntime().availableProcessors()).props(Props(new Intersector(geom))), "IntersectRouter" + scala.util.Random.nextLong())
       sender ! GeometryOrganizerAll.ReceiveDone(geom.boundingSphere)
     }
-    case FrontendRegistration => {
-      frontend ! GeometryOrganizerAll.ManagerRegistration
+    case OrganizerRegistration => {
+      organizer ! GeometryOrganizerAll.ManagerRegistration
       println("registering manager with frontend")
     }
     
@@ -47,5 +47,5 @@ class GeometryManager(cluster: Cluster, frontend: ActorSelection, number: String
 object GeometryManager {
   case class FindPath(func: GeometryCreator) extends Serializable
   case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) extends Serializable
-  case object FrontendRegistration extends Serializable
+  case object OrganizerRegistration extends Serializable
 }

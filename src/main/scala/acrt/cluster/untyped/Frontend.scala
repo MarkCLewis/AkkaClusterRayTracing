@@ -6,10 +6,8 @@ import scala.util.Failure
 import scala.util.Success
 import akka.actor._
 import swiftvis2.raytrace._
-//#frontend
+
 class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointLight]) extends Actor {
-  import GeometryManager._
-  import GeometryOrganizerAll._
   import Frontend._
 
   private var backends = IndexedSeq.empty[ActorRef]
@@ -30,6 +28,9 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
   val down = Vect(0, -2 * 1e-5, 0)
 
   def receive = {
+    case BackendRegistration => {
+      organizer ! GeometryOrganizerAll.BackendRegistration(sender)
+    }
     case Start =>
       imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)
 
@@ -40,4 +41,5 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
 
 object Frontend {
   case object Start extends Serializable
+  case object BackendRegistration extends Serializable
 }

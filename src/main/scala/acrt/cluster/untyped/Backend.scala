@@ -16,16 +16,18 @@ class Backend(cluster: Cluster, number: Int) extends Actor {
   import Backend._
   private val managers: mutable.Map[String, ActorRef] = mutable.Map()
   private var frontend: ActorSelection = null
+  private var organizer: ActorRef = null
 
   override def preStart(): Unit = cluster.subscribe(self, classOf[MemberUp])
   override def postStop(): Unit = cluster.unsubscribe(self)
 
   def receive = {
     case MakeManager(num, offset) => {
-        val mgr = context.actorOf(Props(new GeometryManager(cluster, frontend, num, offset)), s"Manager$num")
-        managers += (num -> mgr)
-        mgr ! GeometryManager.FrontendRegistration
-        println("making manager")
+      organizer = sender
+      val mgr = context.actorOf(Props(new GeometryManager(cluster, organizer, num, offset)), s"Manager$num")
+      managers += (num -> mgr)
+      mgr ! GeometryManager.OrganizerRegistration
+      println("making manager")
     }
 
     case MemberUp(m) => register(m)
@@ -38,7 +40,7 @@ class Backend(cluster: Cluster, number: Int) extends Actor {
     if (member.hasRole("frontend")) {
       println(RootActorPath(member.address))
       frontend = context.actorSelection(RootActorPath(member.address) / "user" / "Frontend")
-      frontend ! GeometryOrganizerAll.BackendRegistration
+      frontend ! Frontend.BackendRegistration
     }
 }
 

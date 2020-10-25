@@ -31,15 +31,15 @@ class GeometryOrganizerAll(numFiles: Int) extends Actor {
       if(managers.length >= numFiles) context.parent ! Frontend.Start
     }
 
-    case BackendRegistration => {
-      backends = backends :+ sender
+    case BackendRegistration(backend) => {
+      backends = backends :+ backend
       if(backends.length >= numBackends) roundRobinManagers
       println("registering with backend")
     }
 
-    case ManagerRegistration => {
+    case ManagerRegistration(manager) => {
       //sender ! TestSerialize(Some(IntersectContainer(0.0, Point(0.0,0.0,0.0), Vect(0.0,0.0,0.0), RTColor.Black, 0.0, new GeomSphereContainer(Point(0,0,0), 0.0, RTColor.Black, 0.0))))
-      sender ! GeometryManager.FindPath(finderFunc)
+      manager ! GeometryManager.FindPath(finderFunc)
     }
 
     case CastRay(rec, k, r) => {
@@ -101,6 +101,6 @@ object GeometryOrganizerAll {
   case class ReceiveDone(bounds: Sphere) extends Serializable
   case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends Serializable
   case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) extends Serializable
-  case object ManagerRegistration extends Serializable
-  case object BackendRegistration extends Serializable
+  case class ManagerRegistration(manager: ActorRef) extends Serializable
+  case class BackendRegistration(backend: ActorRef) extends Serializable
 }
