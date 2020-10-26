@@ -24,7 +24,8 @@ class Backend(cluster: Cluster, number: Int) extends Actor {
   def receive = {
     case MakeManager(num, offset) => {
       organizer = sender
-      val mgr = context.actorOf(Props(new GeometryManager(cluster, organizer, num, offset)), s"Manager$num")
+      val rand = scala.util.Random.nextLong()
+      val mgr = context.actorOf(Props(new GeometryManager(cluster, organizer, num, offset)), s"Manager$rand")
       managers += (num -> mgr)
       mgr ! GeometryManager.OrganizerRegistration
       println("making manager")
@@ -41,6 +42,9 @@ class Backend(cluster: Cluster, number: Int) extends Actor {
       println(RootActorPath(member.address))
       frontend = context.actorSelection(RootActorPath(member.address) / "user" / "Frontend")
       frontend ! Frontend.BackendRegistration
+      while(managers.isEmpty == false) {
+        managers -= managers.head._1
+      }
     }
 }
 

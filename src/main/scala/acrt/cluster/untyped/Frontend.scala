@@ -15,7 +15,7 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
 
   val numFiles = 25
 
-  val organizer = context.actorOf(Props(new GeometryOrganizerAll(numFiles)), "GeometryOrganizer")
+  val organizer = context.actorOf(Props(new GeometryOrganizerSome(numFiles)), "GeometryOrganizer")
   val imageDrawer = context.actorOf(Props(new ImageDrawer(lights, img, numRays, organizer)), "ImageDrawer")
 
   val cellWidth = 1e-5

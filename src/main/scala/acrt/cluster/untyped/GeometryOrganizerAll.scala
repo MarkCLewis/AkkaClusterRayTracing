@@ -8,7 +8,7 @@ import java.net.URL
 class GeometryOrganizerAll(numFiles: Int) extends Actor {
   import GeometryOrganizerAll._
 
-  val numBackends = 1
+  val numBackends = 7
   
   private var managers = IndexedSeq.empty[ActorRef]
   private var backends = IndexedSeq.empty[ActorRef]
@@ -87,11 +87,12 @@ class GeometryOrganizerAll(numFiles: Int) extends Actor {
     var x = 0
     var offset: Int = -1 * (numFiles / 2)
     while(x < numFiles) {
-      for(backend <- backends) {
-        if(x < numFiles) backend ! Backend.MakeManager(numberList(x), offset)
-        offset += 1
-        x += 1
-      }
+      val whichBackend = x % numBackends
+      val whichNum = numberList(x)
+      backends(x % numBackends) ! Backend.MakeManager(numberList(x), offset)
+      println(s"having backend #$whichBackend make manager #$whichNum")
+      offset += 1
+      x += 1
     }
   }
 }
