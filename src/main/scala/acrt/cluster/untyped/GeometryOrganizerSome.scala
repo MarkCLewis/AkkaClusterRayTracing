@@ -6,7 +6,7 @@ import swiftvis2.raytrace._
 class GeometryOrganizerSome(numFiles: Int) extends Actor {
   import GeometryOrganizerAll._
   
-  val numBackends = 7
+  val numBackends = 1
   private val managers = collection.mutable.Map.empty[ActorRef, Sphere]
   private var backendsRegistered = 0
   private var backends = collection.mutable.Buffer.empty[ActorRef]
@@ -15,7 +15,7 @@ class GeometryOrganizerSome(numFiles: Int) extends Actor {
 
   private val intersectsMap = collection.mutable.Map[Long, (Ray, Array[(ActorRef, (Double, Vect, Double, Vect))])]()
 
-  private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
+  private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectContainer]]]() 
   private val numManagersMap = collection.mutable.Map[Long, Int]()
 
   val numberList: List[String] = List("5000", "5001", "5002", "5003", "5004", "5005", 
@@ -45,7 +45,7 @@ class GeometryOrganizerSome(numFiles: Int) extends Actor {
 
     case CastRay(rec, k, r) => {
       val intersects = managers.filter(_._2.intersectParam(r) != None)
-      buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
+      buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectContainer]])
       numManagersMap += (k -> intersects.size)
 
       if (intersects.isEmpty) rec ! PixelHandler.IntersectResult(k, None)
@@ -67,7 +67,7 @@ class GeometryOrganizerSome(numFiles: Int) extends Actor {
         if(editedBuff.isEmpty){
           rec ! PixelHandler.IntersectResult(k, None)
         } else {
-          var lowest: IntersectData = editedBuff.head match {
+          var lowest: IntersectContainer = editedBuff.head match {
             case Some(intD) => intD
             case None => null
           }

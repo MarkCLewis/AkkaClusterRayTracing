@@ -8,7 +8,8 @@ class Intersector(geom: Geometry) extends Actor {
 
   def receive = {
     case CastRay(k, ray, rec, geomOrg) => {
-      geomOrg ! GeometryOrganizerAll.RecID(rec, k, geom intersect ray)
+      val oid = geom intersect ray
+      geomOrg ! GeometryOrganizerAll.RecID(rec, k, oid.map(IntersectContainer.apply))
     }
     case m => "Intersector received unhandled message: " + m
   }

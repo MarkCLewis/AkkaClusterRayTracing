@@ -13,7 +13,7 @@ class GeometryOrganizerAll(numFiles: Int) extends Actor {
   private var managers = IndexedSeq.empty[ActorRef]
   private var backends = IndexedSeq.empty[ActorRef]
  
-  private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
+  private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectContainer]]]() 
   
   val finderFunc = new WebCreator
 
@@ -43,7 +43,7 @@ class GeometryOrganizerAll(numFiles: Int) extends Actor {
     }
 
     case CastRay(rec, k, r) => {
-      buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
+      buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectContainer]])
       managers.foreach(_ ! GeometryManager.CastRay(rec, k, r, self))
     }
 
@@ -60,7 +60,7 @@ class GeometryOrganizerAll(numFiles: Int) extends Actor {
         if(editedBuff.isEmpty){
           rec ! PixelHandler.IntersectResult(k, None)
         } else {
-          var lowest: IntersectData = editedBuff.head match {
+          var lowest: IntersectContainer = editedBuff.head match {
             case Some(intD) => intD
             case None => null
           }
@@ -101,7 +101,7 @@ object GeometryOrganizerAll {
   case class TestSerialize(g: Option[IntersectContainer]) extends Serializable
   case class ReceiveDone(bounds: Sphere) extends Serializable
   case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends Serializable
-  case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData]) extends Serializable
+  case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectContainer]) extends Serializable
   case class ManagerRegistration(manager: ActorRef) extends Serializable
   case class BackendRegistration(backend: ActorRef) extends Serializable
 }

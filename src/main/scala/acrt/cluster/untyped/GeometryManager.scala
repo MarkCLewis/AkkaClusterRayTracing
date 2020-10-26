@@ -19,7 +19,7 @@ class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, off
 
   private var geom: Geometry = null
   private var router: ActorRef = null
-
+  implicit val ec = context.dispatcher
   def receive = {
     case GeometryOrganizerAll.TestSerialize(geom) => {
       println(geom)

@@ -10,14 +10,19 @@ case class IntersectContainer(time: Double, point: Point, norm: Vect, color: RTC
       @JsonSubTypes(
         Array(
           new JsonSubTypes.Type(value = classOf[GeomSphere], name = "geomsphere"),
-          new JsonSubTypes.Type(value = classOf[GeomSphereContainer], name = "ageomsphere")))*/
-      geom: Geometry) extends Serializable
+          new JsonSubTypes.Type(value = classOf[GeomSphereContainer], name = "geomsphere")))*/
+      geom: Geometry) 
+      
+object IntersectContainer {
+  def apply(id: IntersectData): IntersectContainer = {
+    val ic = new IntersectContainer(id.time, id.point, id.norm, id.color, id.reflect, id.geom)
+    ic
+  }
+}
 
-class GeomSphereContainer(centerP: Point, radiusD: Double, color: RTColor, reflect: Double) extends Geometry with Sphere {
-    val center: Point = centerP
-    val radius: Double = radiusD
+case class GeomSphereContainer(center: Point, radius: Double, color: RTColor, reflect: Double) extends Geometry with Sphere {
     
-    def movedBy(v: Vect): Sphere = ???
+    def movedBy(v: Vect): Sphere = copy(center = center+v)
     
     override def intersect(r: Ray): Option[IntersectData] = {
         intersectParam(r).flatMap { case (enter, _, exit, _) =>
@@ -36,8 +41,8 @@ class GeomSphereContainer(centerP: Point, radiusD: Double, color: RTColor, refle
     override def boundingBox: Box = BoundingBox(center - radius, center + radius)
 }
 
-/*aclass KDTreeContainer[B <: Bounds](geometry: Seq[Geometry], val MaxGeom: Int = 5, builder: BoundsBuilder[B] = SphereBoundsBuilder) extends Geometry {
-  import KDTreeGeometry._
+class KDTreeContainer[B <: Bounds](geometry: Seq[Geometry], val MaxGeom: Int = 5, builder: BoundsBuilder[B] = SphereBoundsBuilder)(implicit ec: ExecutionContext) extends Geometry {
+  import KDTreeContainer._
 
   private val root = buildTree(geometry)
   def intersect(r: Ray): Option[IntersectData] = {
@@ -118,11 +123,11 @@ class GeomSphereContainer(centerP: Point, radiusD: Double, color: RTColor, refle
   }
 }
 
-object KDTreeGeometry {
-  private sealed trait Node[B] extends Serializable {
+object KDTreeContainer {
+ sealed trait Node[B] extends Serializable {
     val g: Seq[Geometry]
     val bounds: B
   }
-  private case class InternalNode[B](g: Seq[Geometry], splitDim: Int, splitValue: Double, left: Node[B], right: Node[B], bounds: B) extends Node[B]
-  private case class LeafNode[B](g: Seq[Geometry], bounds: B) extends Node[B]
-}*/
+ case class InternalNode[B](g: Seq[Geometry], splitDim: Int, splitValue: Double, left: Node[B], right: Node[B], bounds: B) extends Node[B]
+ case class LeafNode[B](g: Seq[Geometry], bounds: B) extends Node[B]
+}
