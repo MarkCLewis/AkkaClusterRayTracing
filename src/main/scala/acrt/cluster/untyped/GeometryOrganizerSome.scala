@@ -6,7 +6,7 @@ import swiftvis2.raytrace._
 class GeometryOrganizerSome(numFiles: Int) extends Actor {
   import GeometryOrganizerAll._
   
-  val numBackends = 1
+  val numBackends = 7
   private val managers = collection.mutable.Map.empty[ActorRef, Sphere]
   private var backendsRegistered = 0
   private var backends = collection.mutable.Buffer.empty[ActorRef]
@@ -95,11 +95,12 @@ class GeometryOrganizerSome(numFiles: Int) extends Actor {
     var x = 0
     var offset: Int = -1 * (numFiles / 2)
     while(x < numFiles) {
-      for(backend <- backends) {
-        if(x < numFiles) backend ! Backend.MakeManager(numberList(x), offset)
-        offset += 1
-        x += 1
-      }
+      val whichBackend = x % numBackends
+      val whichNum = numberList(x)
+      backends(x % numBackends) ! Backend.MakeManager(numberList(x), offset)
+      println(s"having backend #$whichBackend make manager #$whichNum")
+      offset += 1
+      x += 1
     }
   }
 }
