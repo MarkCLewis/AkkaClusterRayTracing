@@ -40,7 +40,7 @@ object Main {
         akka.remote.artery.canonical.port=$port
         akka.cluster.roles = [$role]
         """)
-      .withFallback(ConfigFactory.load("application"))
+      .withFallback(ConfigFactory.load("kryoserialize"))
 
     val system = ActorSystem("ClusterSystem", config)
     val cluster = Cluster(system)

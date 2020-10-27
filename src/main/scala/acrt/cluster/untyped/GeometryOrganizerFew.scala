@@ -8,7 +8,7 @@ import akka.actor.ActorRef
 class GeometryOrganizerFew(numFiles: Int) extends Actor {
   import GeometryOrganizerAll._
 
-  val numBackends = 7
+  val numBackends = 1
   private val managers = collection.mutable.Map.empty[ActorRef, Sphere]
   private var backends = collection.mutable.Buffer.empty[ActorRef]
   private var backendsRegistered = 0

@@ -8,7 +8,7 @@ import java.net.URL
 class GeometryOrganizerAll(numFiles: Int) extends Actor {
   import GeometryOrganizerAll._
 
-  val numBackends = 7
+  val numBackends = 1
   
   private var managers = IndexedSeq.empty[ActorRef]
   private var backends = IndexedSeq.empty[ActorRef]
@@ -98,10 +98,10 @@ class GeometryOrganizerAll(numFiles: Int) extends Actor {
 }
 
 object GeometryOrganizerAll {
-  case class TestSerialize(g: Option[IntersectContainer]) extends Serializable
-  case class ReceiveDone(bounds: Sphere) extends Serializable
-  case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends Serializable
-  case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectContainer]) extends Serializable
-  case class ManagerRegistration(manager: ActorRef) extends Serializable
-  case class BackendRegistration(backend: ActorRef) extends Serializable
+  case class TestSerialize(g: Option[IntersectContainer])
+  case class ReceiveDone(bounds: Sphere)
+  case class CastRay(recipient: ActorRef, k: Long, r: Ray)
+  case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectContainer])
+  case class ManagerRegistration(manager: ActorRef)
+  case class BackendRegistration(backend: ActorRef)
 }

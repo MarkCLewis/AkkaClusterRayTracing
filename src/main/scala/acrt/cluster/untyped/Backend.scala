@@ -49,5 +49,5 @@ class Backend(cluster: Cluster, number: Int) extends Actor {
 }
 
 object Backend {
-    case class MakeManager(number: String, offset: Double) extends Serializable
+    case class MakeManager(number: String, offset: Double)
 }

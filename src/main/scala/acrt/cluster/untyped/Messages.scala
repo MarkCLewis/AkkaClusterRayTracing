@@ -11,7 +11,7 @@ case class IntersectContainer(time: Double, point: Point, norm: Vect, color: RTC
         Array(
           new JsonSubTypes.Type(value = classOf[GeomSphere], name = "geomsphere"),
           new JsonSubTypes.Type(value = classOf[GeomSphereContainer], name = "geomsphere")))*/
-      geom: Geometry) 
+      geom: Geometry)
       
 object IntersectContainer {
   def apply(id: IntersectData): IntersectContainer = {
@@ -33,7 +33,7 @@ case class GeomSphereContainer(center: Point, radius: Double, color: RTColor, re
             val normal = (pnt - center).normalize
             Some(new IntersectData(inter, pnt, normal, color, reflect, this))
         }
-        }
+      }
     }
 
     override def boundingSphere: Sphere = this
