@@ -29,7 +29,7 @@ class GeometryOrganizerFew(numFiles: Int) extends Actor {
     case ReceiveDone(bounds) => {
       managers += (sender -> bounds)
       backendsRegistered += 1
-      if(backendsRegistered >= numBackends)
+      if(backendsRegistered >= numFiles)
         context.parent ! Frontend.Start
     }
 

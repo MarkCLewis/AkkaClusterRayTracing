@@ -4,14 +4,18 @@ import swiftvis2.raytrace._
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import scala.concurrent._
+import swiftvis2.raytrace.BoxBoundsBuilder
+import swiftvis2.raytrace.SphereBoundsBuilder
 
 case class IntersectContainer(time: Double, point: Point, norm: Vect, color: RTColor, reflect: Double, 
-  /*@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
       @JsonSubTypes(
         Array(
           new JsonSubTypes.Type(value = classOf[GeomSphere], name = "geomsphere"),
-          new JsonSubTypes.Type(value = classOf[GeomSphereContainer], name = "geomsphere")))*/
-      geom: Geometry)
+          new JsonSubTypes.Type(value = classOf[KDTreeContainer[Sphere]], name = "kdtreecontainersphere"),
+          new JsonSubTypes.Type(value = classOf[KDTreeContainer[Box]], name = "kdtreecontainerbox"),
+          new JsonSubTypes.Type(value = classOf[GeomSphereContainer], name = "geomspherecontainer")))
+      geom: Geometry) extends CborSerializable
       
 object IntersectContainer {
   def apply(id: IntersectData): IntersectContainer = {

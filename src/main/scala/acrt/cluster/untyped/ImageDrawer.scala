@@ -41,6 +41,6 @@ class ImageDrawer(lights: List[PointLight], img: rendersim.RTBufferedImage, numR
 }
 
 object ImageDrawer {
-  case class Start(eye: Point, topLeft: Point, right: Vect, down: Vect)
-  case class SetColor(i: Int, j: Int, color: RTColor)
+  case class Start(eye: Point, topLeft: Point, right: Vect, down: Vect) extends CborSerializable
+  case class SetColor(i: Int, j: Int, color: RTColor) extends CborSerializable
 }

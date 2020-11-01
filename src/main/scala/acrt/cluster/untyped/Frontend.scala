@@ -40,6 +40,6 @@ class Frontend(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointL
 }
 
 object Frontend {
-  case object Start
-  case object BackendRegistration
+  case object Start extends CborSerializable
+  case object BackendRegistration extends CborSerializable
 }

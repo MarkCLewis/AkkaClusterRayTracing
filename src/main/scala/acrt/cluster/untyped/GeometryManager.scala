@@ -45,7 +45,7 @@ class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, off
 }
 
 object GeometryManager {
-  case class FindPath(func: GeometryCreator)
-  case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef)
-  case object OrganizerRegistration
+  case class FindPath(func: GeometryCreator) extends CborSerializable
+  case class CastRay(recipient: ActorRef, k: Long, ray: Ray, geomOrg: ActorRef) extends CborSerializable
+  case object OrganizerRegistration extends CborSerializable
 }

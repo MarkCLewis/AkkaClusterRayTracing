@@ -7,12 +7,12 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import scala.concurrent.ExecutionContext
 
 
-/*@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes(
   Array(
     new JsonSubTypes.Type(value = classOf[WebCreator], name = "webcreator"),
-    new JsonSubTypes.Type(value = classOf[FileCreator], name = "toomuchramcreator")))*/
-sealed trait GeometryCreator {
+    new JsonSubTypes.Type(value = classOf[FileCreator], name = "toomuchramcreator")))
+sealed trait GeometryCreator extends CborSerializable {
     def apply(num: String, offset: Double)(implicit ec: ExecutionContext): Geometry
 }
 
