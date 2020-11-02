@@ -28,7 +28,7 @@ class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, off
     case FindPath(f) => {
       geom = f(number, offset)
       router = context.actorOf(BalancingPool(Runtime.getRuntime().availableProcessors()).props(Props(new Intersector(geom))), "IntersectRouter" + scala.util.Random.nextLong())
-      sender ! GeometryOrganizerAll.ReceiveDone(geom.boundingSphere)
+      sender ! GeometryOrganizerAll.ReceiveDone(SphereContainer(geom.boundingSphere))
     }
     case OrganizerRegistration => {
       organizer ! GeometryOrganizerAll.ManagerRegistration(self)

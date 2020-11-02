@@ -7,6 +7,18 @@ import scala.concurrent._
 import swiftvis2.raytrace.BoxBoundsBuilder
 import swiftvis2.raytrace.SphereBoundsBuilder
 
+case class SphereContainer(center: Point, radius: Double) extends CborSerializable with Sphere {
+  def movedBy(v: Vect): Sphere = {
+    ???
+  }
+}
+
+object SphereContainer {
+  def apply(s: Sphere): SphereContainer = {
+    new SphereContainer(s.center, s.radius)
+  }
+}
+
 case class IntersectContainer(time: Double, point: Point, norm: Vect, color: RTColor, reflect: Double, 
   @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
       @JsonSubTypes(
