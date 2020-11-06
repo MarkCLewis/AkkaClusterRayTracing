@@ -1,16 +1,15 @@
-package acrt.cluster.untyped
+package acrt.cluster.untyped.frontend
 
-import akka.actor.Actor
 import scala.collection.mutable
-import swiftvis2.raytrace.{PointLight, IntersectData, RTColor, Ray}
-import akka.actor.ActorSelection
-import akka.actor.ActorRef
+import akka.actor.{Actor, ActorRef}
+import swiftvis2.raytrace.{PointLight, RTColor, Ray}
+import acrt.cluster.untyped.backend.IntersectContainer
 
 class LightMerger(lights: List[PointLight], id: IntersectContainer, organizer: ActorRef) extends Actor {
   private val buff = mutable.ArrayBuffer[RTColor]() 
-
   val ids = collection.mutable.Map[Long, (Ray, PointLight)]() 
   
+  //Sends out Rays to each light
   for(light <- lights) {
     val outRay = Ray(id.point + id.norm * 0.0001 * id.geom.boundingSphere.radius, light.point)
     
@@ -22,6 +21,7 @@ class LightMerger(lights: List[PointLight], id: IntersectContainer, organizer: A
   }
 
   def receive = {
+    //Receives back IntersectContainer, and once receives all, merges the colors to create the pixel color to send up
     case PixelHandler.IntersectResult(k: Long, oid: Option[IntersectContainer]) => {
       val (outRay, light) = ids(k)
       

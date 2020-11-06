@@ -1,12 +1,12 @@
-package acrt.cluster.untyped
+package acrt.cluster.untyped.frontend
 
 import akka.actor.{Props, Actor, ActorRef}
-import swiftvis2.raytrace._
+import swiftvis2.raytrace.{Sphere, Ray, Vect}
+import acrt.cluster.untyped.backend.{IntersectContainer, GeometryManager, Backend}
 
-class GeometryOrganizerSome(numFiles: Int) extends Actor {
+class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
   import GeometryOrganizerAll._
   
-  val numBackends = 1
   private val managers = collection.mutable.Map.empty[ActorRef, Sphere]
   private var backendsRegistered = 0
   private var backends = collection.mutable.Buffer.empty[ActorRef]
@@ -14,10 +14,10 @@ class GeometryOrganizerSome(numFiles: Int) extends Actor {
   val finderFunc = new WebCreator
 
   private val intersectsMap = collection.mutable.Map[Long, (Ray, Array[(ActorRef, (Double, Vect, Double, Vect))])]()
-
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectContainer]]]() 
   private val numManagersMap = collection.mutable.Map[Long, Int]()
 
+  //List of numbers to pull files from
   val numberList: List[String] = List("5000", "5001", "5002", "5003", "5004", "5005", 
      "5006", "5007", "5008", "5009", "5010", "5011", "5012", "5013", "5014", "5015", 
      "5016", "5017", "5018", "5019", "5020", "5021", "5022", "5023", "5024", "5025", 
@@ -27,6 +27,7 @@ class GeometryOrganizerSome(numFiles: Int) extends Actor {
      "6026", "6027", "6028", "6029")
 
   def receive = {
+    //Receives back that the manager has finished loading data; when all have, starts drawing
     case ReceiveDone(bounds) => {
       managers += (sender -> bounds)
       backendsRegistered += 1
@@ -34,15 +35,18 @@ class GeometryOrganizerSome(numFiles: Int) extends Actor {
         context.parent ! Frontend.Start
     }
 
+    //Registers backend with organizer; once all are, RoundRobin's managers across all Backends
     case BackendRegistration(backend) => {
       backends = backends :+ backend
       if(backends.length >= numBackends) roundRobinManagers
     }
 
+    //Registers manager with organizer, then sends the GeometryCreator to find data
     case ManagerRegistration(manager) => {
       manager ! GeometryManager.FindPath(finderFunc)
     }
 
+    //Casts Ray to all the managers that it intersects; sends back to pixel if none
     case CastRay(rec, k, r) => {
       val intersects = managers.filter(_._2.intersectParam(r) != None)
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectContainer]])
@@ -54,6 +58,7 @@ class GeometryOrganizerSome(numFiles: Int) extends Actor {
       }
     }
 
+    //Receives back IntersectContainer, adds to buffer
     case RecID(rec, k, id) => {
       val buffK = buffMap(k)
       val numManagersK = numManagersMap(k)
@@ -62,6 +67,7 @@ class GeometryOrganizerSome(numFiles: Int) extends Actor {
       if(buffK.length < numManagersK) {
         buffMap += (k -> buffK)
       } else {
+        //If the buffer is full, finds the first hit and sends back, else sends black
         val editedBuff = buffK.filter(_ != None)
 
         if(editedBuff.isEmpty){
@@ -91,6 +97,7 @@ class GeometryOrganizerSome(numFiles: Int) extends Actor {
     case m => "GeometryManager received unhandled message: " + m
   }
 
+  //Assigns managers in a round robin to all available backends, up to the number of files
   def roundRobinManagers = {
     var x = 0
     var offset: Int = -1 * (numFiles / 2)

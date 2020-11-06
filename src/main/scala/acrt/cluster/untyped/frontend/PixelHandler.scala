@@ -1,13 +1,9 @@
-package acrt.cluster.untyped
+package acrt.cluster.untyped.frontend
 
-import akka.actor.Actor
-import swiftvis2.raytrace._
-import akka.actor.Props
-import collection.mutable
-import akka.actor.ActorSelection
-import akka.actor.ActorRef
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonSubTypes
+import scala.collection.mutable
+import akka.actor.{Actor, Props, ActorRef}
+import swiftvis2.raytrace.{PointLight, RTColor, Ray}
+import acrt.cluster.untyped.backend.{IntersectContainer, CborSerializable}
 
 class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int, organizer: ActorRef) extends Actor {
   import PixelHandler._
@@ -15,10 +11,12 @@ class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int, organ
   private var count = 0
   
   def receive = {
+    //Sends a ray to the organizer to be cast
     case AddRay(r) => {
       organizer ! GeometryOrganizerAll.CastRay(self, scala.util.Random.nextLong(), r)
     }
     
+    //Receives back IntersectContainer and either sets color or creates a LightMerger to determine the color
     case IntersectResult(k: Long, intD: Option[IntersectContainer]) => {
       intD match {
         case None =>  context.parent ! ImageDrawer.SetColor(i, j, RTColor.Black)
@@ -29,6 +27,7 @@ class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int, organ
       }
     }
     
+    //sends the color up to the ImageDrawer
     case SetColor(col: RTColor) => {
       buff += col
       if(buff.length >= numRays) {

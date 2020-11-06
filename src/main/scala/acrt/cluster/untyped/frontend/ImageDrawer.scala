@@ -1,20 +1,20 @@
-package acrt.cluster.untyped
+package acrt.cluster.untyped.frontend
 
-import akka.actor.{Actor, Props}
+import akka.actor.{Actor, Props, ActorRef}
 import swiftvis2.raytrace.{PointLight, Ray, Point, Vect, RTColor}
-import akka.actor.ActorRef
+import acrt.cluster.untyped.backend.CborSerializable
 
 class ImageDrawer(lights: List[PointLight], img: rendersim.RTBufferedImage, numRays: Int, organizer: ActorRef) extends Actor {
   import ImageDrawer._
   
   val aspect = img.width.toDouble / img.height
-  
   private var pixelsSet = 0
   private val totalPixels = img.width * img.height * numRays
 
   private var startTime: Long = 0
 
   def receive = {
+    //Starts drawing, sends out rays for every pixel
     case Start(eye, topLeft, right, down) => {
       startTime = System.nanoTime()
 
@@ -27,6 +27,7 @@ class ImageDrawer(lights: List[PointLight], img: rendersim.RTBufferedImage, numR
       }
     }
 
+    //Sets color at the given pixel
     case SetColor(i, j, color) => {
       img.setColor(i, j, color)
       

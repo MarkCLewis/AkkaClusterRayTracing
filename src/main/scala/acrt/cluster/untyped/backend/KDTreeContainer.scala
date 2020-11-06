@@ -1,62 +1,9 @@
-package acrt.cluster.untyped
+package acrt.cluster.untyped.backend
 
-import swiftvis2.raytrace._
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import scala.concurrent._
-import swiftvis2.raytrace.BoxBoundsBuilder
-import swiftvis2.raytrace.SphereBoundsBuilder
+import scala.concurrent.{Future, Await, ExecutionContext}
+import swiftvis2.raytrace.{Bounds, Geometry, BoundsBuilder, SphereBoundsBuilder, IntersectData, Sphere, Box, Point, Ray}
 
-case class SphereContainer(center: Point, radius: Double) extends CborSerializable with Sphere {
-  def movedBy(v: Vect): Sphere = {
-    ???
-  }
-}
-
-object SphereContainer {
-  def apply(s: Sphere): SphereContainer = {
-    new SphereContainer(s.center, s.radius)
-  }
-}
-
-case class IntersectContainer(time: Double, point: Point, norm: Vect, color: RTColor, reflect: Double, 
-  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-      @JsonSubTypes(
-        Array(
-          new JsonSubTypes.Type(value = classOf[GeomSphere], name = "geomsphere"),
-          new JsonSubTypes.Type(value = classOf[KDTreeContainer[Sphere]], name = "kdtreecontainersphere"),
-          new JsonSubTypes.Type(value = classOf[KDTreeContainer[Box]], name = "kdtreecontainerbox"),
-          new JsonSubTypes.Type(value = classOf[GeomSphereContainer], name = "geomspherecontainer")))
-      geom: Geometry) extends CborSerializable
-      
-object IntersectContainer {
-  def apply(id: IntersectData): IntersectContainer = {
-    val ic = new IntersectContainer(id.time, id.point, id.norm, id.color, id.reflect, id.geom)
-    ic
-  }
-}
-
-case class GeomSphereContainer(center: Point, radius: Double, color: RTColor, reflect: Double) extends Geometry with Sphere {
-    
-    def movedBy(v: Vect): Sphere = copy(center = center+v)
-    
-    override def intersect(r: Ray): Option[IntersectData] = {
-        intersectParam(r).flatMap { case (enter, _, exit, _) =>
-        val inter = if (enter < 0) exit else enter
-        if (inter < 0) None
-        else {
-            val pnt = r point inter
-            val normal = (pnt - center).normalize
-            Some(new IntersectData(inter, pnt, normal, color, reflect, this))
-        }
-      }
-    }
-
-    override def boundingSphere: Sphere = this
-
-    override def boundingBox: Box = BoundingBox(center - radius, center + radius)
-}
-
+//Serializable Container for KDTreeGeometry, taken almost entirely from Swiftvis2
 class KDTreeContainer[B <: Bounds](geometry: Seq[Geometry], val MaxGeom: Int = 5, builder: BoundsBuilder[B] = SphereBoundsBuilder)(implicit ec: ExecutionContext) extends Geometry {
   import KDTreeContainer._
 
@@ -64,16 +11,13 @@ class KDTreeContainer[B <: Bounds](geometry: Seq[Geometry], val MaxGeom: Int = 5
   def intersect(r: Ray): Option[IntersectData] = {
     def helper(n: Node[B]): Option[IntersectData] = n match {
       case InternalNode(g, splitDim, splitValue, left, right, bounds) =>
-        //        println(s"leftb = ${left.boundingSphere}, lefti = ${left.boundingSphere.intersectParam(r)}")
-        //        println(s"rightb = ${right.boundingSphere}, righti = ${right.boundingSphere.intersectParam(r)}")
         val leftHit = left.bounds.intersectParam(r).filter(_._3 >= 0).map(p => left -> p._1)
         val rightHit = right.bounds.intersectParam(r).filter(_._3 >= 0).map(p => right -> p._1)
         val hits = (leftHit.toList ++ rightHit.toList).sortBy(_._2)
-        //        println(hits)
         hits.foldLeft(None: Option[IntersectData]) {
           case (None, (child, param)) => helper(child)
           case (oid @ Some(id), (child, param)) =>
-            if (id.time < param) oid // There was a hit in the first child before we cross the boundingSphere of the second child.
+            if (id.time < param) oid 
             else helper(child) match {
               case None             => oid
               case coid @ Some(cid) => if (id.time < cid.time) oid else coid
@@ -87,7 +31,6 @@ class KDTreeContainer[B <: Bounds](geometry: Seq[Geometry], val MaxGeom: Int = 5
   }
 
   override def boundingSphere: Sphere = root.bounds.boundingSphere
-
   override def boundingBox: Box = root.bounds.boundingBox
 
   private def buildTree(geom: Seq[Geometry]): Node[B] = {

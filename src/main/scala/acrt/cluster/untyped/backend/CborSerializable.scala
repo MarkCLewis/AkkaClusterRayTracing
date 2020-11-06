@@ -1,4 +1,4 @@
-package acrt.cluster.untyped
+package acrt.cluster.untyped.backend
 
 /**
  * Marker trait to tell Akka to serialize messages into CBOR using Jackson for sending over the network

@@ -1,22 +1,19 @@
-package acrt.cluster.untyped
+package acrt.cluster.untyped.frontend
 
 import akka.actor.{Actor, ActorRef, Props}
-import swiftvis2.raytrace._
-import data.CartAndRad
-import java.net.URL
+import swiftvis2.raytrace.Ray
+import acrt.cluster.untyped.backend.{GeometryManager, IntersectContainer, Backend, CborSerializable, SphereContainer}
 
-class GeometryOrganizerAll(numFiles: Int) extends Actor {
+class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
   import GeometryOrganizerAll._
-
-  val numBackends = 1
   
   private var managers = IndexedSeq.empty[ActorRef]
   private var backends = IndexedSeq.empty[ActorRef]
- 
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectContainer]]]() 
   
   val finderFunc = new WebCreator
 
+  //List of numbers to pull files from
   val numberList: List[String] = List("5000", "5001", "5002", "5003", "5004", "5005", 
      "5006", "5007", "5008", "5009", "5010", "5011", "5012", "5013", "5014", "5015", 
      "5016", "5017", "5018", "5019", "5020", "5021", "5022", "5023", "5024", "5025", 
@@ -26,27 +23,30 @@ class GeometryOrganizerAll(numFiles: Int) extends Actor {
      "6026", "6027", "6028", "6029")
 
   def receive = {
+    //Receives back that the manager has finished loading data; when all have, starts drawing
     case ReceiveDone(bounds) => {
       managers = managers :+ sender
       if(managers.length >= numFiles) context.parent ! Frontend.Start
     }
 
+    //Registers backend with organizer, once all are, RoundRobin's managers across all Backends
     case BackendRegistration(backend) => {
       backends = backends :+ backend
       if(backends.length >= numBackends) roundRobinManagers
-      println("registering with backend")
     }
 
+    //Registers manager with organizer, then sends the GeometryCreator to find data
     case ManagerRegistration(manager) => {
-      //sender ! TestSerialize(Some(IntersectContainer(0.0, Point(0.0,0.0,0.0), Vect(0.0,0.0,0.0), RTColor.Black, 0.0, new GeomSphereContainer(Point(0,0,0), 0.0, RTColor.Black, 0.0))))
       manager ! GeometryManager.FindPath(finderFunc)
     }
 
+    //Casts Ray to every manager
     case CastRay(rec, k, r) => {
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectContainer]])
       managers.foreach(_ ! GeometryManager.CastRay(rec, k, r, self))
     }
 
+    //Receives back IntersectContainer, then adds to the buffer
     case RecID(rec, k, id) => {
       val buffK = buffMap(k)
       buffK += id
@@ -55,6 +55,7 @@ class GeometryOrganizerAll(numFiles: Int) extends Actor {
         buffMap -= k
         buffMap += (k -> buffK)
       } else {
+        //If the buffer is full, finds the first hit and sends back, else sends black
         val editedBuff = buffK.filter(_ != None)
 
         if(editedBuff.isEmpty){
@@ -83,6 +84,7 @@ class GeometryOrganizerAll(numFiles: Int) extends Actor {
     case m => "GeometryManager received unhandled message: " + m
   }
 
+  //Assigns managers in a round robin to all available backends, up to the number of files
   def roundRobinManagers = {
     var x = 0
     var offset: Int = -1 * (numFiles / 2)
@@ -98,7 +100,6 @@ class GeometryOrganizerAll(numFiles: Int) extends Actor {
 }
 
 object GeometryOrganizerAll {
-  case class TestSerialize(g: Option[IntersectContainer]) extends CborSerializable
   case class ReceiveDone(bounds: SphereContainer) extends CborSerializable
   case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends CborSerializable
   case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectContainer]) extends CborSerializable
