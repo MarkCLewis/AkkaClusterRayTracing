@@ -41,6 +41,7 @@ object Main {
   //Starts up backend or frontend nodes based on the args passed in
   def startup(role: String, ip: String, port: Int, n: String): Unit = {
     //Makes ip, port, and role into the config. Edit the loaded fallback to change serializer
+    //Options: jacksonserialize, kryoserialize, javaserialize
     val config = ConfigFactory
       .parseString(s"""
         akka.remote.artery.canonical.hostname = "$ip"

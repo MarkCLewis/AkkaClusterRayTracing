@@ -6,6 +6,9 @@ scalaVersion := "2.12.10"
 //javaHome := Some(file("D:\\graalvm-ce-19.2.1\\jre\\"))
 
 run / fork := true
+
+javaOptions += "-Xmx24g" 
+
 mainClass in (Compile, packageBin) := Some("acrt.remoting.RemotingMain")
 
 mainClass in (Compile, run) := Some("acrt.remoting.RemotingMain")
