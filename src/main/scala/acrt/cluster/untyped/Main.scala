@@ -7,7 +7,7 @@ import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
 import swiftvis2.raytrace.{Point, PointLight, RTColor}
 import backend.BackendNode
-import frontend.FrontendNode
+import frontend.raytracing.FrontendNode
 
 object Main {
   //Uncomment to use all pandora machines

@@ -1,4 +1,4 @@
-package acrt.cluster.untyped.frontend
+package acrt.cluster.untyped.frontend.raytracing
 
 import java.net.URL
 import data.CartAndRad

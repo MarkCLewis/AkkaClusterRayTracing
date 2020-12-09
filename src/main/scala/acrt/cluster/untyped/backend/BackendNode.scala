@@ -4,7 +4,7 @@ import scala.collection.mutable
 import akka.actor.{Actor, ActorRef, RootActorPath, ActorSelection, Props, PoisonPill}
 import akka.cluster.{Cluster, MemberStatus, Member}
 import akka.cluster.ClusterEvent.{MemberUp, CurrentClusterState}
-import acrt.cluster.untyped.frontend.Frontend
+import acrt.cluster.untyped.frontend.raytracing.Frontend
 
 class BackendNode(cluster: Cluster, number: Int) extends Actor {
   import Backend._

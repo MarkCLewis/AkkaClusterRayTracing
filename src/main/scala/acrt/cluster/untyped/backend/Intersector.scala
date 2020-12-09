@@ -2,7 +2,7 @@ package acrt.cluster.untyped.backend
 
 import akka.actor.{Actor, ActorRef}
 import swiftvis2.raytrace.{Geometry, Ray}
-import acrt.cluster.untyped.frontend.GeometryOrganizerAll
+import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll
 
 class Intersector(geom: Geometry) extends Actor {
   import Intersector._

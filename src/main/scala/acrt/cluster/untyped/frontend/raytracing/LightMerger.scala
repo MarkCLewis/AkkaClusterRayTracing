@@ -1,4 +1,4 @@
-package acrt.cluster.untyped.frontend
+package acrt.cluster.untyped.frontend.raytracing
 
 import scala.collection.mutable
 import akka.actor.{Actor, ActorRef}

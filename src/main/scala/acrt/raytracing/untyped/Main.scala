@@ -74,7 +74,8 @@ object Main extends App {
   //Simple repainting loop
   var repainting = true
   var last = System.nanoTime()
-  while (true) {
+  while (true) {;
+    
     val delay = System.nanoTime() - last
     if (delay >= (.5 * 1e9)) {
       frame.repaint()

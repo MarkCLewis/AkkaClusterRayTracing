@@ -3,6 +3,7 @@ package acrt.geometrymanagement.untyped
 import akka.actor.{Actor, Props}
 import swiftvis2.raytrace.{Geometry, Ray, KDTreeGeometry, Vect, BoxBoundsBuilder, SphereBoundsBuilder}
 import acrt.raytracing.untyped.PixelHandler
+import acrt.photometry.untyped.ImageDrawer
 
 class GeometryOrganizerFew(simpleGeom: Seq[Geometry]) extends Actor {
   import GeometryOrganizerAll._
@@ -15,6 +16,8 @@ class GeometryOrganizerFew(simpleGeom: Seq[Geometry]) extends Actor {
   val numManagers = 10
   
   //Gets the Bounds of the Geometry
+  val xmin = simpleGeom.minBy(_.boundingSphere.center.x).boundingSphere.center.x
+  val xmax = simpleGeom.maxBy(_.boundingSphere.center.x).boundingSphere.center.x
   val ymin = simpleGeom.minBy(_.boundingSphere.center.y).boundingSphere.center.y
   val ymax = simpleGeom.maxBy(_.boundingSphere.center.y).boundingSphere.center.y
   
@@ -27,6 +30,9 @@ class GeometryOrganizerFew(simpleGeom: Seq[Geometry]) extends Actor {
   private val intersectsMap = collection.mutable.Map[Long, (Ray, Array[(Int, (Double, Vect, Double, Vect))])]()
   
   def receive = {
+    case GetBounds => {
+      sender ! ImageDrawer.Bounds(xmin, xmax, ymin, ymax)
+    }
     //Casts ray to the first Manager whose Bounds the ray enters 
     case CastRay(rec, k, r) => {
       val intersects = geoms.map(g => g._1 -> g._2.boundingSphere.intersectParam(r)).filter(g => g._2.map(_._3 > 0).getOrElse(false)).toArray.sortBy(_._2.get._3)

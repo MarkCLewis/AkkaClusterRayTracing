@@ -3,6 +3,7 @@ package acrt.geometrymanagement.untyped
 import akka.actor.{Actor, ActorRef, Props}
 import swiftvis2.raytrace.{Geometry, Ray, KDTreeGeometry, Vect, BoxBoundsBuilder, SphereBoundsBuilder, IntersectData}
 import acrt.raytracing.untyped.PixelHandler
+import acrt.photometry.untyped.ImageDrawer
 
 class GeometryOrganizerAll(simpleGeom: Seq[Geometry]) extends Actor {
   import GeometryOrganizerAll._
@@ -11,9 +12,11 @@ class GeometryOrganizerAll(simpleGeom: Seq[Geometry]) extends Actor {
   //val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs, builder = BoxBoundsBuilder))
   
   //Change this line for more/less breakup of geometry
-  val numManagers = 10
+  val numManagers = 1
 
   //Gets the Bounds of the Geometry
+  val xmin = simpleGeom.minBy(_.boundingSphere.center.x).boundingSphere.center.x
+  val xmax = simpleGeom.maxBy(_.boundingSphere.center.x).boundingSphere.center.x
   val ymin = simpleGeom.minBy(_.boundingSphere.center.y).boundingSphere.center.y
   val ymax = simpleGeom.maxBy(_.boundingSphere.center.y).boundingSphere.center.y
 
@@ -26,8 +29,12 @@ class GeometryOrganizerAll(simpleGeom: Seq[Geometry]) extends Actor {
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
   
   def receive = {
+    case GetBounds => {
+      sender ! ImageDrawer.Bounds(xmin, xmax, ymin, ymax)
+    }
     //Casts Rays to every Geometry and adds the ray to the Map
     case CastRay(rec, k, r) => {
+      println("castRay")
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
       geomManagers.foreach(_._2 ! GeometryManager.CastRay(rec, k, r, self))
     }
@@ -75,4 +82,5 @@ class GeometryOrganizerAll(simpleGeom: Seq[Geometry]) extends Actor {
 object GeometryOrganizerAll {
   case class CastRay(recipient: ActorRef, k: Long, r: Ray)
   case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData])
+  case object GetBounds
 }

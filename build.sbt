@@ -9,9 +9,9 @@ run / fork := true
 
 javaOptions += "-Xmx24g" 
 
-mainClass in (Compile, packageBin) := Some("acrt.remoting.RemotingMain")
+mainClass in (Compile, packageBin) := Some("acrt.photometry.untyped.Main")
 
-mainClass in (Compile, run) := Some("acrt.remoting.RemotingMain")
+mainClass in (Compile, run) := Some("acrt.photometry.untyped.Main")
 
 libraryDependencies ++= Seq(
 	"com.typesafe.akka" %% "akka-actor" % "2.6.9",

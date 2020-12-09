@@ -1,4 +1,4 @@
-package acrt.cluster.untyped.frontend
+package acrt.cluster.untyped.frontend.raytracing
 
 import akka.actor.{Actor, Props, ActorRef}
 import swiftvis2.raytrace.{PointLight, Ray, Point, Vect, RTColor}
