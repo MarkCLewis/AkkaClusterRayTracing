@@ -1,11 +1,8 @@
-package acrt
+package acrt.geometrymanagement.untyped
 
-import akka.actor.Actor
-import swiftvis2.raytrace.Geometry
-import swiftvis2.raytrace.Ray
+import akka.actor.{Actor, Props, ActorRef}
 import akka.routing.BalancingPool
-import akka.actor.Props
-import akka.actor.ActorRef
+import swiftvis2.raytrace.{Geometry, Ray}
 
 class GeometryManager(geom: Geometry) extends Actor {
   import GeometryManager._
@@ -13,7 +10,7 @@ class GeometryManager(geom: Geometry) extends Actor {
   val router = context.actorOf(BalancingPool(Runtime.getRuntime().availableProcessors()).props(Props(new Intersector(geom))), "IntersectRouter")
 
   def receive = {
-    //Sends a given Ray to the router to be allocated to one of the 8 possible Intersectors
+    //Sends a given Ray to the router to be allocated to one of the 8 (or core count) possible Intersectors
     case CastRay(r, k, ray, geomOrg) => {
       router ! Intersector.CastRay(k, ray, r, geomOrg)
     }
