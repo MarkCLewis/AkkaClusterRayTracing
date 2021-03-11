@@ -4,11 +4,12 @@ import akka.actor.{Props, Actor, ActorRef}
 import swiftvis2.raytrace.{Sphere, Ray, Vect}
 import acrt.cluster.untyped.backend.{IntersectContainer, GeometryManager, Backend}
 import acrt.cluster.untyped.frontend.WebCreator
+import swiftvis2.raytrace.Box
 
 class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
   import GeometryOrganizerAll._
   
-  private val managers = collection.mutable.Map.empty[ActorRef, Sphere]
+  private val managers = collection.mutable.Map.empty[ActorRef, Box]
   private var backendsRegistered = 0
   private var backends = collection.mutable.Buffer.empty[ActorRef]
   

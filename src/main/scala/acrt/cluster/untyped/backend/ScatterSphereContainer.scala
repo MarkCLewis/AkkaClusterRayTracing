@@ -12,8 +12,8 @@ class ScatterSphereContainer(
   def fractionScattered(
       incomingDir: Vect,
       outgoingDir: Vect,
-      intersectData: IntersectData
+      intersectCont: IntersectContainer
   ): Double = {
-    outgoingDir.normalize.dot(intersectData.norm)
+    outgoingDir.normalize.dot(intersectCont.norm)
   }
 }

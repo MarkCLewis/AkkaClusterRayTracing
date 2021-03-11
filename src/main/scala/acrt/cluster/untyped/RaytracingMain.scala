@@ -9,7 +9,7 @@ import swiftvis2.raytrace.{Point, PointLight, RTColor}
 import backend.BackendNode
 import frontend.raytracing.FrontendNode
 
-object Main {
+object RaytracingMain {
   //Swap to change transport between UDP and TCP
   val transport = "tcp"
   //val transport = "aeron-udp"

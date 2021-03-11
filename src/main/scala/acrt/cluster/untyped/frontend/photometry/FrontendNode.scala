@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorRef, Props, Terminated}
 import swiftvis2.raytrace.{PointLight, Point, Vect}
 import acrt.cluster.untyped.backend.CborSerializable
 
-class FrontendNode(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PointLight]) extends Actor {
+class FrontendNode(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PhotonSource]) extends Actor {
   import Frontend._
 
   private var backends = IndexedSeq.empty[ActorRef]
@@ -32,7 +32,7 @@ class FrontendNode(img: rendersim.RTBufferedImage, numRays: Int, lights: List[Po
 
     //Start the ImageDrawer
     case Start =>
-      imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)
+      imageDrawer ! ImageDrawer.AcquireBounds
 
     //If a backend dies, removes backends from it
     case Terminated(a) =>

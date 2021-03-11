@@ -18,6 +18,7 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import acrt.geometrymanagement.untyped.GeometryOrganizerFew
 import acrt.geometrymanagement.untyped.GeometryOrganizerAll
+import acrt.geometrymanagement.untyped.GeometryOrganizerSome
 
 //i*i*10
 object Main extends App {
@@ -40,11 +41,11 @@ object Main extends App {
     val viewLoc = Point(0, 0, 3e-5)
     val forward = Vect(0, 0, -1)
     val up = Vect(0, 1, 0)
-    val bimg = new BufferedImage(1200, 1200, BufferedImage.TYPE_INT_ARGB)
+    val bimg = new BufferedImage(800, 800, BufferedImage.TYPE_INT_ARGB)
     val img = new rendersim.RTBufferedImage(bimg)
 
     val system = ActorSystem("AkkaSystem")  
-    val organizer = system.actorOf(Props(new GeometryOrganizerAll(particles)), "GeomOrganizer")
+    val organizer = system.actorOf(Props(new GeometryOrganizerSome(particles)), "GeomOrganizer")
     val imageDrawer = system.actorOf(Props(new ImageDrawer(lights, viewLoc, forward, up, img)), "ImageDrawer")
 
     imageDrawer ! ImageDrawer.AcquireBounds

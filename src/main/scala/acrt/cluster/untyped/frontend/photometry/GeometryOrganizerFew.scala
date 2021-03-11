@@ -4,11 +4,15 @@ import akka.actor.{Actor, ActorRef}
 import swiftvis2.raytrace.{Ray, Vect, Sphere}
 import acrt.cluster.untyped.backend._
 import acrt.cluster.untyped.frontend.WebCreator
+import acrt.cluster.untyped.frontend.raytracing.PixelHandler
+import swiftvis2.raytrace.Box
+import swiftvis2.raytrace.BoundingBox
+import swiftvis2.raytrace.Point
 
 class GeometryOrganizerFew(numFiles: Int, numBackends: Int) extends Actor {
   import GeometryOrganizerAll._
 
-  private val managers = collection.mutable.Map.empty[ActorRef, Sphere]
+  private val managers = collection.mutable.Map.empty[ActorRef, BoundingBox]
   private var backends = collection.mutable.Buffer.empty[ActorRef]
   private var backendsRegistered = 0
   
@@ -26,9 +30,14 @@ class GeometryOrganizerFew(numFiles: Int, numBackends: Int) extends Actor {
      "6026", "6027", "6028", "6029")
 
   def receive = {
+    case GetBounds => {
+      val totalBounds = managers.foldLeft(BoundingBox(Point(0,0,0), Point(0,0,0))) { case (b, (actor, bounds)) => BoundingBox.mutualBox(b, bounds) }
+      sender ! ImageDrawer.Bounds(totalBounds.min.x, totalBounds.max.x, totalBounds.min.y, totalBounds.max.y)
+    }
+
     //Receives back that the manager has finished loading data; when all have, starts drawing
     case ReceiveDone(bounds) => {
-      managers += (sender -> bounds)
+      managers += (sender -> bounds.toBoundingBox)
       backendsRegistered += 1
       if(backendsRegistered >= numFiles)
         context.parent ! Frontend.Start

@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import swiftvis2.raytrace.Ray
 import acrt.cluster.untyped.backend.{GeometryManager, IntersectContainer, Backend, CborSerializable, SphereContainer}
 import acrt.cluster.untyped.frontend.WebCreator
+import acrt.cluster.untyped.backend.BoxContainer
 
 class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
   import GeometryOrganizerAll._
@@ -101,7 +102,7 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
 }
 
 object GeometryOrganizerAll {
-  case class ReceiveDone(bounds: SphereContainer) extends CborSerializable
+  case class ReceiveDone(bounds: BoxContainer) extends CborSerializable
   case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends CborSerializable
   case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectContainer]) extends CborSerializable
   case class ManagerRegistration(manager: ActorRef) extends CborSerializable

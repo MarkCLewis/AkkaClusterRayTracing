@@ -8,30 +8,31 @@ The current versions of these are:
 
     ScalaRingsCode 2.12 0.1.0
     SwiftVis2 2.12 0.1.0
-  
+    
 ## Current Functionality
 
-This project currently supports local actorized raytracing, clustered actorized raytracing across a local network, multiple serializers and transport protocols, as well as photometric rendering locally and across a network.
+This project currently supports local actorized raytracing, clustered actorized raytracing across a local network, multiple serializers, as well as photometric rendering locally and across a network.
 
 For local raytracing, run:
-
-    sbt runMain acrt.raytracing.untyped.Main
-
+```
+sbt runMain acrt.raytracing.untyped.Main
+```
 For local photometry, run:
 
-    sbt runMain acrt.photometry.untyped.Main
+	sbt runMain acrt.photometry.untyped.Main
 
-In order to create a clustered raytrace, first edit src/main/scala/acrt/cluster/untyped/frontend/raytracing/FrontendNode.scala to tell it how many Backend nodes to expect, as well as add the ip and port number of all machines to src/main/scala/acrt/cluster/untyped/Main.scala, then, on each machine except the head node, run:
+In order to create a clustered raytrace, first edit src/main/scala/acrt/cluster/untyped/frontend/raytracing/FrontendNode.scala to tell it how many Backend nodes to expect, as well as add the ip and port number of all machines to src/main/scala/acrt/cluster/untyped/Main.scala, then, on each machine except the head node, run: 
 
-    sbt runMain acrt.cluster.untyped.Main backend ip port machinenumber
+	sbt runMain acrt.cluster.untyped.Main backend ip port machinenumber
 
 filling in the ip and port of the machine you are using, and using a unique machine number from 0 to numBackend for each. After all are created, run the following on the head node:
 
-    sbt runMain acrt.cluster.untyped.Main frontend ip port
-
+	sbt runMain acrt.cluster.untyped.Main frontend ip port
+	
 similarly filling in the ip and port of this machine.
 
-There are several different config files that can be loaded in to support standard Java serialization, Jackson, and Kryo serializers. To change transport protocol between TCP and UDP, change the lines seen in acrt.cluster.untyped.Main.
+There are several different config files that can be loaded in to support standard Java serialization, Jackson, and Kryo serializers.
+
 
 ## Future Functionality
 
@@ -42,10 +43,11 @@ This project is entirely dependent on Classic Cluster and untyped Actors from Ak
 A Study in Akka-based Distributed Raytracing of Large Scenes
   
 Distributed Raytracing of Large Scenes using Actors
-
+  
+  
 ## Contributors
 
-Kurt Hardee
+Kurt Hardee 
   
 Dr. Mark Lewis
   

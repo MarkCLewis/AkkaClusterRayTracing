@@ -29,6 +29,7 @@ class ImageDrawer(sources: List[PhotonSource], viewLoc: Point, forward: Vect, up
       case MoreRays => {
         howManyRays += 1
       }
+
       case AcquireBounds => {
         Main.organizer ! GeometryOrganizerAll.GetBounds
       }
@@ -57,8 +58,10 @@ class ImageDrawer(sources: List[PhotonSource], viewLoc: Point, forward: Vect, up
         howManyRays -= 1
 
         val startingColor = pixels(x)(y)
+
         if(col.a != 0.0 || col.b != 0.0 || col.g != 0.0 || col.r != 0.0) pixels(x)(y) = col + startingColor
-        if(changedPixels >= img.width*img.height) {
+
+        if(changedPixels >= img.width * img.height) {
           writeToImage(pixels, img)
           changedPixels = 0
         }
@@ -68,6 +71,7 @@ class ImageDrawer(sources: List[PhotonSource], viewLoc: Point, forward: Vect, up
       }
       case m => "me imagedrawer. me receive " + m
     }
+
   def writeToImage(pixels: Array[Array[RTColor]], image: RTImage): Unit = {
     val maxPix = pixels.foldLeft(0.0)((m,row) => m max row.foldLeft(0.0)((m2, p) => m2 max p.r max p.g max p.b))
     for (px <- 0 until image.width; py <- 0 until image.height) {

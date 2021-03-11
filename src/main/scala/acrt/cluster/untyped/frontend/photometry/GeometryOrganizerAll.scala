@@ -4,6 +4,11 @@ import akka.actor.{Actor, ActorRef, Props}
 import swiftvis2.raytrace.Ray
 import acrt.cluster.untyped.backend.{GeometryManager, IntersectContainer, Backend, CborSerializable, SphereContainer}
 import acrt.cluster.untyped.frontend.WebCreator
+import acrt.cluster.untyped.frontend.raytracing.PixelHandler
+import swiftvis2.raytrace.Bounds
+import acrt.cluster.untyped.backend.BoxContainer
+import swiftvis2.raytrace.BoundingBox
+import swiftvis2.raytrace.Point
 
 class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
   import GeometryOrganizerAll._
@@ -11,7 +16,8 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
   private var managers = IndexedSeq.empty[ActorRef]
   private var backends = IndexedSeq.empty[ActorRef]
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectContainer]]]() 
-  
+  private var bounds = collection.mutable.ArrayBuffer[BoundingBox]() 
+
   val finderFunc = new WebCreator
 
   //List of numbers to pull files from
@@ -24,9 +30,16 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
      "6026", "6027", "6028", "6029")
 
   def receive = {
+    case GetBounds => {
+      val totalBounds = bounds.foldLeft(BoundingBox(Point(0,0,0), Point(0,0,0)))(BoundingBox.mutualBox(_, _))
+      sender ! ImageDrawer.Bounds(totalBounds.min.x, totalBounds.max.x, totalBounds.min.y, totalBounds.max.y)
+    }
+
     //Receives back that the manager has finished loading data; when all have, starts drawing
-    case ReceiveDone(bounds) => {
+    case ReceiveDone(bound) => {
       managers = managers :+ sender
+      bounds += bound.toBoundingBox
+
       if(managers.length >= numFiles) context.parent ! Frontend.Start
     }
 
@@ -101,9 +114,10 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
 }
 
 object GeometryOrganizerAll {
-  case class ReceiveDone(bounds: SphereContainer) extends CborSerializable
+  case class ReceiveDone(bounds: BoxContainer) extends CborSerializable
   case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends CborSerializable
   case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectContainer]) extends CborSerializable
   case class ManagerRegistration(manager: ActorRef) extends CborSerializable
   case class BackendRegistration(backend: ActorRef) extends CborSerializable
+  case object GetBounds extends CborSerializable
 }

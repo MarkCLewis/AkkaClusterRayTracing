@@ -28,13 +28,19 @@ class GeometryOrganizerAll(simpleGeom: Seq[Geometry]) extends Actor {
   //Map of IDs to Buffers of IntersectDatas
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
   
+  private var num = 1
+
   def receive = {
     case GetBounds => {
       sender ! ImageDrawer.Bounds(xmin, xmax, ymin, ymax)
     }
     //Casts Rays to every Geometry and adds the ray to the Map
     case CastRay(rec, k, r) => {
-      println("castRay")
+      num += 1
+      if (num % 100 == 0) {
+        println("castRay")
+        num = 1
+      }
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
       geomManagers.foreach(_._2 ! GeometryManager.CastRay(rec, k, r, self))
     }
