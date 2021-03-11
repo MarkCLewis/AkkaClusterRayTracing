@@ -10,6 +10,10 @@ import backend.BackendNode
 import frontend.raytracing.FrontendNode
 
 object Main {
+  //Swap to change transport between UDP and TCP
+  val transport = "tcp"
+  //val transport = "aeron-udp"
+
   //Uncomment to use all pandora machines
   //val hosts = List("pandora01", "pandora02", "pandora03", "pandora04", "pandora05", "pandora06", "pandora07", "pandora08")
   val hosts = List("pandora02", "pandora03")
@@ -40,12 +44,13 @@ object Main {
 
   //Starts up backend or frontend nodes based on the args passed in
   def startup(role: String, ip: String, port: Int, n: String): Unit = {
-    //Makes ip, port, and role into the config. Edit the loaded fallback to change serializer
+    //Makes ip, port, transport, and role into the config. Edit the loaded fallback to change serializer
     //Options: jacksonserialize, kryoserialize, javaserialize
     val config = ConfigFactory
       .parseString(s"""
         akka.remote.artery.canonical.hostname = "$ip"
         akka.remote.artery.canonical.port=$port
+        akka.remote.artery.canonical.transport=$transport
         akka.cluster.roles = [$role]
         """)
       .withFallback(ConfigFactory.load("jacksonserialize"))

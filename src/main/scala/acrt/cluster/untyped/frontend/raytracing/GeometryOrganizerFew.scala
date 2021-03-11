@@ -3,6 +3,7 @@ package acrt.cluster.untyped.frontend.raytracing
 import akka.actor.{Actor, ActorRef}
 import swiftvis2.raytrace.{Ray, Vect, Sphere}
 import acrt.cluster.untyped.backend._
+import acrt.cluster.untyped.frontend.WebCreator
 
 class GeometryOrganizerFew(numFiles: Int, numBackends: Int) extends Actor {
   import GeometryOrganizerAll._

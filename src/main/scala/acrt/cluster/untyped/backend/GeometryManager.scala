@@ -4,7 +4,8 @@ import akka.actor.{Actor, Props, ActorRef}
 import akka.cluster.Cluster
 import akka.routing.BalancingPool
 import swiftvis2.raytrace.{Geometry, Ray}
-import acrt.cluster.untyped.frontend.raytracing.{GeometryOrganizerAll, GeometryCreator}
+import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll
+import acrt.cluster.untyped.frontend.GeometryCreator
 
 class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, offset: Double) extends Actor {
   import GeometryManager._
