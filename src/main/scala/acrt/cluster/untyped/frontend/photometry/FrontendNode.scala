@@ -3,15 +3,16 @@ package acrt.cluster.untyped.frontend.photometry
 import akka.actor.{Actor, ActorRef, Props, Terminated}
 import swiftvis2.raytrace.{PointLight, Point, Vect}
 import acrt.cluster.untyped.backend.CborSerializable
+import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll
 
 class FrontendNode(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PhotonSource]) extends Actor {
-  import Frontend._
+  import acrt.cluster.untyped.frontend.raytracing.Frontend._
 
   private var backends = IndexedSeq.empty[ActorRef]
   private var jobCounter = 0
 
   //Change to change how many files loaded, or how many backends to look for
-  val numFiles = 5
+  val numFiles = 2
   val numBackend = 1
 
   //Change to change what style of Organizer
@@ -40,7 +41,3 @@ class FrontendNode(img: rendersim.RTBufferedImage, numRays: Int, lights: List[Ph
   }
 }
 
-object Frontend {
-  case object Start extends CborSerializable
-  case object BackendRegistration extends CborSerializable
-}

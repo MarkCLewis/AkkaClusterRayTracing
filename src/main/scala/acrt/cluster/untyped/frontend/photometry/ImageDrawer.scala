@@ -34,10 +34,12 @@ class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, n
     }
 
     case AcquireBounds => {
-        organizer ! GeometryOrganizerAll.GetBounds
+        println("Getting bounds")
+        organizer ! GeometryOrganizer.GetBounds
     }
 
     case Bounds(x1, x2, y1, y2) => {
+        println("got bounds")
         xmin = x1
         xmax = x2
         ymin = y1
@@ -50,7 +52,7 @@ class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, n
     //Starts drawing, sends out rays for every pixel
     case Start(startPixels) => {
       pixels = startPixels
-
+      println("starting PhotonSender")
       for(c <- 1 to threads; light <- sources) {
           val id = light.numPhotons + scala.util.Random.nextLong()
           val child = context.actorOf(Props(new PhotonCreator(xmin, xmax, ymin, ymax, light, viewLoc, forward, up, img, organizer)), s"PhotonSender$c,$id")

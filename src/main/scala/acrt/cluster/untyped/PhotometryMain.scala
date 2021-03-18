@@ -17,7 +17,7 @@ object PhotometryMain {
 
   //Uncomment to use all pandora machines
   //val hosts = List("pandora01", "pandora02", "pandora03", "pandora04", "pandora05", "pandora06", "pandora07", "pandora08")
-  val hosts = List("pandora02", "pandora03")
+  val hosts = List("pandora00", "pandora01")
   val port = 25251
   val list = hosts.map(Address("akka", "ClusterSystem", _, port))
 
@@ -70,7 +70,7 @@ object PhotometryMain {
     if (role == "frontend") {
       val numRays = 1
       val lights = List(PhotonSource(PointLight(new RTColor(0.9, 0.9, 0.9, 1), Point(1e-1, 0, 1e-2)), 50000), PhotonSource(PointLight(new RTColor(0.5, 0.4, 0.1, 1), Point(-1e-1, 0, 1e-2)), 50000))
-      val bimg = new BufferedImage(1200, 1200, BufferedImage.TYPE_INT_ARGB)
+      val bimg = new BufferedImage(800, 800, BufferedImage.TYPE_INT_ARGB)
       val img = new rendersim.RTBufferedImage(bimg)
       
       val frame = new MainFrame {

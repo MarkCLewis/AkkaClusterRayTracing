@@ -19,6 +19,7 @@ class BackendNode(cluster: Cluster, number: Int) extends Actor {
   def receive = {
     //Makes a new GeometryManager with a random name to contain the data from the given file, with the given x offset
     case MakeManager(num, offset) => {
+      println("making manager")
       organizer = sender
       val rand = scala.util.Random.nextLong()
       val mgr = context.actorOf(Props(new GeometryManager(cluster, organizer, num, offset)), s"Manager$rand")

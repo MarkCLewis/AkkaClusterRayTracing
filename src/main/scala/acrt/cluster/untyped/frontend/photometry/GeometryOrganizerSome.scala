@@ -3,24 +3,28 @@ package acrt.cluster.untyped.frontend.photometry
 import akka.actor.{Props, Actor, ActorRef}
 import swiftvis2.raytrace.{Sphere, Ray, Vect}
 import acrt.cluster.untyped.backend.{IntersectContainer, GeometryManager, Backend}
-import acrt.cluster.untyped.frontend.WebCreator
+import acrt.cluster.untyped.frontend.PhotometryCreator
 import acrt.cluster.untyped.frontend.raytracing.PixelHandler
+import acrt.cluster.untyped.frontend.raytracing.Frontend
+import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll._
 import swiftvis2.raytrace.Box
 import swiftvis2.raytrace.BoundingBox
 import swiftvis2.raytrace.Point
 
 class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
-  import GeometryOrganizerAll._
+  import GeometryOrganizer._
   
   private val managers = collection.mutable.Map.empty[ActorRef, BoundingBox]
   private var backendsRegistered = 0
   private var backends = collection.mutable.Buffer.empty[ActorRef]
   
-  val finderFunc = new WebCreator
+  val finderFunc = new PhotometryCreator
 
   private val intersectsMap = collection.mutable.Map[Long, (Ray, Array[(ActorRef, (Double, Vect, Double, Vect))])]()
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectContainer]]]() 
   private val numManagersMap = collection.mutable.Map[Long, Int]()
+
+  private var num = 1
 
   //List of numbers to pull files from
   val numberList: List[String] = List("5000", "5001", "5002", "5003", "5004", "5005", 
@@ -40,6 +44,7 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
 
     //Receives back that the manager has finished loading data; when all have, starts drawing
     case ReceiveDone(bounds) => {
+      println("Manager has loaded geometry")
       managers += (sender -> bounds.toBoundingBox)
       backendsRegistered += 1
       if(backendsRegistered >= numFiles)
@@ -54,16 +59,23 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
 
     //Registers manager with organizer, then sends the GeometryCreator to find data
     case ManagerRegistration(manager) => {
+      println("Registering with manager")
       manager ! GeometryManager.FindPath(finderFunc)
     }
 
     //Casts Ray to all the managers that it intersects; sends back to pixel if none
     case CastRay(rec, k, r) => {
+      num += 1
+      if(num % 100 == 0) {
+        println("100 rays cast")
+        num = 1
+      }
       val intersects = managers.filter(_._2.intersectParam(r) != None)
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectContainer]])
       numManagersMap += (k -> intersects.size)
 
-      if (intersects.isEmpty) rec ! PixelHandler.IntersectResult(k, None)
+      if (intersects.isEmpty) { rec ! PixelHandler.IntersectResult(k, None)
+        println("casting none back") }
       else for(i <- intersects) {
           i._1 ! GeometryManager.CastRay(rec, k, r, self)
       }
@@ -71,6 +83,7 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
 
     //Receives back IntersectContainer, adds to buffer
     case RecID(rec, k, id) => {
+      println("organizer received")
       val buffK = buffMap(k)
       val numManagersK = numManagersMap(k)
       buffK += id
@@ -81,6 +94,7 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
         //If the buffer is full, finds the first hit and sends back, else sends black
         val editedBuff = buffK.filter(_ != None)
 
+        println("sending back hit")
         if(editedBuff.isEmpty){
           rec ! PixelHandler.IntersectResult(k, None)
         } else {

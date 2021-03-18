@@ -8,6 +8,7 @@ import acrt.cluster.untyped.frontend.raytracing.PixelHandler
 import swiftvis2.raytrace.Vect
 import swiftvis2.raytrace.Point
 import acrt.cluster.untyped.backend.ScatterGeometry
+import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll
 
 class Scatterer(source: PhotonSource, viewLoc: Point, forward: Vect, up: Vect, id: IntersectContainer, width: Int, height: Int, dir: Vect, organizer: ActorRef) extends Actor {
   val interPoint = id.point + id.norm * 1e-8

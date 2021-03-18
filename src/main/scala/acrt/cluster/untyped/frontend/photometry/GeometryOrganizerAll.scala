@@ -3,22 +3,24 @@ package acrt.cluster.untyped.frontend.photometry
 import akka.actor.{Actor, ActorRef, Props}
 import swiftvis2.raytrace.Ray
 import acrt.cluster.untyped.backend.{GeometryManager, IntersectContainer, Backend, CborSerializable, SphereContainer}
-import acrt.cluster.untyped.frontend.WebCreator
+import acrt.cluster.untyped.frontend.PhotometryCreator
 import acrt.cluster.untyped.frontend.raytracing.PixelHandler
+import acrt.cluster.untyped.frontend.raytracing.Frontend
+import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll._
 import swiftvis2.raytrace.Bounds
 import acrt.cluster.untyped.backend.BoxContainer
 import swiftvis2.raytrace.BoundingBox
 import swiftvis2.raytrace.Point
 
 class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
-  import GeometryOrganizerAll._
+  import GeometryOrganizer._
   
   private var managers = IndexedSeq.empty[ActorRef]
   private var backends = IndexedSeq.empty[ActorRef]
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectContainer]]]() 
   private var bounds = collection.mutable.ArrayBuffer[BoundingBox]() 
 
-  val finderFunc = new WebCreator
+  val finderFunc = new PhotometryCreator
 
   //List of numbers to pull files from
   val numberList: List[String] = List("5000", "5001", "5002", "5003", "5004", "5005", 
@@ -113,11 +115,6 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
   }
 }
 
-object GeometryOrganizerAll {
-  case class ReceiveDone(bounds: BoxContainer) extends CborSerializable
-  case class CastRay(recipient: ActorRef, k: Long, r: Ray) extends CborSerializable
-  case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectContainer]) extends CborSerializable
-  case class ManagerRegistration(manager: ActorRef) extends CborSerializable
-  case class BackendRegistration(backend: ActorRef) extends CborSerializable
+object GeometryOrganizer {
   case object GetBounds extends CborSerializable
 }

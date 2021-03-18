@@ -5,6 +5,7 @@ import akka.actor.{Actor, Props, ActorRef}
 import swiftvis2.raytrace.{PointLight, RTColor, Ray}
 import acrt.cluster.untyped.frontend.raytracing.PixelHandler
 import acrt.cluster.untyped.backend.{IntersectContainer, CborSerializable}
+import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll
 import swiftvis2.raytrace.Vect
 import swiftvis2.raytrace.Point
 
@@ -24,7 +25,7 @@ class PhotonCreator(xmin: Double, xmax: Double, ymin: Double, ymax: Double, sour
     case PixelHandler.IntersectResult(k, oid) => {
       oid.foreach { iContainer =>
         val newScatterer = context.actorOf(Props(new Scatterer(source, viewLoc, forward, up, iContainer, image.width, image.height, rays(k).dir, organizer)), s"Scatterer$k")
-        //println(s"Ray $k was Scattered")
+        println(s"Ray $k was Scattered")
         }
     }
     

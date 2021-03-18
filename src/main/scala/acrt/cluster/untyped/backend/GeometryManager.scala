@@ -26,6 +26,7 @@ class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, off
 
     //Registers with Organizer
     case OrganizerRegistration => {
+      println("mgr register with organizer")
       organizer ! GeometryOrganizerAll.ManagerRegistration(self)
     }
     

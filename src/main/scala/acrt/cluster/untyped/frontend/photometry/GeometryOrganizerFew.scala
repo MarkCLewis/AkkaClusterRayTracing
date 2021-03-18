@@ -3,20 +3,22 @@ package acrt.cluster.untyped.frontend.photometry
 import akka.actor.{Actor, ActorRef}
 import swiftvis2.raytrace.{Ray, Vect, Sphere}
 import acrt.cluster.untyped.backend._
-import acrt.cluster.untyped.frontend.WebCreator
+import acrt.cluster.untyped.frontend.PhotometryCreator
 import acrt.cluster.untyped.frontend.raytracing.PixelHandler
+import acrt.cluster.untyped.frontend.raytracing.Frontend
+import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll._
 import swiftvis2.raytrace.Box
 import swiftvis2.raytrace.BoundingBox
 import swiftvis2.raytrace.Point
 
 class GeometryOrganizerFew(numFiles: Int, numBackends: Int) extends Actor {
-  import GeometryOrganizerAll._
+  import GeometryOrganizer._
 
   private val managers = collection.mutable.Map.empty[ActorRef, BoundingBox]
   private var backends = collection.mutable.Buffer.empty[ActorRef]
   private var backendsRegistered = 0
   
-  val finderFunc = new WebCreator
+  val finderFunc = new PhotometryCreator
 
   private val intersectsMap = collection.mutable.Map[Long, (Ray, Array[(ActorRef, (Double, Vect, Double, Vect))])]()
   
