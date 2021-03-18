@@ -7,9 +7,14 @@ import acrt.cluster.untyped.backend.CborSerializable
 class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, numRays: Int, organizer: ActorRef) extends Actor {
   import ImageDrawer._
   
-  val viewLoc = Point(0, 0, 3e-5)
-  val forward = Vect(0, 0, -1)
-  val up = Vect(0, 1, 0)
+  val forward = Vect(0, 0, -1e5)
+  val up = Vect(0, 1e5, 0)
+
+  val viewLoc = Point(0.0, 0.0, numFiles*1e-5)
+
+  val topLeft = Point(-1e-5, 1e-5, (numFiles-1)*1e-5)
+  val right = Vect(2 * 1e-5, 0, 0)
+  val down = Vect(0, -2 * 1e-5, 0)
 
   private var howManyRays = sources.map(m => m.numPhotons).sum
   val threads = 8

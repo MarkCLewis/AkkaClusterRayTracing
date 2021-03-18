@@ -65,7 +65,7 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
 
     //Casts Ray to all the managers that it intersects; sends back to pixel if none
     case CastRay(rec, k, r) => {
-      num += 1
+      //num += 1
       if(num % 100 == 0) {
         println("100 rays cast")
         num = 1
@@ -75,7 +75,8 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
       numManagersMap += (k -> intersects.size)
 
       if (intersects.isEmpty) { rec ! PixelHandler.IntersectResult(k, None)
-        println("casting none back") }
+        //println("casting none back") 
+      }
       else for(i <- intersects) {
           i._1 ! GeometryManager.CastRay(rec, k, r, self)
       }
@@ -94,7 +95,7 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
         //If the buffer is full, finds the first hit and sends back, else sends black
         val editedBuff = buffK.filter(_ != None)
 
-        println("sending back hit")
+        //println("sending back hit")
         if(editedBuff.isEmpty){
           rec ! PixelHandler.IntersectResult(k, None)
         } else {
