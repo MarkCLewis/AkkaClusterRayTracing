@@ -17,7 +17,7 @@ class FrontendNode(img: rendersim.RTBufferedImage, numRays: Int, lights: List[Ph
 
   //Change to change what style of Organizer
   val organizer = context.actorOf(Props(new GeometryOrganizerSome(numFiles, numBackend)), "GeometryOrganizer")
-  val imageDrawer = context.actorOf(Props(new ImageDrawer(lights, img, numRays, organizer)), "ImageDrawer")
+  val imageDrawer = context.actorOf(Props(new ImageDrawer(lights, img, numRays, numFiles, organizer)), "ImageDrawer")
 
   //Automatically changes view based on the number of files
   val eye = Point(0.0, 0.0, numFiles*1e-5)
