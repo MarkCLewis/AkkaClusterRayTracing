@@ -4,7 +4,7 @@ import java.net.URL
 import data.CartAndRad
 import scala.concurrent.ExecutionContext
 import com.fasterxml.jackson.annotation.{JsonTypeInfo, JsonSubTypes}
-import swiftvis2.raytrace.{Point, Geometry, RTColor, SphereBoundsBuilder}
+import swiftvis2.raytrace.{Point, Geometry, RTColor, SphereBoundsBuilder, BoxBoundsBuilder}
 import acrt.cluster.untyped.backend.{CborSerializable, GeomSphereContainer, ScatterSphereContainer, KDTreeContainer}
 
 //JSON Tag info for the GeometryCreator trait
@@ -42,7 +42,7 @@ class PhotometryCreator extends GeometryCreator {
       val particles = simpleGeom.length
 
       println(s"Particles#$num: $particles")
-      val geom = new KDTreeContainer(simpleGeom, builder = SphereBoundsBuilder)
+      val geom = new KDTreeContainer(simpleGeom, builder = BoxBoundsBuilder)
       geom
     }
 }

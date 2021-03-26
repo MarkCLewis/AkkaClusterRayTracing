@@ -21,6 +21,7 @@ class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, off
       geom = f(number, offset)
       router = context.actorOf(BalancingPool(
           Runtime.getRuntime().availableProcessors()).props(Props(new Intersector(geom))), s"IntersectRouter$rand")
+      println(geom.boundingBox)
       sender ! GeometryOrganizerAll.ReceiveDone(BoxContainer(geom.boundingBox))
     }
 

@@ -4,7 +4,7 @@ import akka.actor.{Actor, Props, ActorRef}
 import swiftvis2.raytrace.{PointLight, Ray, Point, Vect, RTColor}
 import acrt.cluster.untyped.backend.CborSerializable
 
-class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, numRays: Int, organizer: ActorRef) extends Actor {
+class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, numRays: Int, numFiles:Int, organizer: ActorRef) extends Actor {
   import ImageDrawer._
   
   val forward = Vect(0, 0, -1e5)
@@ -44,7 +44,7 @@ class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, n
     }
 
     case Bounds(x1, x2, y1, y2) => {
-        println("got bounds")
+        println("got bounds " + x1 + " " + x2 + " " + y1 + " " + y2)
         xmin = x1
         xmax = x2
         ymin = y1

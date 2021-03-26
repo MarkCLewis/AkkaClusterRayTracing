@@ -39,7 +39,9 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
     
     case GetBounds => {
       val totalBounds = managers.foldLeft(BoundingBox(Point(0,0,0), Point(0,0,0))) { case (b, (actor, bounds)) => BoundingBox.mutualBox(b, bounds) }
+      println(totalBounds)
       sender ! ImageDrawer.Bounds(totalBounds.min.x, totalBounds.max.x, totalBounds.min.y, totalBounds.max.y)
+    
     }
 
     //Receives back that the manager has finished loading data; when all have, starts drawing
@@ -47,6 +49,9 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
       println("Manager has loaded geometry")
       managers += (sender -> bounds.toBoundingBox)
       backendsRegistered += 1
+      println("bounds = " + bounds)
+      println("boundingBox = " + bounds.toBoundingBox)
+
       if(backendsRegistered >= numFiles)
         context.parent ! Frontend.Start
     }
