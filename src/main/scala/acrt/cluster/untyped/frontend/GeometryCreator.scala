@@ -14,7 +14,7 @@ import acrt.cluster.untyped.backend.{CborSerializable, GeomSphereContainer, Scat
     new JsonSubTypes.Type(value = classOf[WebCreator], name = "webcreator"),
     new JsonSubTypes.Type(value = classOf[PhotometryCreator], name = "photometrycreator"),
     new JsonSubTypes.Type(value = classOf[FileCreator], name = "filecreator")))
-sealed trait GeometryCreator extends CborSerializable {
+sealed trait GeometryCreator extends CborSerializable with Serializable {
     def apply(num: String, offset: Double)(implicit ec: ExecutionContext): Geometry
 }
 

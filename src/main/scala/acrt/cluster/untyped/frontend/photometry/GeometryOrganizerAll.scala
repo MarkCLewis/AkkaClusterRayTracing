@@ -33,7 +33,7 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
 
   def receive = {
     case GetBounds => {
-      val totalBounds = bounds.foldLeft(BoundingBox(Point(0,0,0), Point(0,0,0)))(BoundingBox.mutualBox(_, _))
+      val totalBounds = bounds.reduceLeft(BoundingBox.mutualBox(_, _))
       sender ! ImageDrawer.Bounds(totalBounds.min.x, totalBounds.max.x, totalBounds.min.y, totalBounds.max.y)
     }
 

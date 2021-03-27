@@ -12,8 +12,8 @@ class FrontendNode(img: rendersim.RTBufferedImage, numRays: Int, lights: List[Ph
   private var jobCounter = 0
 
   //Change to change how many files loaded, or how many backends to look for
-  val numFiles = 1
-  val numBackend = 1
+  val numFiles = 3
+  val numBackend = 3
 
   //Change to change what style of Organizer
   val organizer = context.actorOf(Props(new GeometryOrganizerSome(numFiles, numBackend)), "GeometryOrganizer")

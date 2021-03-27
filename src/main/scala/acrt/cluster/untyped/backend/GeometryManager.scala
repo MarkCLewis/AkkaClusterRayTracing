@@ -33,6 +33,7 @@ class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, off
     
     //Casts given ray with the intersector
     case CastRay(r, k, ray, geomOrg) => {
+      //println("Casting Ray: " + k)
       router ! Intersector.CastRay(k, ray, r, geomOrg)
     }
     

@@ -23,10 +23,11 @@ class PhotonCreator(xmin: Double, xmax: Double, ymin: Double, ymax: Double, sour
       pixels(x)(y) = pixels(x)(y) + col
     }
     case PixelHandler.IntersectResult(k, oid) => {
+      //println("Intersect Result Back!")
       oid.foreach { iContainer =>
         val newScatterer = context.actorOf(Props(new Scatterer(source, viewLoc, forward, up, iContainer, image.width, image.height, rays(k).dir, organizer)), s"Scatterer$k")
-        println(s"Ray $k was Scattered")
-        }
+        //println(s"Ray $k was Scattered")
+      }
     }
     
     

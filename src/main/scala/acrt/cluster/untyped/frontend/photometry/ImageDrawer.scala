@@ -4,17 +4,17 @@ import akka.actor.{Actor, Props, ActorRef}
 import swiftvis2.raytrace.{PointLight, Ray, Point, Vect, RTColor}
 import acrt.cluster.untyped.backend.CborSerializable
 
-class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, numRays: Int, numFiles:Int, organizer: ActorRef) extends Actor {
+class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, numRays: Int, numFiles: Int, organizer: ActorRef) extends Actor {
   import ImageDrawer._
   
-  val forward = Vect(0, 0, -1e5)
-  val up = Vect(0, 1e5, 0)
+  val forward = Vect(0, 0, -1)
+  val up = Vect(0, 1, 0)
 
   val viewLoc = Point(0.0, 0.0, numFiles*1e-5)
 
-  val topLeft = Point(-1e-5, 1e-5, (numFiles-1)*1e-5)
-  val right = Vect(2 * 1e-5, 0, 0)
-  val down = Vect(0, -2 * 1e-5, 0)
+  //val topLeft = Point(-1e-5, 1e-5, (numFiles-1)*1e-5)
+  //val right = Vect(2 * 1e-5, 0, 0)
+  //val down = Vect(0, -2 * 1e-5, 0)
 
   private var howManyRays = sources.map(m => m.numPhotons).sum
   val threads = 8
@@ -44,7 +44,8 @@ class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, n
     }
 
     case Bounds(x1, x2, y1, y2) => {
-        println("got bounds " + x1 + " " + x2 + " " + y1 + " " + y2)
+        println("got bounds")
+        println(x1 + " " + x2 + " " + y1 + " " + y2)
         xmin = x1
         xmax = x2
         ymin = y1
@@ -72,7 +73,7 @@ class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, n
 
       val startingColor = pixels(x)(y)
       if(col.a != 0.0 || col.b != 0.0 || col.g != 0.0 || col.r != 0.0) pixels(x)(y) = col + startingColor
-      if(changedPixels >= img.width*img.height) {
+      if(changedPixels >= /*img.width*img.height*/ 10) {
         writeToImage(pixels, img)
         changedPixels = 0
       }

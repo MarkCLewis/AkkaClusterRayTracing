@@ -38,10 +38,11 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
   def receive = {
     
     case GetBounds => {
-      val totalBounds = managers.foldLeft(BoundingBox(Point(0,0,0), Point(0,0,0))) { case (b, (actor, bounds)) => BoundingBox.mutualBox(b, bounds) }
+      val boundsList = managers.map(_._2)
+      val totalBounds = boundsList.reduceLeft((bounds, b) => BoundingBox.mutualBox(b, bounds))
       println(totalBounds)
       sender ! ImageDrawer.Bounds(totalBounds.min.x, totalBounds.max.x, totalBounds.min.y, totalBounds.max.y)
-    
+      println(boundsList.mkString("\n"))  
     }
 
     //Receives back that the manager has finished loading data; when all have, starts drawing

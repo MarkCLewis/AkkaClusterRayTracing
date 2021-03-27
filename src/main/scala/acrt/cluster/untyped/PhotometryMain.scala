@@ -54,7 +54,7 @@ object PhotometryMain {
         akka.remote.artery.canonical.transport=$transport
         akka.cluster.roles = [$role]
         """)
-      .withFallback(ConfigFactory.load("jacksonserialize"))
+      .withFallback(ConfigFactory.load("javaserialize"))
 
     //Creates the cluster and system with the config
     val system = ActorSystem("ClusterSystem", config)
@@ -69,7 +69,7 @@ object PhotometryMain {
     //If frontend, starts up FrontendNode, with the swing image, and then starts repainting
     if (role == "frontend") {
       val numRays = 1
-      val lights = List(PhotonSource(PointLight(new RTColor(0.9, 0.9, 0.9, 1), Point(1e-1, 0, 1e-2)), 50000), PhotonSource(PointLight(new RTColor(0.5, 0.4, 0.1, 1), Point(-1e-1, 0, 1e-2)), 50000))
+      val lights = List(PhotonSource(PointLight(new RTColor(0.9, 0.9, 0.9, 1), Point(1e-1, 0, 1e-2)), 50000000), PhotonSource(PointLight(new RTColor(0.5, 0.4, 0.1, 1), Point(-1e-1, 0, 1e-2)), 50000000))
       val bimg = new BufferedImage(800, 800, BufferedImage.TYPE_INT_ARGB)
       val img = new rendersim.RTBufferedImage(bimg)
       

@@ -11,7 +11,7 @@ case class BoxContainer(min: Point, max: Point) extends CborSerializable with Bo
     ???
   }
   def toBoundingBox: BoundingBox = {
-    new BoundingBox(min, min)
+    new BoundingBox(min, max)
   }
 }
 object BoxContainer {
