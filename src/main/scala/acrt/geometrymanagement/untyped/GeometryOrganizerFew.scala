@@ -8,6 +8,7 @@ import acrt.photometry.untyped.ImageDrawer
 class GeometryOrganizerFew(simpleGeom: Seq[Geometry]) extends Actor {
   import GeometryOrganizerAll._
 
+
   //Alternate Lines for BoxBoundsBuilder - Replace all to swap
   //val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs, builder = BoxBoundsBuilder))
   //val intersects = geoms.map(g => g._1 -> g._2.boundingBox.intersectParam(r)).filter(g => g._2.map(_._3 > 0).getOrElse(false)).toArray.sortBy(_._2.get._3)

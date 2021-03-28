@@ -26,11 +26,17 @@ object Main extends App {
   val firstXOffset = cellWidth * (numSims - 1)
   
   //View Options: Uncomment for different default views
+  //Square view
+  val eye = Point(0.0, 0.0, (10 * numSims) * 1e-5)
+  val topLeft = Point(-1e-5, 1e-5, ((10 * numSims) - 1) * 1e-5)
+  val right = Vect(2 * 1e-5, 0, 0)
+  val down = Vect(0, -2 * 1e-5, 0)
+
   //Top-Down view
-  val eye = Point(0, 0, distanceUp)
-  val topLeft = Point(-viewSize, viewSize, distanceUp - viewSize)
-  val right = Vect(2 * viewSize, 0, 0)
-  val down = Vect(0, -2 * viewSize, 0)
+  //val eye = Point(0, 0, distanceUp)
+  //val topLeft = Point(-viewSize, viewSize, distanceUp - viewSize)
+  //val right = Vect(2 * viewSize, 0, 0)
+  //val down = Vect(0, -2 * viewSize, 0)
   
   //Across the top view positive Y
   //val eye = Point(0, -firstXOffset-2*cellWidth, distanceUp)
@@ -58,13 +64,13 @@ object Main extends App {
   val bimg = new BufferedImage(1200, 1200, BufferedImage.TYPE_INT_ARGB)
   val img = new rendersim.RTBufferedImage(bimg)
     
-  //Creates an actorsystem, an ImageDrawer actor to handle RayTracing, and a GeometryManager actor to handle intersection math, then sends the ImageDrawer the message to start
+  //Creates an ActorSystem, an ImageDrawer actor to handle RayTracing, and a GeometryManager actor to handle intersection math, then sends the ImageDrawer the message to start
   val system = ActorSystem("AkkaSystem")  
   val imageDrawer = system.actorOf(Props(new ImageDrawer(lights, img, numRays)), "ImageDrawer")
-  val organizer = system.actorOf(Props(new GeometryOrganizerFew(particles)), "GeomOrganizer")
+  val organizer = system.actorOf(Props(new GeometryOrganizerAll(particles, numSims)), "GeomOrganizer")
   imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)
   
-  //Creates the Swing frame and places the Buffered Image in it
+  //Creates the Swing frame and places the BufferedImage in it
   val frame = new MainFrame {
     title = "AkkaRT Frame"
     contents = new Label("", Swing.Icon(bimg), Alignment.Center)

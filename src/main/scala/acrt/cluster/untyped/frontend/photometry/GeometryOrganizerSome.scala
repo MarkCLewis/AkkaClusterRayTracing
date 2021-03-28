@@ -136,7 +136,7 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
     while(x < numFiles) {
       val whichBackend = x % numBackends
       val whichNum = numberList(x)
-      backends(x % numBackends) ! Backend.MakeManager(numberList(x), offset)
+      backends(x % numBackends) ! Backend.MakeManager(numberList(x), (offset, 0))
       println(s"having backend #$whichBackend make manager #$whichNum")
       offset += 1
       x += 1

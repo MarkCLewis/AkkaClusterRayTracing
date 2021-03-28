@@ -7,11 +7,11 @@ scalaVersion := "2.12.10"
 
 run / fork := true
 
-javaOptions += "-Xmx24g" 
+javaOptions += "-Xmx6g" 
 
-mainClass in (Compile, packageBin) := Some("acrt.photometry.untyped.Main")
+mainClass in (Compile, packageBin) := Some("acrt.raytracing.untyped.Main")
 
-mainClass in (Compile, run) := Some("acrt.photometry.untyped.Main")
+mainClass in (Compile, run) := Some("acrt.raytracing.untyped.Main")
 
 libraryDependencies ++= Seq(
 	"com.typesafe.akka" %% "akka-actor" % "2.6.9",

@@ -53,5 +53,5 @@ class BackendNode(cluster: Cluster, number: Int) extends Actor {
 }
 
 object Backend {
-    case class MakeManager(number: String, offset: Double) extends CborSerializable
+    case class MakeManager(number: String, offset: (Double, Double)) extends CborSerializable
 }

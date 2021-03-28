@@ -7,7 +7,7 @@ import swiftvis2.raytrace.{Geometry, Ray}
 import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll
 import acrt.cluster.untyped.frontend.GeometryCreator
 
-class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, offset: Double) extends Actor {
+class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, xyOffset: (Double, Double)) extends Actor {
   import GeometryManager._
 
   private var geom: Geometry = null
@@ -18,7 +18,7 @@ class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, off
     //Given the GeometryCreator, finds the manager's Geometry and loads it, then creates a router of intersectors with it, then responds with bounds
     case FindPath(f) => {
       val rand = scala.util.Random.nextLong()
-      geom = f(number, offset)
+      geom = f(number, xyOffset)
       router = context.actorOf(BalancingPool(
           Runtime.getRuntime().availableProcessors()).props(Props(new Intersector(geom))), s"IntersectRouter$rand")
       println(geom.boundingBox)

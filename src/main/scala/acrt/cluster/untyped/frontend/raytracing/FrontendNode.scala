@@ -19,8 +19,13 @@ class FrontendNode(img: rendersim.RTBufferedImage, numRays: Int, lights: List[Po
   val imageDrawer = context.actorOf(Props(new ImageDrawer(lights, img, numRays, organizer)), "ImageDrawer")
 
   //Automatically changes view based on the number of files
-  val eye = Point(0.0, 0.0, numFiles*1e-5)
-  val topLeft = Point(-1e-5, 1e-5, (numFiles-1)*1e-5)
+  //val eye = Point(0.0, 0.0, numFiles*1e-5)
+  //val topLeft = Point(-1e-5, 1e-5, (numFiles-1)*1e-5)
+  //val right = Vect(2 * 1e-5, 0, 0)
+  //val down = Vect(0, -2 * 1e-5, 0)
+
+  val eye = Point(0.0, 0.0, (10 * numFiles)*1e-5)
+  val topLeft = Point(-1e-5, 1e-5, ((10 * numFiles)-1)*1e-5)
   val right = Vect(2 * 1e-5, 0, 0)
   val down = Vect(0, -2 * 1e-5, 0)
 

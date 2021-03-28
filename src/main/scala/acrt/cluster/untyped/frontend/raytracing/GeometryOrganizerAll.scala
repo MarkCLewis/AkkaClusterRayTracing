@@ -5,6 +5,7 @@ import swiftvis2.raytrace.Ray
 import acrt.cluster.untyped.backend.{GeometryManager, IntersectContainer, Backend, CborSerializable, SphereContainer}
 import acrt.cluster.untyped.frontend.WebCreator
 import acrt.cluster.untyped.backend.BoxContainer
+import swiftvis2.raytrace.Geometry
 
 class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
   import GeometryOrganizerAll._
@@ -16,13 +17,36 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
   val finderFunc = new WebCreator
 
   //List of numbers to pull files from
-  val numberList: List[String] = List("5000", "5001", "5002", "5003", "5004", "5005", 
+  val numberList: Seq[String] = Seq("5000", "5001", "5002", "5003", "5004", "5005", 
      "5006", "5007", "5008", "5009", "5010", "5011", "5012", "5013", "5014", "5015", 
      "5016", "5017", "5018", "5019", "5020", "5021", "5022", "5023", "5024", "5025", 
      "5026", "5027", "5028", "5029", "6000", "6001", "6002", "6003", "6004", "6005", 
      "6006", "6007", "6008", "6009", "6010", "6011", "6012", "6013", "6014", "6015", 
      "6016", "6017", "6018", "6019", "6020", "6021", "6022", "6023", "6024", "6025",
      "6026", "6027", "6028", "6029")
+
+  def giveOffsets(arr: Seq[String], offsetArray: IndexedSeq[(Double, Double)]): Map[String, (Double, Double)] = {
+      arr.map(t => (t, offsetArray(t.toInt))).toMap
+  }
+
+  val cartAndRadNumbers = numberList.take(numFiles)
+  val n = math.sqrt(numBackends.toDouble / 10.0).ceil.toInt
+
+  val offsets = for(x <- 0 until 10 * n; y <- 0 until n) yield {
+    (x * 2.0e-5 - (10 * n - 1) * 1e-5, y * 2e-4 - (n - 1) * 1e-4)
+  }
+
+  val offsetsMap = giveOffsets(cartAndRadNumbers, offsets)
+
+  //Assigns managers in a round robin to all available backends, up to the number of files
+  def roundRobinManagers = {
+    for(x <- cartAndRadNumbers.indices) {
+      val whichBackend = x % numBackends
+      val whichNum = cartAndRadNumbers(x)
+      backends(whichBackend) ! Backend.MakeManager(whichNum, offsetsMap(whichNum))
+      println(s"having backend #$whichBackend make manager #$whichNum")
+    }
+  }
 
   def receive = {
     //Receives back that the manager has finished loading data; when all have, starts drawing
@@ -84,20 +108,6 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
       }
     }
     case m => "GeometryManager received unhandled message: " + m
-  }
-
-  //Assigns managers in a round robin to all available backends, up to the number of files
-  def roundRobinManagers = {
-    var x = 0
-    var offset: Int = -1 * (numFiles / 2)
-    while(x < numFiles) {
-      val whichBackend = x % numBackends
-      val whichNum = numberList(x)
-      backends(x % numBackends) ! Backend.MakeManager(numberList(x), offset)
-      println(s"having backend #$whichBackend make manager #$whichNum")
-      offset += 1
-      x += 1
-    }
   }
 }
 
