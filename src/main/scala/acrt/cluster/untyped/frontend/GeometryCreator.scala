@@ -24,7 +24,7 @@ class WebCreator extends GeometryCreator {
       val carURL = new URL(s"http://www.cs.trinity.edu/~mlewis/Rings/AMNS-Moonlets/Moonlet4/CartAndRad.$num.bin")
 
       val simpleGeom = CartAndRad.readStream(carURL.openStream).map(p => 
-        GeomSphereContainer(Point(p.x + xyOffset._1, p.y + xyOffset._1, p.z), p.rad, new RTColor(1, 1, 1, 1), 0.0))
+        GeomSphereContainer(Point(p.x + xyOffset._1, p.y + xyOffset._2, p.z), p.rad, new RTColor(1, 1, 1, 1), 0.0))
       val particles = simpleGeom.length
       println(s"Particles#$num: $particles")
       val geom = new KDTreeContainer(simpleGeom, builder = SphereBoundsBuilder)
@@ -38,7 +38,7 @@ class PhotometryCreator extends GeometryCreator {
       val carURL = new URL(s"http://www.cs.trinity.edu/~mlewis/Rings/AMNS-Moonlets/Moonlet4/CartAndRad.$num.bin")
 
       val simpleGeom = CartAndRad.readStream(carURL.openStream).map(p => 
-        new ScatterSphereContainer(Point(p.x + xyOffset._1, p.y + xyOffset._1, p.z), p.rad, new RTColor(1, 1, 1, 1), 0.0))
+        new ScatterSphereContainer(Point(p.x + xyOffset._1, p.y + xyOffset._2, p.z), p.rad, new RTColor(1, 1, 1, 1), 0.0))
       val particles = simpleGeom.length
 
       println(s"Particles#$num: $particles")

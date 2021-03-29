@@ -15,7 +15,7 @@ class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, xyO
   implicit val ec = context.dispatcher
 
   def receive = {
-    //Given the GeometryCreator, finds the manager's Geometry and loads it, then creates a router of intersectors with it, then responds with bounds
+    //Given the GeometryCreator, finds the manager's exGeometry and loads it, then creates a router of intersectors with it, then responds with bounds
     case FindPath(f) => {
       val rand = scala.util.Random.nextLong()
       geom = f(number, xyOffset)

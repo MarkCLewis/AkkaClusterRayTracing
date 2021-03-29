@@ -28,6 +28,29 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
      "6016", "6017", "6018", "6019", "6020", "6021", "6022", "6023", "6024", "6025",
      "6026", "6027", "6028", "6029")
 
+  def giveOffsets(arr: Seq[String], offsetArray: IndexedSeq[(Double, Double)]): Map[String, (Double, Double)] = {
+      arr.map(t => (t, offsetArray(arr.indexOf(t)))).toMap
+  }
+
+  val cartAndRadNumbers = numberList.take(numFiles)
+  val n = math.sqrt(numFiles.toDouble / 10.0).ceil.toInt
+
+  val offsets = for(x <- 0 until 10 * n; y <- 0 until n) yield {
+    (x * 2.0e-5 - (10 * n - 1) * 1e-5, y * 2e-4 - (n - 1) * 1e-4)
+  }
+
+  val offsetsMap = giveOffsets(cartAndRadNumbers, offsets)
+
+  //Assigns managers in a round robin to all available backends, up to the number of files
+  def roundRobinManagers = {
+    for(x <- cartAndRadNumbers.indices) {
+      val whichBackend = x % numBackends
+      val whichNum = cartAndRadNumbers(x)
+      backends(whichBackend) ! Backend.MakeManager(whichNum, offsetsMap(whichNum))
+      println(s"having backend #$whichBackend make manager #$whichNum")
+    }
+  }
+
   def receive = {
     //Receives back that the manager has finished loading data; when all have, starts drawing
     case ReceiveDone(bounds) => {
@@ -97,19 +120,5 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
       }
     }
     case m => "GeometryManager received unhandled message: " + m
-  }
-
-  //Assigns managers in a round robin to all available backends, up to the number of files
-  def roundRobinManagers = {
-    var x = 0
-    var offset: Int = -1 * (numFiles / 2)
-    while(x < numFiles) {
-      val whichBackend = x % numBackends
-      val whichNum = numberList(x)
-      backends(x % numBackends) ! Backend.MakeManager(numberList(x), (offset, 0))
-      println(s"having backend #$whichBackend make manager #$whichNum")
-      offset += 1
-      x += 1
-    }
   }
 }

@@ -26,11 +26,11 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
      "6026", "6027", "6028", "6029")
 
   def giveOffsets(arr: Seq[String], offsetArray: IndexedSeq[(Double, Double)]): Map[String, (Double, Double)] = {
-      arr.map(t => (t, offsetArray(t.toInt))).toMap
+      arr.map(t => (t, offsetArray(arr.indexOf(t)))).toMap
   }
 
   val cartAndRadNumbers = numberList.take(numFiles)
-  val n = math.sqrt(numBackends.toDouble / 10.0).ceil.toInt
+  val n = math.sqrt(numFiles.toDouble / 10.0).ceil.toInt
 
   val offsets = for(x <- 0 until 10 * n; y <- 0 until n) yield {
     (x * 2.0e-5 - (10 * n - 1) * 1e-5, y * 2e-4 - (n - 1) * 1e-4)

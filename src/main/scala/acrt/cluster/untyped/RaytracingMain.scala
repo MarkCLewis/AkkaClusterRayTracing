@@ -15,8 +15,8 @@ object RaytracingMain {
   //val transport = "aeron-udp"
 
   //Uncomment to use all pandora machines
-  //val hosts = List("pandora01", "pandora02", "pandora03", "pandora04", "pandora05", "pandora06", "pandora07", "pandora08")
-  val hosts = List("pandora02", "pandora03")
+  val hosts = List("pandora00", "pandora01", "pandora02", "pandora03", "pandora04", "pandora05", "pandora06", "pandora07", "pandora08")
+  //val hosts = List("pandora02", "pandora03")
   val port = 25251
   val list = hosts.map(Address("akka", "ClusterSystem", _, port))
 

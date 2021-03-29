@@ -24,8 +24,9 @@ class FrontendNode(img: rendersim.RTBufferedImage, numRays: Int, lights: List[Po
   //val right = Vect(2 * 1e-5, 0, 0)
   //val down = Vect(0, -2 * 1e-5, 0)
 
-  val eye = Point(0.0, 0.0, (10 * numFiles)*1e-5)
-  val topLeft = Point(-1e-5, 1e-5, ((10 * numFiles)-1)*1e-5)
+  val n = math.sqrt(numFiles.toDouble / 10.0).ceil.toInt
+  val eye = Point(0.0, 0.0, (10 * n)*1e-5)
+  val topLeft = Point(-1e-5, 1e-5, ((10 * n)-1)*1e-5)
   val right = Vect(2 * 1e-5, 0, 0)
   val down = Vect(0, -2 * 1e-5, 0)
 
