@@ -7,7 +7,7 @@ scalaVersion := "2.12.10"
 
 run / fork := true
 
-javaOptions += "-Xmx6g" 
+javaOptions += "-Xmx28g" 
 
 mainClass in (Compile, packageBin) := Some("acrt.raytracing.untyped.Main")
 

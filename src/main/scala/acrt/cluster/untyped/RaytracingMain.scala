@@ -53,7 +53,7 @@ object RaytracingMain {
         akka.remote.artery.canonical.transport=$transport
         akka.cluster.roles = [$role]
         """)
-      .withFallback(ConfigFactory.load("jacksonserialize"))
+      .withFallback(ConfigFactory.load("kryoserialize"))
 
     //Creates the cluster and system with the config
     val system = ActorSystem("ClusterSystem", config)

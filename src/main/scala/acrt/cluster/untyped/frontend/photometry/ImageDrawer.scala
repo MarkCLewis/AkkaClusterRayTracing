@@ -9,9 +9,10 @@ class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, n
   
   val forward = Vect(0, 0, -1)
   val up = Vect(0, 1, 0)
-
-  val viewLoc = Point(0.0, 0.0, numFiles*1e-5)
-
+  //val viewLoc = Point(0.0, 0.0, numFiles*1e-5)
+  val n = math.sqrt(numFiles.toDouble / 10.0).ceil.toInt
+  val viewLoc = Point(0.0, 0.0, (10 * n)*1e-5)
+  
   //val topLeft = Point(-1e-5, 1e-5, (numFiles-1)*1e-5)
   //val right = Vect(2 * 1e-5, 0, 0)
   //val down = Vect(0, -2 * 1e-5, 0)
@@ -59,6 +60,7 @@ class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, n
     case Start(startPixels) => {
       pixels = startPixels
       println("starting PhotonSender")
+      startTime = System.nanoTime()
       for(c <- 1 to threads; light <- sources) {
           val id = light.numPhotons + scala.util.Random.nextLong()
           val child = context.actorOf(Props(new PhotonCreator(xmin, xmax, ymin, ymax, light, viewLoc, forward, up, img, organizer)), s"PhotonSender$c,$id")
@@ -73,13 +75,14 @@ class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, n
 
       val startingColor = pixels(x)(y)
       if(col.a != 0.0 || col.b != 0.0 || col.g != 0.0 || col.r != 0.0) pixels(x)(y) = col + startingColor
-      if(changedPixels >= /*img.width*img.height*/ 10) {
+      if(changedPixels >= /*img.width*img.height*/ 1000) {
         writeToImage(pixels, img)
         changedPixels = 0
+        println((System.nanoTime() - startTime) * 1e-9)
       }
         
-      println("pix" + changedPixels)
-      if(howManyRays <= 0) println("Drew all rays")
+      //println("pix" + changedPixels)
+      //if(howManyRays <= 0) println("Drew all rays")
     }
 
     case m => "ImageDrawer received unhandled message: " + m
@@ -90,6 +93,7 @@ class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, n
     for (px <- 0 until image.width; py <- 0 until image.height) {
       image.setColor(px, py, (pixels(px)(py) / maxPix * 2.0).copy(a = 1.0))
     }
+    //println((System.nanoTime() - startTime) * 1e-9)
   }
 }
 

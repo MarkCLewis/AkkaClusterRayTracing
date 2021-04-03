@@ -29,7 +29,13 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
       arr.map(t => (t, offsetArray(arr.indexOf(t)))).toMap
   }
 
-  val cartAndRadNumbers = numberList.take(numFiles)
+  val cartAndRadNumbers = {
+    var nlist = numberList.take(numFiles)
+    while(nlist.length< numFiles) {
+        nlist = (nlist ++ nlist).take(numFiles)
+    }
+    nlist
+  }
   val n = math.sqrt(numFiles.toDouble / 10.0).ceil.toInt
 
   val offsets = for(x <- 0 until 10 * n; y <- 0 until n) yield {
