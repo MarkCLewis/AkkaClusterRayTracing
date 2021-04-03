@@ -4,8 +4,9 @@ import scala.collection.mutable
 import akka.actor.{Actor, Props, ActorRef}
 import swiftvis2.raytrace.{PointLight, RTColor, Ray}
 import acrt.cluster.untyped.frontend.raytracing.PixelHandler
-import acrt.cluster.untyped.backend.{IntersectContainer, CborSerializable}
-import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll
+import acrt.cluster.untyped.backend.CborSerializable
+import acrt.cluster.untyped.backend.containers.IntersectContainer
+import acrt.cluster.untyped.frontend.GeometryOrganizer
 import swiftvis2.raytrace.Vect
 import swiftvis2.raytrace.Point
 
@@ -42,7 +43,7 @@ class PhotonCreator(xmin: Double, xmax: Double, ymin: Double, ymax: Double, sour
             )
         )
         val k = scala.util.Random.nextLong()
-        organizer ! GeometryOrganizerAll.CastRay(self, k, ray)
+        organizer ! GeometryOrganizer.CastRay(self, k, ray)
         rays += (k -> ray)
       }
     }

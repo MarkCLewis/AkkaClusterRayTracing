@@ -8,10 +8,9 @@ import swiftvis2.raytrace.Vect
 import swiftvis2.raytrace.RTImage
 import collection.mutable
 import akka.actor.Props
-import acrt.geometrymanagement.untyped.GeometryOrganizerAll
+import acrt.geometrymanagement.untyped.GeometryOrganizer
 
 class ImageDrawer(sources: List[PhotonSource], viewLoc: Point, forward: Vect, up: Vect, img: RTImage) extends Actor {
-  
     import ImageDrawer._
 
     private var howManyRays = sources.map(m => m.numPhotons).sum
@@ -31,7 +30,8 @@ class ImageDrawer(sources: List[PhotonSource], viewLoc: Point, forward: Vect, up
       }
 
       case AcquireBounds => {
-        Main.organizer ! GeometryOrganizerAll.GetBounds
+        Main.organizer ! GeometryOrganizer.GetBounds(self)
+        println("getting bounds")
       }
 
       case Bounds(x1, x2, y1, y2) => {
@@ -40,11 +40,13 @@ class ImageDrawer(sources: List[PhotonSource], viewLoc: Point, forward: Vect, up
         ymin = y1
         ymax = y2  
 
+        println(s"$xmin, $xmax, $ymin, $ymax")
         val startPixels = Array.fill(img.width, img.height)(RTColor.Black)
         self ! ImageDrawer.Start(startPixels)
       }
 
       case Start(startPixels) => {
+        println("starting")
         pixels = startPixels
 
         for(c <- 1 to threads; light <- sources) {
@@ -61,12 +63,11 @@ class ImageDrawer(sources: List[PhotonSource], viewLoc: Point, forward: Vect, up
 
         if(col.a != 0.0 || col.b != 0.0 || col.g != 0.0 || col.r != 0.0) pixels(x)(y) = col + startingColor
 
-        if(changedPixels >= img.width * img.height) {
+        if(changedPixels >= 100 List(PhotonSource(PointLight(RTColor(1, 1, 1), Point(1, 0, 0.2)), 400000))/*img.width * img.height*/) {
           writeToImage(pixels, img)
           changedPixels = 0
         }
-        
-        println("pix" + changedPixels)
+
         if(howManyRays <= 0) println("Drew all rays")
       }
       case m => "me imagedrawer. me receive " + m

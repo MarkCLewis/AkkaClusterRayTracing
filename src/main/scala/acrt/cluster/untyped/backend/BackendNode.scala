@@ -4,10 +4,10 @@ import scala.collection.mutable
 import akka.actor.{Actor, ActorRef, RootActorPath, ActorSelection, Props, PoisonPill}
 import akka.cluster.{Cluster, MemberStatus, Member}
 import akka.cluster.ClusterEvent.{MemberUp, CurrentClusterState}
-import acrt.cluster.untyped.frontend.raytracing.Frontend
+import acrt.cluster.untyped.frontend.FrontendNode
 
 class BackendNode(cluster: Cluster, number: Int) extends Actor {
-  import Backend._
+  import BackendNode._
   private val managers: mutable.Map[String, ActorRef] = mutable.Map()
   private var frontend: ActorSelection = null
   private var organizer: ActorRef = null
@@ -41,7 +41,7 @@ class BackendNode(cluster: Cluster, number: Int) extends Actor {
   def register(member: Member): Unit = {
     if (member.hasRole("frontend")) {
       frontend = context.actorSelection(RootActorPath(member.address) / "user" / "Frontend")
-      frontend ! Frontend.BackendRegistration
+      frontend ! FrontendNode.BackendRegistration
 
       //Removes all previous managers from previous runs
       while(managers.isEmpty == false) {
@@ -52,6 +52,6 @@ class BackendNode(cluster: Cluster, number: Int) extends Actor {
   }
 }
 
-object Backend {
+object BackendNode {
     case class MakeManager(number: String, offset: (Double, Double)) extends CborSerializable
 }

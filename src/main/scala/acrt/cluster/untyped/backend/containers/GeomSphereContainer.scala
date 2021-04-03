@@ -1,11 +1,12 @@
-package acrt.cluster.untyped.backend
+package acrt.cluster.untyped.backend.containers
 
 import com.fasterxml.jackson.annotation.{JsonTypeInfo, JsonSubTypes}
 import scala.concurrent.{Future, Await, ExecutionContext}
 import swiftvis2.raytrace.{Point, RTColor, Geometry, Sphere, Vect, IntersectData, Ray, Box, BoundingBox}
+import acrt.cluster.untyped.backend.CborSerializable
 
 //Serializable Container for GeomSpheres, taken mostly from Swiftvis2
-case class GeomSphereContainer(center: Point, radius: Double, color: RTColor, reflect: Double) extends Geometry with Sphere {
+case class GeomSphereContainer(center: Point, radius: Double, color: RTColor, reflect: Double) extends Geometry with Sphere with CborSerializable {
     def movedBy(v: Vect): Sphere = copy(center = center+v)
     
     override def intersect(r: Ray): Option[IntersectData] = {

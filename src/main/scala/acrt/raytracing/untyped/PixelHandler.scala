@@ -4,7 +4,7 @@ import akka.actor.Actor
 import swiftvis2.raytrace._
 import akka.actor.Props
 import collection.mutable
-import acrt.geometrymanagement.untyped.{GeometryOrganizerAll, GeometryOrganizerFew, GeometryOrganizerSome}
+import acrt.geometrymanagement.untyped.GeometryOrganizer
 
 class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int) extends Actor {
   import PixelHandler._
@@ -14,7 +14,7 @@ class PixelHandler(lights: List[PointLight], i: Int, j: Int, numRays: Int) exten
   def receive = {
     case AddRay(r) => {
       //Casts original Ray for (x,y)
-      Main.organizer ! GeometryOrganizerAll.CastRay(self, scala.util.Random.nextLong(), r)
+      Main.organizer ! GeometryOrganizer.CastRay(self, scala.util.Random.nextLong(), r)
     }
     case IntersectResult(k: Long, intD: Option[IntersectData]) => {
       intD match {

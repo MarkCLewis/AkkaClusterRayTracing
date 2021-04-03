@@ -8,7 +8,7 @@ import swiftvis2.raytrace.RTImage
 import swiftvis2.raytrace.Ray
 import swiftvis2.raytrace.RTColor
 import acrt.raytracing.untyped.PixelHandler
-import acrt.geometrymanagement.untyped.GeometryOrganizerAll
+import acrt.geometrymanagement.untyped.GeometryOrganizer
 import akka.actor.Props
 
 class PhotonCreator(xmin: Double, xmax: Double, ymin: Double, ymax: Double, source: PhotonSource, viewLoc: Point, forward: Vect, up: Vect, image: RTImage) extends Actor {
@@ -42,7 +42,7 @@ class PhotonCreator(xmin: Double, xmax: Double, ymin: Double, ymax: Double, sour
                     )
                 )
                 val k = scala.util.Random.nextLong()
-                organizer ! GeometryOrganizerAll.CastRay(self, k, ray)
+                organizer ! GeometryOrganizer.CastRay(self, k, ray)
                 rays += (k -> ray)
             }
         }

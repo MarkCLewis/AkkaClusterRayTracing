@@ -3,10 +3,11 @@ package acrt.cluster.untyped.frontend.photometry
 import akka.actor.{Actor, ActorRef, Props, Terminated}
 import swiftvis2.raytrace.{PointLight, Point, Vect}
 import acrt.cluster.untyped.backend.CborSerializable
-import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll
+import acrt.cluster.untyped.frontend.GeometryOrganizer
+import acrt.cluster.untyped.frontend.FrontendNode
 
-class FrontendNode(img: rendersim.RTBufferedImage, numRays: Int, lights: List[PhotonSource]) extends Actor {
-  import acrt.cluster.untyped.frontend.raytracing.Frontend._
+class PhotoFrontendNode(val img: rendersim.RTBufferedImage, val numRays: Int, lights: List[PhotonSource]) extends FrontendNode {
+  import FrontendNode._
 
   private var backends = IndexedSeq.empty[ActorRef]
   private var jobCounter = 0
@@ -28,7 +29,7 @@ class FrontendNode(img: rendersim.RTBufferedImage, numRays: Int, lights: List[Ph
   def receive = {
     //Forwards the BackendRegistration to the Organizer
     case BackendRegistration => {
-      organizer ! GeometryOrganizerAll.BackendRegistration(sender)
+      organizer ! GeometryOrganizer.BackendRegistration(sender)
     }
 
     //Start the ImageDrawer

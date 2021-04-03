@@ -2,12 +2,15 @@ package acrt.cluster.untyped.frontend.raytracing
 
 import akka.actor.{Props, Actor, ActorRef}
 import swiftvis2.raytrace.{Sphere, Ray, Vect}
-import acrt.cluster.untyped.backend.{IntersectContainer, GeometryManager, Backend}
+import acrt.cluster.untyped.backend.{GeometryManager, BackendNode}
+import acrt.cluster.untyped.backend.containers._
 import acrt.cluster.untyped.frontend.WebCreator
 import swiftvis2.raytrace.Box
+import acrt.cluster.untyped.frontend.GeometryOrganizer
+import acrt.cluster.untyped.frontend.FrontendNode
 
-class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
-  import GeometryOrganizerAll._
+class GeometryOrganizerSome(val numFiles: Int, val numBackends: Int) extends GeometryOrganizer {
+  import GeometryOrganizer._
   
   private val managers = collection.mutable.Map.empty[ActorRef, Box]
   private var backendsRegistered = 0
@@ -52,7 +55,7 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
     for(x <- cartAndRadNumbers.indices) {
       val whichBackend = x % numBackends
       val whichNum = cartAndRadNumbers(x)
-      backends(whichBackend) ! Backend.MakeManager(whichNum, offsetsMap(whichNum))
+      backends(whichBackend) ! BackendNode.MakeManager(whichNum, offsetsMap(whichNum))
       println(s"having backend #$whichBackend make manager #$whichNum")
     }
   }
@@ -63,7 +66,7 @@ class GeometryOrganizerSome(numFiles: Int, numBackends: Int) extends Actor {
       managers += (sender -> bounds)
       backendsRegistered += 1
       if(backendsRegistered >= numFiles)
-        context.parent ! Frontend.Start
+        context.parent ! FrontendNode.Start
     }
 
     //Registers backend with organizer; once all are, RoundRobin's managers across all Backends

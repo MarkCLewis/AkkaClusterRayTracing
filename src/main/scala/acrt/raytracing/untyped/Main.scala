@@ -7,28 +7,26 @@ import scala.swing.{MainFrame, Label, Swing, Alignment}
 import akka.actor.{ActorSystem, Props}
 import swiftvis2.raytrace.{PointLight, GeomSphere, RTColor, Point, Vect}
 import acrt.geometrymanagement.untyped.{GeometryOrganizerAll, GeometryOrganizerFew, GeometryOrganizerSome}
+import acrt.geometrymanagement.untyped.WebCreator
 
 object Main extends App {
   //Alternate Organizers:
   //val organizer = system.actorOf(Props(new GeometryOrganizerAll(particles)), "GeomOrganizer")
   //val organizer = system.actorOf(Props(new GeometryOrganizerSome(particles)), "GeomOrganizer")
-
-  //Pulls the geometry data from the supplied file within the given directory. Assigns the color of the spheres to black.
-  val carURL = new URL("http://www.cs.trinity.edu/~mlewis/Rings/AMNS-Moonlets/Moonlet4/CartAndRad.6029.bin")
-  val particles = CartAndRad.readStream(carURL.openStream).map(p => GeomSphere(Point(p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
   
   //Visualization Params
   val numRays = 1
   val cellWidth = 1e-5
   val distanceUp = 1e-5
   val viewSize = 1e-5
-  val numSims = 6
+  val numSims = 10
   val firstXOffset = cellWidth * (numSims - 1)
   
   //View Options: Uncomment for different default views
   //Square view
-  val eye = Point(0.0, 0.0, (10 * numSims) * 1e-5)
-  val topLeft = Point(-1e-5, 1e-5, ((10 * numSims) - 1) * 1e-5)
+  val n = math.sqrt(numSims.toDouble / 10.0).ceil.toInt
+  val eye = Point(0.0, 0.0, (10 * n)*1e-5)
+  val topLeft = Point(-1e-5, 1e-5, ((10 * n)-1)*1e-5)
   val right = Vect(2 * 1e-5, 0, 0)
   val down = Vect(0, -2 * 1e-5, 0)
 
@@ -54,9 +52,6 @@ object Main extends App {
   //val particles = (0 until numSims).flatMap { i =>
   //  (CartAndRad.read(new java.io.File(s"/home/mlewis/Rings/AMNS-Moonlets/Moonlet4c/CartAndRad.720$i.bin"))).map(p => GeomSphere(Point(p.x - firstXOffset + i * 2 * cellWidth, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
   //}
-
-  println(s"# particles = ${particles.length}")
-  
   //Creates a List of PointLights. Does not work for AmbientLights.
   val lights: List[PointLight] = List(PointLight(new RTColor(0.9, 0.9, 0.9, 1), Point(1e-1, 0, 1e-2)), PointLight(new RTColor(0.5, 0.4, 0.1, 1), Point(-1e-1, 0, 1e-2)))
   
@@ -64,10 +59,12 @@ object Main extends App {
   val bimg = new BufferedImage(1200, 1200, BufferedImage.TYPE_INT_ARGB)
   val img = new rendersim.RTBufferedImage(bimg)
     
+  val wc = new WebCreator
+
   //Creates an ActorSystem, an ImageDrawer actor to handle RayTracing, and a GeometryManager actor to handle intersection math, then sends the ImageDrawer the message to start
   val system = ActorSystem("AkkaSystem")  
+  val organizer = system.actorOf(Props(new GeometryOrganizerSome(numSims, wc)), "GeomOrganizer")
   val imageDrawer = system.actorOf(Props(new ImageDrawer(lights, img, numRays)), "ImageDrawer")
-  val organizer = system.actorOf(Props(new GeometryOrganizerAll(particles, numSims)), "GeomOrganizer")
   imageDrawer ! ImageDrawer.Start(eye, topLeft, right, down)
   
   //Creates the Swing frame and places the BufferedImage in it

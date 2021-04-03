@@ -1,7 +1,8 @@
-package acrt.cluster.untyped.backend
+package acrt.cluster.untyped.backend.containers
 
 import swiftvis2.raytrace.{Point, Vect, Sphere}
 import swiftvis2.raytrace.BoundingSphere
+import acrt.cluster.untyped.backend.CborSerializable
 
 //Serializable Container for Sphere trait
 case class SphereContainer(center: Point, radius: Double) extends CborSerializable with Sphere {

@@ -7,7 +7,7 @@ import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
 import swiftvis2.raytrace.{Point, PointLight, RTColor}
 import backend.BackendNode
-import frontend.photometry.FrontendNode
+import frontend.photometry.PhotoFrontendNode
 import acrt.cluster.untyped.frontend.photometry.PhotonSource
 
 object PhotometryMain {
@@ -81,7 +81,7 @@ object PhotometryMain {
       frame.visible = true
       var repainting = true
       var last = System.nanoTime()
-      val frontend = system.actorOf(Props(new FrontendNode(img, numRays, lights)), "Frontend")
+      val frontend = system.actorOf(Props(new PhotoFrontendNode(img, numRays, lights)), "Frontend")
 
       cluster.joinSeedNodes(list)
 

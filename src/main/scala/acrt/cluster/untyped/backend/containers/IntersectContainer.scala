@@ -1,7 +1,8 @@
-package acrt.cluster.untyped.backend
+package acrt.cluster.untyped.backend.containers
 
 import com.fasterxml.jackson.annotation.{JsonTypeInfo, JsonSubTypes}
 import swiftvis2.raytrace.{Point, Vect, RTColor, GeomSphere, Sphere, Box, Geometry, IntersectData}
+import acrt.cluster.untyped.backend.CborSerializable
 
 //Serializable Container for IntersectData, with JSON tags for Jackson
 case class IntersectContainer(time: Double, point: Point, norm: Vect, color: RTColor, reflect: Double, 

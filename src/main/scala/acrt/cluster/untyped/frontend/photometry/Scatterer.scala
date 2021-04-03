@@ -3,18 +3,18 @@ package acrt.cluster.untyped.frontend.photometry
 import scala.collection.mutable
 import akka.actor.{Actor, ActorRef}
 import swiftvis2.raytrace.{PointLight, RTColor, Ray}
-import acrt.cluster.untyped.backend.IntersectContainer
+import acrt.cluster.untyped.backend.containers.IntersectContainer
 import acrt.cluster.untyped.frontend.raytracing.PixelHandler
 import swiftvis2.raytrace.Vect
 import swiftvis2.raytrace.Point
-import acrt.cluster.untyped.backend.ScatterGeometry
-import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll
+import acrt.cluster.untyped.backend.containers.ScatterGeometry
+import acrt.cluster.untyped.frontend.GeometryOrganizer
 
 class Scatterer(source: PhotonSource, viewLoc: Point, forward: Vect, up: Vect, id: IntersectContainer, width: Int, height: Int, dir: Vect, organizer: ActorRef) extends Actor {
   val interPoint = id.point + id.norm * 1e-8
   val right = forward.cross(up)
   
-  organizer ! GeometryOrganizerAll.CastRay(self, scala.util.Random.nextLong(), Ray(interPoint, viewLoc))
+  organizer ! GeometryOrganizer.CastRay(self, scala.util.Random.nextLong(), Ray(interPoint, viewLoc))
 
   def receive = {
     case PixelHandler.IntersectResult(k, intD) => {

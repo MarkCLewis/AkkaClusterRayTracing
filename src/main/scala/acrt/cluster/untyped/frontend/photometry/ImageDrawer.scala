@@ -3,6 +3,7 @@ package acrt.cluster.untyped.frontend.photometry
 import akka.actor.{Actor, Props, ActorRef}
 import swiftvis2.raytrace.{PointLight, Ray, Point, Vect, RTColor}
 import acrt.cluster.untyped.backend.CborSerializable
+import acrt.cluster.untyped.frontend.GeometryOrganizer
 
 class ImageDrawer(sources: List[PhotonSource], img: rendersim.RTBufferedImage, numRays: Int, numFiles: Int, organizer: ActorRef) extends Actor {
   import ImageDrawer._

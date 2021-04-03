@@ -1,4 +1,4 @@
-package acrt.photometry.untyped
+package acrt.geometrymanagement.untyped
 
 import swiftvis2.raytrace._
 

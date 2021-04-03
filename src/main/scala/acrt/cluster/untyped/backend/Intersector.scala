@@ -2,7 +2,8 @@ package acrt.cluster.untyped.backend
 
 import akka.actor.{Actor, ActorRef}
 import swiftvis2.raytrace.{Geometry, Ray}
-import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll
+import acrt.cluster.untyped.frontend.GeometryOrganizer
+import containers.IntersectContainer
 
 class Intersector(geom: Geometry) extends Actor {
   import Intersector._
@@ -11,7 +12,7 @@ class Intersector(geom: Geometry) extends Actor {
     //Intersects the ray, then places in IntersectContainer for serializer
     case CastRay(k, ray, rec, geomOrg) => {
       val oid = geom intersect ray
-      geomOrg ! GeometryOrganizerAll.RecID(rec, k, oid.map(IntersectContainer.apply))
+      geomOrg ! GeometryOrganizer.RecID(rec, k, oid.map(IntersectContainer.apply))
     }
     
     case m => "Intersector received unhandled message: " + m

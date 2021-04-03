@@ -2,17 +2,17 @@ package acrt.cluster.untyped.frontend.photometry
 
 import akka.actor.{Actor, ActorRef, Props}
 import swiftvis2.raytrace.Ray
-import acrt.cluster.untyped.backend.{GeometryManager, IntersectContainer, Backend, CborSerializable, SphereContainer}
+import acrt.cluster.untyped.backend.{GeometryManager, BackendNode, CborSerializable}
 import acrt.cluster.untyped.frontend.PhotometryCreator
 import acrt.cluster.untyped.frontend.raytracing.PixelHandler
-import acrt.cluster.untyped.frontend.raytracing.Frontend
-import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll._
+import acrt.cluster.untyped.frontend.FrontendNode
+import acrt.cluster.untyped.frontend.GeometryOrganizer
 import swiftvis2.raytrace.Bounds
-import acrt.cluster.untyped.backend.BoxContainer
+import acrt.cluster.untyped.backend.containers.{IntersectContainer, BoxContainer, SphereContainer}
 import swiftvis2.raytrace.BoundingBox
 import swiftvis2.raytrace.Point
 
-class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
+class GeometryOrganizerAll(val numFiles: Int, val numBackends: Int) extends GeometryOrganizer {
   import GeometryOrganizer._
   
   private var managers = IndexedSeq.empty[ActorRef]
@@ -55,7 +55,7 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
     for(x <- cartAndRadNumbers.indices) {
       val whichBackend = x % numBackends
       val whichNum = cartAndRadNumbers(x)
-      backends(whichBackend) ! Backend.MakeManager(whichNum, offsetsMap(whichNum))
+      backends(whichBackend) ! BackendNode.MakeManager(whichNum, offsetsMap(whichNum))
       println(s"having backend #$whichBackend make manager #$whichNum")
     }
   } 
@@ -71,7 +71,7 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
       managers = managers :+ sender
       bounds += bound.toBoundingBox
 
-      if(managers.length >= numFiles) context.parent ! Frontend.Start
+      if(managers.length >= numFiles) context.parent ! FrontendNode.Start
     }
 
     //Registers backend with organizer, once all are, RoundRobin's managers across all Backends
@@ -128,7 +128,4 @@ class GeometryOrganizerAll(numFiles: Int, numBackends: Int) extends Actor {
     }
     case m => "GeometryManager received unhandled message: " + m
   }
-}
-object GeometryOrganizer {
-  case object GetBounds extends CborSerializable
 }

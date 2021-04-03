@@ -4,72 +4,53 @@ import akka.actor.{Actor, ActorRef, Props}
 import swiftvis2.raytrace.{Geometry, Ray, KDTreeGeometry, Vect, BoxBoundsBuilder, SphereBoundsBuilder, IntersectData}
 import acrt.raytracing.untyped.PixelHandler
 import acrt.photometry.untyped.ImageDrawer
-import acrt.cluster.untyped.frontend.GeometryCreator
 import java.net.URL
 import data.CartAndRad
 import swiftvis2.raytrace.Point
 import swiftvis2.raytrace.GeomSphere
 import swiftvis2.raytrace.RTColor
 import scala.concurrent.ExecutionContext
+import swiftvis2.raytrace.Bounds
+import swiftvis2.raytrace.BoundingBox
+import swiftvis2.raytrace.Box
 
-class GeometryOrganizerAll(simpleGeom: Seq[Geometry], numFiles: Int) extends Actor {
-  import GeometryOrganizerAll._
+class GeometryOrganizerAll(val numFiles: Int, val gc: GeometryCreator) extends GeometryOrganizer {
+  import GeometryOrganizer._
 
-  //Alternate Lines for BoxBoundsBuilder - Replace all to swap
-  //val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs, builder = BoxBoundsBuilder))
-  
+  val numberList: List[String] = List("5000", "5001", "5002", "5003", "5004", "5005", 
+     "5006", "5007", "5008", "5009", "5010", "5011", "5012", "5013", "5014", "5015", 
+     "5016", "5017", "5018", "5019", "5020", "5021", "5022", "5023", "5024", "5025", 
+     "5026", "5027", "5028", "5029", "6000", "6001", "6002", "6003", "6004", "6005", 
+     "6006", "6007", "6008", "6009", "6010", "6011", "6012", "6013", "6014", "6015", 
+     "6016", "6017", "6018", "6019", "6020", "6021", "6022", "6023", "6024", "6025",
+     "6026", "6027", "6028", "6029")
 
-  /*def divisionOfFiles(numMachines: Int, cartAndRadNumbersArray: Seq[Int]): Array[(Int, Int)] = {
-    val ret = Array.fill(cartAndRadNumbersArray.length)((0,0))
-    for (i <- cartAndRadNumbersArray.indices) yield {
-        ret(i) = (i % numMachines, cartAndRadNumbersArray(i))
+  val cartAndRadNumbers = {
+    var nlist = numberList.take(numFiles)
+    while(nlist.length< numFiles) {
+      nlist = (nlist ++ nlist).take(numFiles)
     }
-    ret
+    nlist
   }
 
-  def giveOffsets(arr: Array[(Int, Int)], offsetArray: IndexedSeq[(Double, Double)]) : Array[(Int, (Int, (Double, Double)))] = {
-      arr.map(t => (t._1, (t._2, (offsetArray(t._1)._1, offsetArray(t._1)._2))))
+  val n = math.sqrt(numFiles.toDouble / 10.0).ceil.toInt
+
+  val offsets = for(x <- 0 until 10 * n; y <- 0 until n) yield {
+    (x * 2.0e-5 - (10 * n - 1) * 1e-5, y * 2e-4 - (n - 1) * 1e-4)
   }
 
-  val n = math.sqrt(2.toDouble / 10.0).ceil.toInt
-  
-  val machineFilePairs = divisionOfFiles(2, Seq(5000, 5001, 5002))
-
-  println(giveOffsets(machineFilePairs, offsets).mkString)
-
-  
-  def createKDTrees(arr: Array[(Int, (Int, (Double, Double)))]): Map[Int, Geometry]  = {
-    val wc = new WebCreator
-    arr.map(t => (t._1 -> wc(t._2._1.toString, t._2._2))).toMap
+  def giveOffsets(arr: Seq[String], offsetArray: IndexedSeq[(Double, Double)]): Map[String, (Double, Double)] = {
+      arr.map(t => (t, offsetArray(arr.indexOf(t)))).toMap
   }
+  val offsetsMap = giveOffsets(cartAndRadNumbers, offsets)
+  private var managerBounds = List[Box]()
+  private def totalBounds: Box = managerBounds.reduce(BoundingBox.mutualBox(_,_))
 
-  val cartAndRadNumbers = (0 until (numPartitions.toDouble / realCartAndRadNumbers.length).ceil.toInt).flatMap(_ => realCartAndRadNumbers)
-  val usedCartAndRadNumbers = cartAndRadNumbers.take(numPartitions)
-  val n = math.sqrt(numPartitions.toDouble / 10.0).ceil.toInt
-  val view = GeometrySetup.topView(10 * n)
-  // above line is equivalent to 
-  // (Point(0.0, 0.0, (10 * n)*1e-5), Point(-1e-5, 1e-5, ((10 * n)-1)*1e-5), Vect(2 * 1e-5, 0, 0), Vect(0, -2 * 1e-5, 0))
-
-  val geom = createKDTrees(sc, giveOffsets(sc, divisionOfFiles(sc, numPartitions, usedCartAndRadNumbers), offsets))*/
-
-  //Change this line for more/less breakup of geometry
-  val numManagers = 1
-
-  val offsets = for(x <- 0 until 10 * numFiles; y <- 0 until numFiles) yield {
-        (x * 2.0e-5 - (10 * numFiles - 1) * 1e-5, y * 2e-4 - (numFiles - 1) * 1e-4)
+  val managers = for(n <- cartAndRadNumbers) yield {
+    val data = gc(n, offsetsMap(n))
+    managerBounds =  data.boundingBox :: managerBounds
+    context.actorOf(Props(new GeometryManager(data)))
   }
-
-
-  //Gets the Bounds of the Geometry
-  val xmin = simpleGeom.minBy(_.boundingSphere.center.x).boundingSphere.center.x
-  val xmax = simpleGeom.maxBy(_.boundingSphere.center.x).boundingSphere.center.x
-  val ymin = simpleGeom.minBy(_.boundingSphere.center.y).boundingSphere.center.y
-  val ymax = simpleGeom.maxBy(_.boundingSphere.center.y).boundingSphere.center.y
-
-  //Groups the Geometry into slices and creates Managers for those pieces of Geometry
-  val geomSeqs = simpleGeom.groupBy(g => ((g.boundingSphere.center.y - ymin) / (ymax - ymin) * numManagers).toInt min (numManagers - 1))
-  val geoms = geomSeqs.mapValues(gs => new KDTreeGeometry(gs, builder = SphereBoundsBuilder))
-  val geomManagers = geoms.map { case (n, g) => n -> context.actorOf(Props(new GeometryManager(g)), "GeometryManager" + n) }
 
   //Map of IDs to Buffers of IntersectDatas
   private val buffMap = collection.mutable.Map[Long, collection.mutable.ArrayBuffer[Option[IntersectData]]]() 
@@ -77,8 +58,13 @@ class GeometryOrganizerAll(simpleGeom: Seq[Geometry], numFiles: Int) extends Act
   private var num = 1
 
   def receive = {
-    case GetBounds => {
-      sender ! ImageDrawer.Bounds(xmin, xmax, ymin, ymax)
+    case GetBounds(s) => {
+      if(managerBounds.length == numFiles) 
+        s ! ImageDrawer.Bounds(totalBounds.min.x, totalBounds.max.x, totalBounds.min.y, totalBounds.max.y)
+      else {
+        Thread.sleep(1000)
+        self ! GetBounds(s)
+      }
     }
     //Casts Rays to every Geometry and adds the ray to the Map
     case CastRay(rec, k, r) => {
@@ -88,7 +74,7 @@ class GeometryOrganizerAll(simpleGeom: Seq[Geometry], numFiles: Int) extends Act
         num = 1
       }
       buffMap += (k -> new collection.mutable.ArrayBuffer[Option[IntersectData]])
-      geomManagers.foreach(_._2 ! GeometryManager.CastRay(rec, k, r, self))
+      managers.foreach(_ ! GeometryManager.CastRay(rec, k, r, self))
     }
     //Receives back IntersectDatas from the Managers 
     case RecID(rec, k, id) => {
@@ -98,7 +84,7 @@ class GeometryOrganizerAll(simpleGeom: Seq[Geometry], numFiles: Int) extends Act
 
       //When the buffer is full of data from each Manager, chooses the first hit and sends it back,
       //or sends back None if no hits
-      if(buffK.length < numManagers) {
+      if(buffK.length < numFiles) {
         buffMap -= k
         buffMap += (k -> buffK)
       } else {
@@ -129,10 +115,4 @@ class GeometryOrganizerAll(simpleGeom: Seq[Geometry], numFiles: Int) extends Act
     }
     case m => "GeometryManager received unhandled message: " + m
   }
-}
-
-object GeometryOrganizerAll {
-  case class CastRay(recipient: ActorRef, k: Long, r: Ray)
-  case class RecID(recipient: ActorRef, k: Long, id: Option[IntersectData])
-  case object GetBounds
 }

@@ -4,8 +4,9 @@ import akka.actor.{Actor, Props, ActorRef}
 import akka.cluster.Cluster
 import akka.routing.BalancingPool
 import swiftvis2.raytrace.{Geometry, Ray}
-import acrt.cluster.untyped.frontend.raytracing.GeometryOrganizerAll
+import acrt.cluster.untyped.frontend.GeometryOrganizer
 import acrt.cluster.untyped.frontend.GeometryCreator
+import containers.BoxContainer
 
 class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, xyOffset: (Double, Double)) extends Actor {
   import GeometryManager._
@@ -22,13 +23,13 @@ class GeometryManager(cluster: Cluster, organizer: ActorRef, number: String, xyO
       router = context.actorOf(BalancingPool(
           Runtime.getRuntime().availableProcessors()).props(Props(new Intersector(geom))), s"IntersectRouter$rand")
       println(geom.boundingBox)
-      sender ! GeometryOrganizerAll.ReceiveDone(BoxContainer(geom.boundingBox))
+      sender ! GeometryOrganizer.ReceiveDone(BoxContainer(geom.boundingBox))
     }
 
     //Registers with Organizer
     case OrganizerRegistration => {
       println("mgr register with organizer")
-      organizer ! GeometryOrganizerAll.ManagerRegistration(self)
+      organizer ! GeometryOrganizer.ManagerRegistration(self)
     }
     
     //Casts given ray with the intersector

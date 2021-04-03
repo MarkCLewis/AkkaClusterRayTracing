@@ -5,7 +5,8 @@ import data.CartAndRad
 import scala.concurrent.ExecutionContext
 import com.fasterxml.jackson.annotation.{JsonTypeInfo, JsonSubTypes}
 import swiftvis2.raytrace.{Point, Geometry, RTColor, SphereBoundsBuilder, BoxBoundsBuilder}
-import acrt.cluster.untyped.backend.{CborSerializable, GeomSphereContainer, ScatterSphereContainer, KDTreeContainer}
+import acrt.cluster.untyped.backend.CborSerializable
+import acrt.cluster.untyped.backend.containers.{GeomSphereContainer, ScatterSphereContainer, KDTreeContainer}
 
 //JSON Tag info for the GeometryCreator trait
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")

@@ -7,14 +7,15 @@ import swiftvis2.raytrace.Vect
 import swiftvis2.raytrace.RTImage
 import swiftvis2.raytrace.RTColor
 import swiftvis2.raytrace.IntersectData
-import acrt.geometrymanagement.untyped.GeometryOrganizerAll
+import acrt.geometrymanagement.untyped.GeometryOrganizer
+import acrt.geometrymanagement.untyped.ScatterGeometry
 import acrt.raytracing.untyped.PixelHandler
 
 class Scatterer(source: PhotonSource, viewLoc: Point, forward: Vect, up: Vect, id: IntersectData, width: Int, height: Int, dir: Vect) extends Actor {
   val interPoint = id.point + id.norm * 1e-8
   val right = forward.cross(up)
 
-  Main.organizer ! GeometryOrganizerAll.CastRay(self, scala.util.Random.nextLong(), Ray(interPoint, viewLoc))
+  Main.organizer ! GeometryOrganizer.CastRay(self, scala.util.Random.nextLong(), Ray(interPoint, viewLoc))
   
   def receive = {
     case PixelHandler.IntersectResult(k, intD) => {

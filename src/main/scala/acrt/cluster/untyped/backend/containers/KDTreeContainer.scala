@@ -1,10 +1,11 @@
-package acrt.cluster.untyped.backend
+package acrt.cluster.untyped.backend.containers
 
 import scala.concurrent.{Future, Await, ExecutionContext}
 import swiftvis2.raytrace.{Bounds, Geometry, BoundsBuilder, SphereBoundsBuilder, IntersectData, Sphere, Box, Point, Ray}
+import acrt.cluster.untyped.backend.CborSerializable
 
 //Serializable Container for KDTreeGeometry, taken almost entirely from Swiftvis2
-class KDTreeContainer[B <: Bounds](geometry: Seq[Geometry], val MaxGeom: Int = 5, builder: BoundsBuilder[B] = SphereBoundsBuilder)(implicit ec: ExecutionContext) extends Geometry {
+class KDTreeContainer[B <: Bounds](geometry: Seq[Geometry], val MaxGeom: Int = 5, builder: BoundsBuilder[B] = SphereBoundsBuilder)(implicit ec: ExecutionContext) extends Geometry with CborSerializable {
   import KDTreeContainer._
 
   private val root = buildTree(geometry)
@@ -83,7 +84,7 @@ class KDTreeContainer[B <: Bounds](geometry: Seq[Geometry], val MaxGeom: Int = 5
 }
 
 object KDTreeContainer {
- sealed trait Node[B] extends Serializable {
+ sealed trait Node[B] extends Serializable with CborSerializable {
     val g: Seq[Geometry]
     val bounds: B
   }

@@ -7,7 +7,7 @@ import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
 import swiftvis2.raytrace.{Point, PointLight, RTColor}
 import backend.BackendNode
-import frontend.raytracing.FrontendNode
+import frontend.raytracing.RTFrontendNode
 
 object RaytracingMain {
   //Swap to change transport between UDP and TCP
@@ -80,7 +80,7 @@ object RaytracingMain {
       frame.visible = true
       var repainting = true
       var last = System.nanoTime()
-      val frontend = system.actorOf(Props(new FrontendNode(img, numRays, lights)), "Frontend")
+      val frontend = system.actorOf(Props(new RTFrontendNode(img, numRays, lights)), "Frontend")
 
       cluster.joinSeedNodes(list)
 

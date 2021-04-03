@@ -3,7 +3,8 @@ package acrt.cluster.untyped.frontend.raytracing
 import scala.collection.mutable
 import akka.actor.{Actor, ActorRef}
 import swiftvis2.raytrace.{PointLight, RTColor, Ray}
-import acrt.cluster.untyped.backend.IntersectContainer
+import acrt.cluster.untyped.backend.containers.IntersectContainer
+import acrt.cluster.untyped.frontend.GeometryOrganizer
 
 class LightMerger(lights: List[PointLight], id: IntersectContainer, organizer: ActorRef) extends Actor {
   private val buff = mutable.ArrayBuffer[RTColor]() 
@@ -17,7 +18,7 @@ class LightMerger(lights: List[PointLight], id: IntersectContainer, organizer: A
     val tup = (outRay, light)
     ids += (k -> tup)
     
-    organizer ! GeometryOrganizerAll.CastRay(self, k, outRay)
+    organizer ! GeometryOrganizer.CastRay(self, k, outRay)
   }
 
   def receive = {

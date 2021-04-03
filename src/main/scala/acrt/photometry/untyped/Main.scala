@@ -19,39 +19,35 @@ import akka.actor.Props
 import acrt.geometrymanagement.untyped.GeometryOrganizerFew
 import acrt.geometrymanagement.untyped.GeometryOrganizerAll
 import acrt.geometrymanagement.untyped.GeometryOrganizerSome
+import acrt.geometrymanagement.untyped.PhotometryCreator
 
 //i*i*10
 object Main extends App {
-    val carURL = new URL("http://www.cs.trinity.edu/~mlewis/Rings/AMNS-Moonlets/Moonlet4/CartAndRad.6029.bin")
-    val particles = CartAndRad.readStream(carURL.openStream).map(p => new ScatterSphereGeom(Point(p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0))
-    
-    println("loaded")
     val numRays = 1
     val cellWidth = 1e-5
     val distanceUp = 1e-5
     val viewSize = 1e-5
-    val numSims = 6
-    val firstXOffset = cellWidth * (numSims - 1)
-    val ringGeom = new KDTreeGeometry[BoundingBox](data.CartAndRad.readStream(carURL.openStream)
-      .filter(p => p.y < 3e-5 && p.y > -3e-5)
-      .map(p => new ScatterSphereGeom(Point(p.x, p.y, p.z), p.rad, _ => new RTColor(1, 1, 1, 1), _ => 0.0)), 5, BoxBoundsBuilder)
+    val numSims = 10
 
-    val geom = new ListScene(ringGeom)
-    val lights = List(PhotonSource(PointLight(RTColor(1, 1, 1), Point(1, 0, 0.2), Set.empty), 500000), PhotonSource(PointLight(new RTColor(1.0, 0.8, 0.2), Point(-1e-1, 0, 1e-2)), 500000))
-    val viewLoc = Point(0, 0, 3e-5)
+    val lights = List(PhotonSource(PointLight(RTColor(1, 1, 1), Point(1, 0, 0.2)), 4000))
     val forward = Vect(0, 0, -1)
     val up = Vect(0, 1, 0)
+    //val viewLoc = Point(0.0, 0.0, numFiles*1e-5)
+    val n = math.sqrt(numSims.toDouble / 10.0).ceil.toInt
+    val viewLoc = Point(0.0, 0.0, (10 * n)*1e-5)
     val bimg = new BufferedImage(800, 800, BufferedImage.TYPE_INT_ARGB)
     val img = new rendersim.RTBufferedImage(bimg)
 
+    val pc = new PhotometryCreator
+
     val system = ActorSystem("AkkaSystem")  
-    val organizer = system.actorOf(Props(new GeometryOrganizerSome(particles)), "GeomOrganizer")
+    val organizer = system.actorOf(Props(new GeometryOrganizerSome(numSims, pc)), "GeomOrganizer")
     val imageDrawer = system.actorOf(Props(new ImageDrawer(lights, viewLoc, forward, up, img)), "ImageDrawer")
 
     imageDrawer ! ImageDrawer.AcquireBounds
 
     val frame = new MainFrame {
-      title = "Photometry Frame"
+      title = "AkkaPMR Frame"
       contents = new Label("", Swing.Icon(bimg), Alignment.Center)
     }
     frame.visible = true
