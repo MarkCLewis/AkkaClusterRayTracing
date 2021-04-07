@@ -38,6 +38,7 @@ There are several different config files that can be loaded in to support standa
 This project is entirely dependent on Classic Cluster and untyped Actors from Akka. This is being phased out over time, and Akka has since introduced Akka Typed, which includes Typed Actors and the new Typed Cluster. As such, this should eventually support both types of Actors, typed and untyped, and though there are stubbed entries in each folder for a typed version, this typed version does not, as yet, exist and will likely be added at some point in the future.
 
 ## Papers
+Clustered Visualisation of Large Scenes using Actors
   
 A Study in Akka-based Distributed Raytracing of Large Scenes
   
