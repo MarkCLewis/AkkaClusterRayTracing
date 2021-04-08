@@ -63,7 +63,7 @@ class ImageDrawer(sources: List[PhotonSource], viewLoc: Point, forward: Vect, up
 
         if(col.a != 0.0 || col.b != 0.0 || col.g != 0.0 || col.r != 0.0) pixels(x)(y) = col + startingColor
 
-        if(changedPixels >= 100 List(PhotonSource(PointLight(RTColor(1, 1, 1), Point(1, 0, 0.2)), 400000))/*img.width * img.height*/) {
+        if(changedPixels >= 100 /*img.width * img.height*/) {
           writeToImage(pixels, img)
           changedPixels = 0
         }

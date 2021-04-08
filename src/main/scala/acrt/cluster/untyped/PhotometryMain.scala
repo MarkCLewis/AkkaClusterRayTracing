@@ -16,8 +16,15 @@ object PhotometryMain {
   //val transport = "aeron-udp"
 
   //Uncomment to use all pandora machines
+  val hosts = List(
+    "janus00", "janus01", "janus02", "janus03", "janus04", 
+    "janus05", "janus06", "janus07", "janus08", "janus09",
+    "janus10", "janus11", "janus12", "janus13", "janus14", 
+    "janus15", "janus16", "janus17", "janus18", "janus19",
+    "janus20", "janus21", "janus22", "janus23", "janus24"
+  )
   //val hosts = List("pandora01", "pandora02", "pandora03", "pandora04", "pandora05", "pandora06", "pandora07", "pandora08")
-  val hosts = List("pandora00", "pandora01")
+  //val hosts = List("pandora00", "pandora01")
   val port = 25251
   val list = hosts.map(Address("akka", "ClusterSystem", _, port))
 

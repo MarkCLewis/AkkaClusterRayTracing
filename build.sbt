@@ -7,8 +7,13 @@ scalaVersion := "2.12.10"
 
 run / fork := true
 
-javaOptions += "-Xmx28g" 
+//javaOptions += "-Xmx28g" 
 //javaOptions += "-Xmx10g" 
+
+assemblyMergeStrategy in assembly := {
+ case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+ case x => MergeStrategy.first
+}
 
 mainClass in (Compile, packageBin) := Some("acrt.raytracing.untyped.Main")
 
