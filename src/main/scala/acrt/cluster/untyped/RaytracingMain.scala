@@ -8,6 +8,9 @@ import com.typesafe.config.ConfigFactory
 import swiftvis2.raytrace.{Point, PointLight, RTColor}
 import backend.BackendNode
 import frontend.raytracing.RTFrontendNode
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import acrt.cluster.untyped.frontend.FrontendNode
 
 object RaytracingMain {
   //Swap to change transport between UDP and TCP
@@ -90,6 +93,12 @@ object RaytracingMain {
       val frontend = system.actorOf(Props(new RTFrontendNode(img, numRays, lights)), "Frontend")
 
       cluster.joinSeedNodes(list)
+
+      frame.peer.addWindowListener(new WindowAdapter{
+        override def windowClosing(e: WindowEvent) = {
+          frontend ! FrontendNode.KillCluster
+        }
+      })
 
       while (true) {
         val delay = System.nanoTime() - last

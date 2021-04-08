@@ -17,6 +17,7 @@ class BackendNode(cluster: Cluster, number: Int) extends Actor {
   override def postStop(): Unit = cluster.unsubscribe(self)
 
   def receive = {
+    case CloseCluster => sys.exit()
     //Makes a new GeometryManager with a random name to contain the data from the given file, with the given x offset
     case MakeManager(num, offset) => {
       println("making manager")
@@ -54,4 +55,5 @@ class BackendNode(cluster: Cluster, number: Int) extends Actor {
 
 object BackendNode {
     case class MakeManager(number: String, offset: (Double, Double)) extends CborSerializable
+    case object CloseCluster extends CborSerializable
 }

@@ -5,6 +5,7 @@ import swiftvis2.raytrace.{PointLight, Point, Vect}
 import acrt.cluster.untyped.backend.CborSerializable
 import acrt.cluster.untyped.frontend.GeometryOrganizer
 import acrt.cluster.untyped.frontend.FrontendNode
+import acrt.cluster.untyped.backend.BackendNode
 
 class RTFrontendNode(val img: rendersim.RTBufferedImage, val numRays: Int, lights: List[PointLight]) extends FrontendNode {
   import FrontendNode._
@@ -33,6 +34,7 @@ class RTFrontendNode(val img: rendersim.RTBufferedImage, val numRays: Int, light
   val down = Vect(0, -2 * 1e-5, 0)
 
   def receive = {
+    case KillCluster => backends.foreach(_ ! BackendNode.CloseCluster)
     //Forwards the BackendRegistration to the Organizer
     case BackendRegistration => {
       organizer ! GeometryOrganizer.BackendRegistration(sender)

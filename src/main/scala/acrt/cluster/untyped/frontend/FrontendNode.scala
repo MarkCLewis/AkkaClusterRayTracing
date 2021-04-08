@@ -11,4 +11,5 @@ trait FrontendNode extends Actor {
 object FrontendNode {
   case object Start extends CborSerializable
   case object BackendRegistration extends CborSerializable
+  case object KillCluster extends CborSerializable
 }
