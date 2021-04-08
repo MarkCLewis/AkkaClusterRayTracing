@@ -64,6 +64,7 @@ object RaytracingMain {
         akka.cluster.roles = [$role]
         """)
       .withFallback(ConfigFactory.load("kryoserialize"))
+      .withFallback(ConfigFactory.load("default"))
 
     //Creates the cluster and system with the config
     val system = ActorSystem("ClusterSystem", config)
