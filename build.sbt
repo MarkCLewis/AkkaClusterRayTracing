@@ -8,7 +8,7 @@ scalaVersion := "2.12.10"
 run / fork := true
 
 //javaOptions += "-Xmx28g" 
-//javaOptions += "-Xmx10g" 
+javaOptions += "-Xmx12g" 
 
 assemblyMergeStrategy in assembly := {
  case PathList("META-INF", xs @ _*) => MergeStrategy.discard

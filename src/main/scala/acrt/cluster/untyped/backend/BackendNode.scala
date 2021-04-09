@@ -6,7 +6,7 @@ import akka.cluster.{Cluster, MemberStatus, Member}
 import akka.cluster.ClusterEvent.{MemberUp, CurrentClusterState}
 import acrt.cluster.untyped.frontend.FrontendNode
 
-class BackendNode(cluster: Cluster, number: Int) extends Actor {
+class BackendNode(cluster: Cluster) extends Actor {
   import BackendNode._
   private val managers: mutable.Map[String, ActorRef] = mutable.Map()
   private var frontend: ActorSelection = null
